@@ -1,10 +1,2 @@
-import type { routing } from '@/libs/I18nRouting';
-import type messages from '@/locales/en.json';
-
-declare module 'next-intl' {
-  // oxlint-disable-next-line typescript/consistent-type-definitions
-  interface AppConfig {
-    Locale: (typeof routing.locales)[number];
-    Messages: typeof messages;
-  }
-}
+/** Centralized type namespace for application text variables */
+export type AppLocale = 'en';

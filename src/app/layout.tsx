@@ -1,0 +1,102 @@
+import type { Metadata, Viewport } from 'next';
+import { DemoBadge } from '@/components/DemoBadge';
+import { PwaRegistration } from '@/components/PwaRegistration';
+import '@/styles/global.css';
+import { AppConfig } from '@/utils/AppConfig';
+import { ThemeProvider } from '@/components/theme/theme-provider';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(AppConfig.siteUrl),
+  title: {
+    default: AppConfig.title,
+    template: `%s — ${AppConfig.title}`,
+  },
+  description: AppConfig.description,
+  keywords: [
+    "Okun",
+    "Kogi State",
+    "Nigeria",
+    "Oworo",
+    "Lokoja",
+    "Yoruba",
+    "encyclopedia",
+    "history",
+    "culture",
+    "Bunu",
+    "Owe",
+    "Gbede",
+    "Oyi",
+    "Kabba",
+    "Ijumu",
+    "Yagba",
+  ],
+  authors: [{ name: AppConfig.author }],
+  creator: AppConfig.author,
+  icons: {
+    icon: [
+      { url: "/static/favicons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/static/favicons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/static/favicons/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: AppConfig.title,
+    description: AppConfig.description,
+    url: AppConfig.siteUrl,
+    siteName: AppConfig.title,
+    images: [{ url: AppConfig.socialBanner, width: 1200, height: 630, alt: AppConfig.title }],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: AppConfig.title,
+    description: AppConfig.description,
+    images: [AppConfig.socialBanner],
+  },
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/rss+xml": `${AppConfig.siteUrl}/feed.xml`,
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: AppConfig.title,
+  },
+  formatDetection: { telephone: false },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#10b981',
+};
+
+export default function RootLayout(props: { children: React.ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+ <head>
+              <link rel="apple-touch-icon" sizes="192x192" href="/static/favicons/apple-touch-icon.png" />
+            </head>
+      <body><ThemeProvider>
+        {props.children}
+        <PwaRegistration />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

@@ -1,13 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { useRouter } from '@/libs/I18nNavigation';
 import { CounterValidation } from '@/validations/CounterValidation';
+import { Button } from '@/components/ui/Button';
 
 export const CounterForm = () => {
-  const t = useTranslations('CounterForm');
   const form = useForm({
     resolver: zodResolver(CounterValidation),
     defaultValues: {
@@ -30,32 +29,33 @@ export const CounterForm = () => {
   });
 
   return (
-    <form onSubmit={handleIncrement}>
-      <p>{t('presentation')}</p>
+    <form onSubmit={handleIncrement} className="space-y-4">
+      <p className="text-xs text-gray-600 dark:text-gray-400">Increment the shared counter below:</p>
       <div>
-        <label className="text-sm font-bold text-gray-700" htmlFor="increment">
-          {t('label_increment')}
-          <input
-            id="increment"
-            type="number"
-            className="ml-2 w-32 appearance-none rounded-sm border border-gray-200 px-2 py-1 text-sm/tight text-gray-700 focus:ring-3 focus:ring-blue-300/50 focus:outline-hidden"
-            {...form.register('increment', { valueAsNumber: true })}
-          />
+        <label className="text-xs font-bold text-gray-700 dark:text-gray-300 block mb-1.5" htmlFor="increment">
+          Increment By
         </label>
+        <input
+          id="increment"
+          type="number"
+          className="w-32 appearance-none rounded-lg border border-gray-200 px-3 py-1.5 text-xs text-gray-700 focus:ring-2 focus:ring-blue-300 focus:outline-hidden dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100"
+          {...form.register('increment', { valueAsNumber: true })}
+        />
 
         {form.formState.errors.increment && (
-          <div className="my-2 text-xs text-red-500 italic">{t('error_increment_range')}</div>
+          <div className="my-2 text-xs text-red-500 italic">Please enter a valid positive increment value.</div>
         )}
       </div>
 
-      <div className="mt-2">
-        <button
-          className="rounded-sm bg-blue-500 px-5 py-1 font-bold text-white hover:bg-blue-600 focus:ring-3 focus:ring-blue-300/50 focus:outline-hidden disabled:pointer-events-none disabled:opacity-50"
+      <div className="pt-2">
+        <Button
+          variant="primary"
+          size="sm"
           type="submit"
           disabled={form.formState.isSubmitting}
         >
-          {t('button_increment')}
-        </button>
+          {form.formState.isSubmitting ? 'Incrementing...' : 'Increment'}
+        </Button>
       </div>
     </form>
   );

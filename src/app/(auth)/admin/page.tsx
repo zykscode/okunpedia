@@ -1,0 +1,102 @@
+import { Link } from '@/libs/I18nNavigation';
+
+export default function AdminPage() {
+  return (
+    <div className="mx-auto max-w-5xl space-y-8 py-4 sm:py-8">
+      {/* Official Curation Hub Banner */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-gray-900 to-emerald-950 p-8 text-white shadow-2xl sm:p-12">
+        {/* Soft atmospheric backglow */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent" />
+
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-4 border-b border-gray-800/80 pb-4">
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-bold tracking-wider text-emerald-400 uppercase ring-1 ring-emerald-500/20">
+            <span>🛡️ Protected Archival Workspace</span>
+          </div>
+          <span className="text-xs font-medium text-gray-400">
+            Authenticated Contributor Session
+          </span>
+        </div>
+
+        <div className="relative z-10 mt-6">
+          <h1 className="font-serif text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            Okunpedia Curation Center
+          </h1>
+          <p className="mt-2 max-w-2xl text-xs text-gray-300 sm:text-base">
+            Select a designated administrative node below to draft or sync regional monographs and localized municipal records.
+          </p>
+        </div>
+      </div>
+
+      {/* Module Shortcuts Section */}
+      <div className="grid gap-8 md:grid-cols-2">
+        {/* Upload Town / Community Entry Portal Card */}
+        <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/30 hover:shadow-xl sm:p-8">
+          <div>
+            <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-amber-50 p-3 text-amber-700 ring-1 ring-amber-600/10 transition-transform duration-300 group-hover:scale-110">
+              <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
+              </svg>
+            </div>
+            <h2 className="font-serif text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
+              Municipalities & Towns
+            </h2>
+            <p className="mt-2.5 text-xs leading-relaxed text-gray-600 sm:text-sm">
+              Create and upload comprehensive encyclopedia records for Okun towns, including founding stories, lacking infrastructure, and traditional leadership hierarchies.
+            </p>
+          </div>
+
+          <div className="mt-8 pt-2">
+            <Link
+              href="/admin/communities/new/"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-amber-600 to-emerald-600 px-4 py-3 text-xs font-bold text-white shadow-md transition-all hover:opacity-95 sm:text-sm"
+            >
+              <span>+ Add Community Monograph</span>
+              <span className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1">
+                &rarr;
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Publish Blog Post Portal Card */}
+        <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/30 hover:shadow-xl sm:p-8">
+          <div>
+            <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-blue-50 p-3 text-blue-700 ring-1 ring-blue-600/10 transition-transform duration-300 group-hover:scale-110">
+              <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </div>
+            <h2 className="font-serif text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
+              Publications & News
+            </h2>
+            <p className="mt-2.5 text-xs leading-relaxed text-gray-600 sm:text-sm">
+              Publish official cultural documentation, socio-economic discussions, featured indigenes highlight interviews, and local news updates.
+            </p>
+          </div>
+
+          <div className="mt-8 pt-2">
+            <Link
+              href="/admin/blog/new/"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-xs font-bold text-white shadow-md transition-all hover:opacity-95 sm:text-sm"
+            >
+              <span>+ Draft Publication Article</span>
+              <span className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1">
+                &rarr;
+              </span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

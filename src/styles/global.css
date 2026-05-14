@@ -1,3 +1,44 @@
 @layer theme, base, clerk, components, utilities; /* Ensure Clerk is compatible with Tailwind CSS v4 */
 
 @import 'tailwindcss';
+
+/* Enable explicit class-based dark mode control in Tailwind CSS v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --radius-button: 0.75rem;
+    --radius-card: 1.25rem;
+    --transition-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html {
+    color-scheme: light dark;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Focus visible accessibility state rings */
+  :focus-visible {
+    @apply outline-hidden ring-2 ring-amber-500 ring-offset-2 ring-offset-gray-50 dark:ring-amber-400 dark:ring-offset-gray-950;
+  }
+}
+
+/* Custom cinematic overlay masks */
+@layer utilities {
+  .mask-radial-faded {
+    mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+  }
+  
+  .text-glow-amber {
+    text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+  }
+
+  .text-glow-emerald {
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  }
+}
