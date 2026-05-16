@@ -5,40 +5,138 @@
 /* Enable explicit class-based dark mode control in Tailwind CSS v4 */
 @custom-variant dark (&:where(.dark, .dark *));
 
-@layer base {
-  :root {
-    --radius-button: 0.75rem;
-    --radius-card: 1.25rem;
-    --transition-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
-  }
+@theme {
+  /* Font families */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-display: 'Inter', system-ui, sans-serif;
 
+  /* Border radius scale */
+  --radius-button: 0.75rem;
+  --radius-card: 1rem;
+  --radius-card-lg: 1.5rem;
+
+  /* Easing curves */
+  --ease-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Brand color tokens — light mode */
+  --color-brand: oklch(42% 0.14 148);
+  --color-brand-light: oklch(96% 0.03 148);
+  --color-brand-hover: oklch(38% 0.13 148);
+  --color-accent: oklch(70% 0.17 68);
+  --color-accent-light: oklch(98% 0.03 68);
+
+  /* Semantic surface tokens — light mode */
+  --color-surface: oklch(99% 0 0);
+  --color-surface-elevated: oklch(100% 0 0);
+  --color-surface-subtle: oklch(97.5% 0 0);
+  --color-surface-muted: oklch(95.5% 0 0);
+
+  /* Border tokens — light mode */
+  --color-border: oklch(91% 0 0);
+  --color-border-strong: oklch(83% 0 0);
+
+  /* Text tokens — light mode */
+  --color-text-primary: oklch(13% 0 0);
+  --color-text-secondary: oklch(42% 0 0);
+  --color-text-tertiary: oklch(62% 0 0);
+
+  /* Wiki alias tokens (used throughout existing components) */
+  --color-wiki-bg: var(--color-surface);
+  --color-wiki-card: rgba(255, 255, 255, 0.9);
+  --color-wiki-card-strong: rgba(255, 255, 255, 0.97);
+  --color-wiki-text: var(--color-text-primary);
+  --color-wiki-muted: var(--color-text-secondary);
+  --color-wiki-border: var(--color-border);
+  --color-wiki-border-accent: var(--color-border-strong);
+  --color-wiki-hover: var(--color-surface-muted);
+
+  /* Forest green aliases (used in header/nav) */
+  --color-forest-400: oklch(62% 0.13 148);
+  --color-forest-500: oklch(52% 0.14 148);
+  --color-forest-600: oklch(42% 0.14 148);
+  --color-forest-900: oklch(22% 0.08 148);
+}
+
+@layer base {
   html {
     color-scheme: light dark;
     scroll-behavior: smooth;
+    font-size: 15px;
   }
-  
+
   body {
     @apply bg-gray-50 text-gray-900 antialiased transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    line-height: 1.25;
   }
 
   /* Focus visible accessibility state rings */
   :focus-visible {
-    @apply outline-hidden ring-2 ring-amber-500 ring-offset-2 ring-offset-gray-50 dark:ring-amber-400 dark:ring-offset-gray-950;
+    @apply outline-hidden ring-2 ring-emerald-600 ring-offset-2 ring-offset-gray-50 dark:ring-emerald-400 dark:ring-offset-gray-950;
+  }
+
+  /* Selection colour */
+  ::selection {
+    @apply bg-emerald-100 text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-200;
+  }
+
+  /* Dark mode overrides for wiki tokens */
+  .dark {
+    --color-wiki-card: rgba(10, 12, 18, 0.9);
+    --color-wiki-card-strong: rgba(10, 12, 18, 0.97);
+    --color-wiki-bg: oklch(10% 0 0);
+    --color-wiki-text: oklch(93% 0 0);
+    --color-wiki-muted: oklch(60% 0 0);
+    --color-wiki-border: oklch(22% 0 0);
+    --color-wiki-border-accent: oklch(32% 0 0);
+    --color-wiki-hover: oklch(16% 0 0);
   }
 }
 
-/* Custom cinematic overlay masks */
 @layer utilities {
-  .mask-radial-faded {
-    mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
-  }
-  
+  /* Text glow effects */
   .text-glow-amber {
-    text-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+    text-shadow: 0 0 24px rgba(245, 158, 11, 0.35);
   }
 
   .text-glow-emerald {
-    text-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    text-shadow: 0 0 24px rgba(16, 185, 129, 0.35);
+  }
+
+  /* Radial fade mask */
+  .mask-radial-faded {
+    mask-image: radial-gradient(circle at center, black 60%, transparent 100%);
+  }
+
+  /* Gradient text utility */
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-emerald-700 to-amber-600 bg-clip-text text-transparent dark:from-emerald-400 dark:to-amber-400;
+  }
+
+  /* Glassmorphism surface */
+  .glass {
+    background: var(--color-wiki-card);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+  }
+
+  /* Animated shimmer for loading states */
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 25%, oklch(95% 0 0 / 0.6) 50%, transparent 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
   }
 }

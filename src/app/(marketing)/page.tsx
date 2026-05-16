@@ -1,69 +1,163 @@
 import type { Metadata } from 'next';
-import { Sponsors } from '@/components/Sponsors';
+import Link from 'next/link';
+import {
+  BookOpen,
+  Map,
+  Newspaper,
+  ArrowRight,
+  Users,
+  Landmark,
+  ScrollText,
+  Globe,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { Link } from '@/libs/I18nNavigation';
 
 export const metadata: Metadata = {
-  title: 'Okunpedia Heritage - Cinematic Tribal Encyclopedia & Atlas',
+  title: 'Okunpedia — Encyclopedia of Okun Heritage, Culture & History',
   description:
-    'The premier digital cultural ecosystem documenting Okun traditional lineages, migration chronicles, municipal infrastructure nodes, and dialect matrices.',
+    'The definitive digital encyclopedia documenting Okun traditional lineages, migration chronicles, community infrastructure, and cultural heritage across six local government areas in Kogi State.',
 };
+
+const stats = [
+  {
+    val: '6',
+    label: 'Local Government Areas',
+    icon: Globe,
+    color: 'text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/40',
+  },
+  {
+    val: '80+',
+    label: 'Documented Communities',
+    icon: Users,
+    color: 'text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/40',
+  },
+  {
+    val: '6+',
+    label: 'Paramount Monarchies',
+    icon: Landmark,
+    color: 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-950/40',
+  },
+  {
+    val: 'Centuries',
+    label: 'Of Migration Narratives',
+    icon: ScrollText,
+    color: 'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-950/40',
+  },
+];
+
+const features = [
+  {
+    icon: BookOpen,
+    title: 'Community Encyclopedia',
+    description:
+      'In-depth profiles spanning founding folklore, clan boundaries, prominent leadership, and civic infrastructure across all Okun towns.',
+    href: '/communities',
+    cta: 'Browse Communities',
+    accent: 'emerald',
+  },
+  {
+    icon: Map,
+    title: 'Interactive GIS Map',
+    description:
+      'Geospatial explorer charting indigenous terrain boundaries, district coordinates, and visual proximity maps of the Okun region.',
+    href: '/map',
+    cta: 'Open Atlas',
+    accent: 'amber',
+  },
+  {
+    icon: Newspaper,
+    title: 'Publications & News',
+    description:
+      'Archival updates covering community outreach, heritage symposiums, and curated civic announcements from across Okunland.',
+    href: '/blog',
+    cta: 'Read Dispatches',
+    accent: 'blue',
+  },
+] as const;
+
+const accentMap = {
+  emerald: {
+    icon: 'bg-emerald-50 text-emerald-600 ring-emerald-600/10 group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-950/40 dark:text-emerald-400 dark:group-hover:bg-emerald-500',
+    title: 'group-hover:text-emerald-700 dark:group-hover:text-emerald-400',
+    border: 'hover:border-emerald-400/50 dark:hover:border-emerald-500/30',
+  },
+  amber: {
+    icon: 'bg-amber-50 text-amber-600 ring-amber-600/10 group-hover:bg-amber-600 group-hover:text-white dark:bg-amber-950/40 dark:text-amber-400 dark:group-hover:bg-amber-500',
+    title: 'group-hover:text-amber-700 dark:group-hover:text-amber-400',
+    border: 'hover:border-amber-400/50 dark:hover:border-amber-500/30',
+  },
+  blue: {
+    icon: 'bg-blue-50 text-blue-600 ring-blue-600/10 group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400 dark:group-hover:bg-blue-500',
+    title: 'group-hover:text-blue-700 dark:group-hover:text-blue-400',
+    border: 'hover:border-blue-400/50 dark:hover:border-blue-500/30',
+  },
+};
+
+const popularTowns = ['Kabba', 'Isanlu', 'Mopa', 'Egbe', 'Iyara', 'Ekinrin-Adde'];
 
 export default function MarketingIndexPage() {
   return (
-    <div className="space-y-16 py-4">
-      {/* Cinematic Ambient Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-gray-900 to-amber-950 p-8 text-white shadow-2xl transition-all duration-300 dark:from-gray-950 dark:via-black dark:to-emerald-950 sm:p-12 lg:p-20">
-        {/* Apple-style floating ambient micro-surfaces */}
-        <div className="absolute top-0 left-1/4 h-[400px] w-[400px] rounded-full bg-emerald-500/10 blur-3xl dark:bg-emerald-500/5" />
-        <div className="absolute right-1/4 bottom-0 h-[400px] w-[400px] rounded-full bg-amber-500/10 blur-3xl dark:bg-amber-500/5" />
+    <div className="space-y-20">
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-gray-900 to-amber-950 px-6 py-16 text-white shadow-2xl sm:px-12 lg:px-20 lg:py-24">
+        {/* Ambient glows */}
+        <div className="absolute top-0 left-1/4 size-96 rounded-full bg-emerald-500/8 blur-3xl" aria-hidden="true" />
+        <div className="absolute right-1/4 bottom-0 size-96 rounded-full bg-amber-500/8 blur-3xl" aria-hidden="true" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent" aria-hidden="true" />
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          {/* Top Curated Accent Badge */}
-          <div className="inline-flex items-center gap-2">
-            <Badge variant="amber" className="px-3 py-1 text-xs backdrop-blur-xs">
-              <span className="flex size-1.5 animate-pulse rounded-full bg-amber-400" />
-              Digital Archival Platform
+          {/* Accent badge */}
+          <div className="mb-6 inline-flex items-center gap-2">
+            <Badge variant="amber" className="px-3 py-1.5 text-xs backdrop-blur-sm">
+              <span className="flex size-1.5 animate-pulse rounded-full bg-amber-400" aria-hidden="true" />
+              Digital Archival Platform · Kogi State, Nigeria
             </Badge>
           </div>
 
-          {/* Premium Heading Typography */}
-          <h1 className="mt-6 font-serif text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-7xl">
-            Preserving the Oral History & Lineages of Okunland
+          {/* Headline */}
+          <h1 className="font-serif text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl lg:text-7xl">
+            Preserving the{' '}
+            <span className="text-glow-emerald bg-gradient-to-r from-emerald-300 to-amber-300 bg-clip-text text-transparent">
+              History & Lineages
+            </span>
+            {' '}of Okunland
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 mx-auto max-w-2xl text-xs leading-relaxed text-slate-300 dark:text-gray-400 sm:text-base lg:text-lg">
-            Explore dedicated community profiles, traditional monarchy structures, migration narratives, and active infrastructural development nodes across the six local government areas.
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 dark:text-gray-400 sm:text-lg">
+            Explore community profiles, traditional monarchy structures, migration narratives, and
+            infrastructural records across the six local government areas of Okun.
           </p>
 
-          {/* Interactive Routing Control Bar */}
-          <div className="mt-10">
+          {/* Search form */}
+          <div className="mx-auto mt-10 max-w-xl">
             <form
               action="/communities/"
               method="GET"
-              className="mx-auto flex max-w-xl items-center gap-2 rounded-xl bg-white/10 p-1.5 backdrop-blur-md focus-within:ring-2 focus-within:ring-amber-400 dark:bg-white/5"
+              className="flex items-center gap-2 rounded-2xl bg-white/10 p-1.5 backdrop-blur-md ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-amber-400/70"
             >
               <input
                 type="text"
                 name="search"
-                placeholder="Search community registry, traditional titles, or leaders..."
-                className="w-full bg-transparent px-4 py-2 text-xs text-white placeholder-gray-400 focus:outline-hidden sm:text-sm"
+                placeholder="Search communities, towns, or traditional titles..."
+                className="w-full bg-transparent px-4 py-2 text-sm text-white placeholder-gray-400 focus:outline-hidden"
+                aria-label="Search Okunpedia"
               />
-              <Button type="submit" variant="primary" size="md" className="shrink-0">
-                Explore Registry
+              <Button type="submit" variant="accent" size="md" className="shrink-0">
+                Search
+                <ArrowRight className="size-4" aria-hidden="true" />
               </Button>
             </form>
 
-            {/* Micro-Navigation Suggestions */}
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] text-gray-400 dark:text-gray-500">
-              <span>Popular hubs:</span>
-              {['Kabba', 'Isanlu', 'Mopa', 'Egbe', 'Iyara', 'Ekinrin-Adde'].map((town) => (
+            {/* Quick links */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-gray-400">
+              <span className="font-medium">Popular:</span>
+              {popularTowns.map((town) => (
                 <Link
                   key={town}
-                  href={`/communities/${town.toLowerCase()}/`}
-                  className="rounded-md bg-white/5 px-2 py-0.5 font-medium transition-colors hover:bg-white/20 hover:text-white dark:bg-white/5 dark:hover:bg-white/10"
+                  href={`/communities/${town.toLowerCase().replace(' ', '-')}/`}
+                  className="rounded-lg bg-white/8 px-2.5 py-1 font-medium transition-colors hover:bg-white/15 hover:text-white"
                 >
                   {town}
                 </Link>
@@ -73,142 +167,98 @@ export default function MarketingIndexPage() {
         </div>
       </section>
 
-      {/* Dynamic Municipal Statistics Matrix */}
-      <section className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6">
-        {[
-          {
-            val: '6 Core',
-            label: 'Local Government Areas',
-            color: 'from-emerald-500 to-emerald-700',
-          },
-          {
-            val: '80+ Nodes',
-            label: 'Documented Communities',
-            color: 'from-amber-500 to-amber-700',
-          },
-          {
-            val: 'Paramount',
-            label: 'Traditional Monarchies',
-            color: 'from-blue-500 to-indigo-700',
-          },
-          {
-            val: 'Centuries',
-            label: 'Migration Narratives',
-            color: 'from-purple-500 to-pink-700',
-          },
-        ].map((stat, idx) => (
-          <div
-            key={String(idx)}
-            className="group relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 text-center shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/60"
-          >
-            <div className={`mx-auto mb-3 h-1 w-12 rounded-full bg-gradient-to-r ${stat.color}`} />
-            <div className="font-serif text-3xl font-bold tracking-tight text-gray-900 transition-colors dark:text-white sm:text-4xl">
-              {stat.val}
+      {/* ── Stats ── */}
+      <section aria-label="Platform statistics">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6">
+          {stats.map((stat) => (
+            <div
+              key={stat.label}
+              className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 text-center shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/60"
+            >
+              <div className={`inline-flex rounded-xl p-2.5 ${stat.color}`}>
+                <stat.icon className="size-5" aria-hidden="true" />
+              </div>
+              <div>
+                <div className="font-serif text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">
+                  {stat.val}
+                </div>
+                <div className="mt-1 text-xs font-medium text-gray-500 dark:text-gray-400 sm:text-sm">
+                  {stat.label}
+                </div>
+              </div>
             </div>
-            <div className="mt-1.5 text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400 sm:text-sm">
-              {stat.label}
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* Premium Platform Suites Grid */}
-      <section className="grid gap-6 md:grid-cols-3">
-        {/* Zone 1: Encyclopedia */}
-        <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900/60 dark:hover:border-emerald-500/30">
-          <div>
-            <div className="mb-4 inline-flex rounded-xl bg-emerald-50 p-3 text-emerald-600 ring-1 ring-emerald-600/10 transition-colors ring-inset group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-950/40 dark:text-emerald-400 dark:ring-emerald-500/20 dark:group-hover:bg-emerald-500 dark:group-hover:text-gray-950">
-              <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
-            </div>
-            <h3 className="font-serif text-xl font-bold text-gray-900 transition-colors group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400">
-              Community Encyclopedia
-            </h3>
-            <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400 sm:text-sm">
-              In-depth local documentation spanning founding folklore, clan boundaries, prominent leadership, and active local amenity statuses.
-            </p>
-          </div>
-          <div className="mt-6 pt-2">
-            <Link href="/communities/" className="block focus:outline-hidden">
-              <Button variant="outline" size="sm" className="w-full group-hover:border-emerald-500/40">
-                <span>Browse Registry Directory</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Zone 2: GIS Mapping Engine */}
-        <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900/60 dark:hover:border-amber-500/30">
-          <div>
-            <div className="mb-4 inline-flex rounded-xl bg-amber-50 p-3 text-amber-600 ring-1 ring-amber-600/10 transition-colors ring-inset group-hover:bg-amber-600 group-hover:text-white dark:bg-amber-950/40 dark:text-amber-400 dark:ring-amber-500/20 dark:group-hover:bg-amber-500 dark:group-hover:text-gray-950">
-              <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-                />
-              </svg>
-            </div>
-            <h3 className="font-serif text-xl font-bold text-gray-900 transition-colors group-hover:text-amber-700 dark:text-white dark:group-hover:text-amber-400">
-              Interactive GIS Map
-            </h3>
-            <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400 sm:text-sm">
-              Geospatial explorer charting indigenous terrain boundaries, active district coordinates, and visual proximity maps.
-            </p>
-          </div>
-          <div className="mt-6 pt-2">
-            <Link href="/map/" className="block focus:outline-hidden">
-              <Button variant="outline" size="sm" className="w-full group-hover:border-amber-500/40">
-                <span>Launch Atlas Engine</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        {/* Zone 3: Editorial Desk */}
-        <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/40 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900/60 dark:hover:border-blue-500/30">
-          <div>
-            <div className="mb-4 inline-flex rounded-xl bg-blue-50 p-3 text-blue-600 ring-1 ring-blue-600/10 transition-colors ring-inset group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400 dark:ring-blue-500/20 dark:group-hover:bg-blue-500 dark:group-hover:text-gray-950">
-              <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                />
-              </svg>
-            </div>
-            <h3 className="font-serif text-xl font-bold text-gray-900 transition-colors group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-400">
-              Publications & News
-            </h3>
-            <p className="mt-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400 sm:text-sm">
-              Archival updates covering community outreach digests, heritage symposiums, and curated civic tech announcements.
-            </p>
-          </div>
-          <div className="mt-6 pt-2">
-            <Link href="/blog/" className="block focus:outline-hidden">
-              <Button variant="outline" size="sm" className="w-full group-hover:border-blue-500/40">
-                <span>Review Dispatch Feed</span>
-              </Button>
-            </Link>
-          </div>
+          ))}
         </div>
       </section>
 
-      {/* Global Sponsors Section */}
-      <section className="border-t border-gray-200/80 pt-10 dark:border-gray-800">
-        <h2 className="text-center font-serif text-lg font-bold text-gray-900 dark:text-white sm:text-xl">
-          Supported Patrons & Technical Collaborators
-        </h2>
-        <div className="mt-8">
-          <Sponsors />
+      {/* ── Feature cards ── */}
+      <section aria-label="Platform features">
+        <div className="mb-8 text-center">
+          <h2 className="font-serif text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
+            Explore Okunpedia
+          </h2>
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Three integrated modules for comprehensive heritage discovery.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {features.map((feature) => {
+            const theme = accentMap[feature.accent];
+            return (
+              <div
+                key={feature.title}
+                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900/60 ${theme.border}`}
+              >
+                <div>
+                  <div
+                    className={`mb-4 inline-flex rounded-xl p-3 ring-1 ring-inset transition-all duration-300 ${theme.icon}`}
+                  >
+                    <feature.icon className="size-5" aria-hidden="true" />
+                  </div>
+                  <h3
+                    className={`font-serif text-lg font-bold text-gray-900 transition-colors dark:text-white ${theme.title}`}
+                  >
+                    {feature.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                    {feature.description}
+                  </p>
+                </div>
+                <div className="mt-6 border-t border-gray-100 pt-4 dark:border-gray-800">
+                  <Link href={feature.href} className="block focus:outline-hidden">
+                    <Button variant="ghost" size="sm" className="w-full justify-between px-1">
+                      <span>{feature.cta}</span>
+                      <ArrowRight className="size-3.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── Mission strip ── */}
+      <section className="rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 to-amber-50/30 p-8 dark:border-emerald-500/15 dark:from-emerald-950/30 dark:to-amber-950/20">
+        <div className="mx-auto max-w-2xl text-center">
+          <Badge variant="emerald" className="mb-4">Our Mission</Badge>
+          <h2 className="font-serif text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
+            Zero historical attrition of Okun heritage
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+            Okunpedia is a civic initiative committed to ensuring the oral traditions, dialectical
+            folklore, migration narratives, and municipal records of the Okun people are preserved,
+            authenticated, and made freely accessible — forever.
+          </p>
+          <div className="mt-6">
+            <Link href="/about" className="focus:outline-hidden">
+              <Button variant="outline" size="md">
+                Learn about this project
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </div>

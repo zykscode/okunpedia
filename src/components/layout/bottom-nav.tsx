@@ -1,59 +1,65 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Home, Map, Users, BookOpen } from "lucide-react";
-import { motion } from "framer-motion";
-import { cn } from "@/utils/utils";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Home, Map, Users, BookOpen } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { cn } from '@/utils/utils';
 
+const navItems = [
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/communities', label: 'Communities', icon: BookOpen },
+  { href: '/map', label: 'Map', icon: Map },
+  { href: '/blog', label: 'Blog', icon: Users },
+];
+
+/**
+ * Fixed bottom navigation bar for mobile viewports with animated active indicator.
+ */
 export function BottomNav() {
   const pathname = usePathname();
 
-  const navItems = [
-    { href: "/", label: "Home", icon: Home },
-    { href: "/towns", label: "Towns", icon: BookOpen },
-    { href: "/map", label: "Map", icon: Map },
-    { href: "/blog", label: "Blog", icon: Users },
-  ];
-
   return (
-    <div className="md:hidden fixed bottom-6 left-4 right-4 z-50 bg-wiki-card/80 backdrop-blur-xl saturate-150 border border-wiki-border shadow-lg rounded-3xl pb-safe-offset overflow-hidden">
-      <div className="flex items-center justify-around h-16 px-2">
+    <div className="fixed right-4 bottom-4 left-4 z-50 overflow-hidden rounded-2xl border border-gray-200/80 bg-white/90 shadow-lg shadow-black/10 backdrop-blur-xl saturate-150 md:hidden dark:border-gray-800/80 dark:bg-gray-950/90">
+      <div className="flex items-center justify-around px-2" style={{ height: '60px' }}>
         {navItems.map((item) => {
-          // Precise matching for root, startsWith for others
-          const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              className="relative flex flex-col items-center justify-center w-full h-full no-underline"
+              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 py-2 no-underline"
             >
+              {/* Active pill background */}
+              {isActive && (
+                <motion.div
+                  layoutId="bottom-nav-pill"
+                  className="absolute inset-x-1 inset-y-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/50"
+                  transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                />
+              )}
+
               <div
                 className={cn(
-                  "flex items-center justify-center p-1.5 rounded-full transition-colors",
-                  isActive ? "text-forest-600 dark:text-forest-400" : "text-wiki-muted",
+                  'relative z-10 flex items-center justify-center transition-colors duration-200',
+                  isActive
+                    ? 'text-emerald-700 dark:text-emerald-400'
+                    : 'text-gray-400 dark:text-gray-500',
                 )}
               >
-                <item.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
+                <item.icon className="size-5" strokeWidth={isActive ? 2.5 : 1.75} />
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-medium mt-0.5 transition-colors",
-                  isActive ? "text-forest-600 dark:text-forest-400" : "text-wiki-muted",
+                  'relative z-10 text-[10px] font-semibold tracking-wide transition-colors duration-200',
+                  isActive
+                    ? 'text-emerald-700 dark:text-emerald-400'
+                    : 'text-gray-400 dark:text-gray-500',
                 )}
               >
                 {item.label}
               </span>
-
-              {/* Active Indicator Dot */}
-              {isActive && (
-                <motion.div
-                  layoutId="bottom-nav-active"
-                  className="absolute top-1 right-1/4 w-1.5 h-1.5 bg-forest-500 rounded-full"
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-              )}
             </Link>
           );
         })}

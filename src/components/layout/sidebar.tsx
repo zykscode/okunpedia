@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/utils";
 import { FileText, Landmark, Globe, Coins, BookOpen } from "lucide-react";
 
 interface SidebarProps {

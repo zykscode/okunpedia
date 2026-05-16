@@ -19,5 +19,5 @@ pre-commit:
         - '**/*.css'
       stage_fixed: true
     - name: knip
-      run: npm run check:deps
+      run: pnpm run check:deps
       glob: '*'

@@ -1,113 +1,123 @@
-import Link from "next/link";
-import { BookOpen, MapPin, FileText, Users, Mail } from "lucide-react";
+import Link from 'next/link';
+import { BookOpen, MapPin, FileText, Users, Mail, ArrowUpRight } from 'lucide-react';
 
 const exploreLinks = [
-  { href: "/towns", label: "All Towns" },
-  { href: "/map", label: "Interactive Map" },
-  { href: "/blog", label: "Blog & Articles" },
-  { href: "/about", label: "About Okunpedia" },
-  { href: "/search", label: "Search" },
+  { href: '/communities', label: 'All Communities' },
+  { href: '/map', label: 'Interactive Map' },
+  { href: '/blog', label: 'Blog & Articles' },
+  { href: '/about', label: 'About Okunpedia' },
+  { href: '/search', label: 'Search' },
 ];
 
-const resourceLinks = [
-  { href: "/towns/kabba", label: "Kabba" },
-  { href: "/towns/isanlu", label: "Isanlu" },
-  { href: "/towns/mopa", label: "Mopa" },
-  { href: "/towns/egbe", label: "Egbe" },
+const featuredLinks = [
+  { href: '/communities/kabba', label: 'Kabba (Owe)' },
+  { href: '/communities/isanlu', label: 'Isanlu' },
+  { href: '/communities/mopa', label: 'Mopa' },
+  { href: '/communities/egbe', label: 'Egbe' },
+  { href: '/communities/iyara', label: 'Iyara' },
+  { href: '/communities/ekinrin-adde', label: 'Ekinrin-Adde' },
 ];
 
+/**
+ * Site-wide footer with brand description, navigation links, and legal strip.
+ */
 export function Footer() {
   return (
-    <footer
-      className="border-t border-wiki-border theme-transition mt-auto"
-      style={{
-        background: "var(--color-wiki-card)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 rounded-xl bg-forest-600/10 text-forest-600 dark:bg-forest-500/20 dark:text-forest-400">
-                <BookOpen className="h-4 w-4" aria-hidden="true" />
+    <footer className="mt-auto border-t border-gray-200/80 bg-white dark:border-gray-800/80 dark:bg-gray-950">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="py-12">
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
+            {/* Brand */}
+            <div className="md:col-span-2">
+              <div className="mb-4 flex items-center gap-2.5">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400">
+                  <BookOpen className="size-4" aria-hidden="true" />
+                </div>
+                <span className="font-serif text-lg font-bold text-gray-900 dark:text-white">
+                  Okunpedia
+                </span>
               </div>
-              <span className="text-lg font-display font-bold text-wiki-text">Okunpedia</span>
+              <p className="max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+                A community-driven digital encyclopedia preserving the rich history, culture, and
+                heritage of Okun towns in Kogi State, Nigeria — for future generations.
+              </p>
+              <p className="mt-4 flex items-center gap-1.5 text-sm text-gray-400 dark:text-gray-500">
+                <MapPin className="size-3.5 shrink-0 text-emerald-500" aria-hidden="true" />
+                Kabba/Bunu · Ijumu · Mopa-Muro · Yagba East · Yagba West, Kogi State
+              </p>
             </div>
-            <p className="text-sm text-wiki-muted leading-relaxed max-w-sm">
-              A community-driven encyclopedia documenting the rich history, culture, and heritage of
-              Okun towns in Kogi State, Nigeria.
-            </p>
-            <p className="text-xs text-wiki-muted mt-4 flex items-center gap-2">
-              <MapPin className="h-3 w-3 text-forest-500 flex-shrink-0" aria-hidden="true" />
-              Kabba/Bunu, Ijumu, Mopa-Muro, Yagba East, Yagba West — Kogi State, NG
-            </p>
-          </div>
 
-          {/* Explore */}
-          <div>
-            <h3 className="font-semibold text-sm text-wiki-text mb-4 flex items-center gap-2">
-              <FileText className="h-4 w-4 text-forest-500" aria-hidden="true" />
-              Explore
-            </h3>
-            <ul className="space-y-2.5" role="list">
-              {exploreLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-wiki-muted hover:text-forest-600 dark:hover:text-forest-400 no-underline transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Explore */}
+            <div>
+              <h3 className="mb-4 flex items-center gap-2 text-xs font-semibold tracking-widest text-gray-900 uppercase dark:text-white">
+                <FileText className="size-3.5 text-emerald-500" aria-hidden="true" />
+                Explore
+              </h3>
+              <ul className="space-y-2.5" role="list">
+                {exploreLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-gray-500 no-underline transition-colors duration-200 hover:text-emerald-700 dark:text-gray-400 dark:hover:text-emerald-400"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Featured Towns */}
-          <div>
-            <h3 className="font-semibold text-sm text-wiki-text mb-4 flex items-center gap-2">
-              <Users className="h-4 w-4 text-forest-500" aria-hidden="true" />
-              Featured Towns
-            </h3>
-            <ul className="space-y-2.5" role="list">
-              {resourceLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-wiki-muted hover:text-forest-600 dark:hover:text-forest-400 no-underline transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Featured Communities */}
+            <div>
+              <h3 className="mb-4 flex items-center gap-2 text-xs font-semibold tracking-widest text-gray-900 uppercase dark:text-white">
+                <Users className="size-3.5 text-emerald-500" aria-hidden="true" />
+                Communities
+              </h3>
+              <ul className="space-y-2.5" role="list">
+                {featuredLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-gray-500 no-underline transition-colors duration-200 hover:text-emerald-700 dark:text-gray-400 dark:hover:text-emerald-400"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="mt-10 pt-6 border-t border-wiki-border flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-wiki-muted">
+        {/* Bottom strip */}
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-200/80 py-6 sm:flex-row dark:border-gray-800/80">
+          <p className="text-xs text-gray-400 dark:text-gray-500">
             © {new Date().getFullYear()} Okunpedia. Built with ❤️ for Okun land.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <Link
               href="/about"
-              className="text-xs text-wiki-muted hover:text-wiki-text no-underline transition-colors"
+              className="text-xs text-gray-400 no-underline transition-colors hover:text-gray-700 dark:hover:text-gray-200"
             >
               About
             </Link>
-            <span className="text-wiki-border" aria-hidden="true">
-              ·
-            </span>
+            <span className="text-gray-300 dark:text-gray-700" aria-hidden="true">·</span>
             <a
               href="mailto:hello@okunpedia.ng"
-              className="text-xs text-wiki-muted hover:text-forest-600 dark:hover:text-forest-400 no-underline transition-colors flex items-center gap-1"
+              className="flex items-center gap-1 text-xs text-gray-400 no-underline transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
             >
-              <Mail className="h-3 w-3" aria-hidden="true" />
+              <Mail className="size-3" aria-hidden="true" />
               Contact
+            </a>
+            <span className="text-gray-300 dark:text-gray-700" aria-hidden="true">·</span>
+            <a
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-0.5 text-xs text-gray-400 no-underline transition-colors hover:text-gray-700 dark:hover:text-gray-200"
+            >
+              GitHub
+              <ArrowUpRight className="size-3" aria-hidden="true" />
             </a>
           </div>
         </div>
