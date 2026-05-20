@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { KBarButton } from 'pliny/search/KBarButton';
+import { KBarButton } from 'pliny/search/KBarButton.js';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { PageLogo } from '@/components/ui/PageLogo';
 import { AppConfig } from '@/utils/AppConfig';

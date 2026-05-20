@@ -4,6 +4,7 @@ import { PwaRegistration } from '@/components/PwaRegistration';
 import '@/styles/global.css';
 import { AppConfig } from '@/utils/AppConfig';
 import { ThemeProvider } from '@/components/theme/theme-provider';
+import { SearchProvider } from 'pliny/search/index.js';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -97,8 +98,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   themeColor: '#10b981',
 };
-
-import { SearchProvider } from 'pliny/search';
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
