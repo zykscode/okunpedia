@@ -9,7 +9,7 @@
     "dev": "run-p db-server:file dev:*",
     "build:next": "next build",
     "build-local": "run-p db-server:memory build:next --race",
-    "build": "run-s db:migrate build:next",
+    "build": "next build",
     "start": "next start",
     "build-stats": "cross-env ANALYZE=true pnpm run build",
     "clean": "rimraf .next out coverage",
