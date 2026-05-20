@@ -1,6 +1,7 @@
 import './src/libs/Env';
 import withBundleAnalyzer from '@next/bundle-analyzer';
 import { withSentryConfig } from '@sentry/nextjs';
+import { withContentlayer } from 'next-contentlayer2';
 import type { NextConfig } from 'next';
 
 // Define the base Next.js configuration
@@ -66,8 +67,5 @@ if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
   });
 }
 
-import { withContentlayer } from 'next-contentlayer2';
-
 const nextConfig = withContentlayer(configWithPlugins);
 export default nextConfig;
-
