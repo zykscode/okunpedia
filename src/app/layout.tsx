@@ -98,15 +98,19 @@ export const viewport: Viewport = {
   themeColor: '#10b981',
 };
 
+import { SearchProvider } from 'pliny/search';
+
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${lora.variable}`}>
       <head>
         <link rel="apple-touch-icon" sizes="192x192" href="/static/favicons/apple-touch-icon.png" />
       </head>
-      <body>
-        <ThemeProvider>
-          {props.children}
+      <body>  
+      <ThemeProvider attribute="class" defaultTheme={AppConfig.theme} enableSystem>
+          <SearchProvider searchConfig={AppConfig.search as any}>
+            {props.children}
+          </SearchProvider>
           <PwaRegistration />
         </ThemeProvider>
       </body>

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Okunpedia Admin",
+    "avatar": "/assets/images/default-avatar.png",
+    "occupation": "Administrator",
+    "company": "Okunpedia Archival Peer Review Network",
+    "email": "admin@okunpedia.org",
+    "body": {
+      "raw": "\nDefault author profile for Okunpedia dispatches.\n",
+      "code": "var Component=(()=>{var d=Object.create;var o=Object.defineProperty;var f=Object.getOwnPropertyDescriptor;var l=Object.getOwnPropertyNames;var x=Object.getPrototypeOf,h=Object.prototype.hasOwnProperty;var k=(t,e)=>()=>(e||t((e={exports:{}}).exports,e),e.exports),_=(t,e)=>{for(var n in e)o(t,n,{get:e[n],enumerable:!0})},c=(t,e,n,i)=>{if(e&&typeof e==\"object\"||typeof e==\"function\")for(let a of l(e))!h.call(t,a)&&a!==n&&o(t,a,{get:()=>e[a],enumerable:!(i=f(e,a))||i.enumerable});return t};var v=(t,e,n)=>(n=t!=null?d(x(t)):{},c(e||!t||!t.__esModule?o(n,\"default\",{value:t,enumerable:!0}):n,t)),g=t=>c(o({},\"__esModule\",{value:!0}),t);var s=k((D,p)=>{p.exports=_jsx_runtime});var w={};_(w,{default:()=>m,frontmatter:()=>j});var r=v(s()),j={name:\"Okunpedia Admin\",avatar:\"/assets/images/default-avatar.png\",occupation:\"Administrator\",company:\"Okunpedia Archival Peer Review Network\",email:\"admin@okunpedia.org\"};function u(t){let e={p:\"p\",...t.components};return(0,r.jsx)(e.p,{children:\"Default author profile for Okunpedia dispatches.\"})}function m(t={}){let{wrapper:e}=t.components||{};return e?(0,r.jsx)(e,{...t,children:(0,r.jsx)(u,{...t})}):u(t)}return g(w);})();\n;return Component;"
+    },
+    "_id": "authors/default.mdx",
+    "_raw": {
+      "sourceFilePath": "authors/default.mdx",
+      "sourceFileName": "default.mdx",
+      "sourceFileDir": "authors",
+      "contentType": "mdx",
+      "flattenedPath": "authors/default"
+    },
+    "type": "Authors",
+    "readingTime": {
+      "text": "1 min read",
+      "minutes": 0.03,
+      "time": 1800,
+      "words": 6
+    },
+    "slug": "default",
+    "path": "authors/default",
+    "filePath": "authors/default.mdx",
+    "toc": []
+  }
+]

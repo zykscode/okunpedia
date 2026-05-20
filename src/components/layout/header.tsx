@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Search } from 'lucide-react';
-import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { KBarButton } from 'pliny/search/KBarButton';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { PageLogo } from '@/components/ui/PageLogo';
-import { MobileNav } from '@/components/layout/mobile-nav';
+import { AppConfig } from '@/utils/AppConfig';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -87,18 +88,15 @@ export function Header() {
 
           {/* Right actions */}
           <div className="flex items-center gap-1.5">
-            <Link
-              href="/search"
-              className="rounded-xl p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100/60 hover:text-emerald-700 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:text-emerald-400"
-              aria-label="Search"
-            >
-              <Search className="size-4" aria-hidden="true" />
-            </Link>
+            {AppConfig.search && AppConfig.search.provider === 'kbar' ? (
+              <KBarButton
+                aria-label="Search"
+                className="rounded-xl p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100/60 hover:text-emerald-700 focus:outline-hidden dark:text-gray-400 dark:hover:bg-gray-800/60 dark:hover:text-emerald-400"
+              >
+                <Search className="size-4" aria-hidden="true" />
+              </KBarButton>
+            ) : null}
             <ThemeToggle />
-            {/* Mobile hamburger */}
-            <div className="md:hidden">
-              <MobileNav />
-            </div>
           </div>
         </div>
       </div>

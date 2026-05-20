@@ -1,0 +1,42 @@
+{
+  "title": "Reviving the Ovia Sacred Festival in Bunu Lands",
+  "date": "2026-05-02T00:00:00.000Z",
+  "tags": [
+    "culture"
+  ],
+  "draft": false,
+  "summary": "Oral historian interviews mapping the ancestral significance of the periodic Ovia ritual celebrations, native chants transcription, and digital audio preservation efforts.",
+  "body": {
+    "raw": "\nTraditional Ovia masquerade invocations represent a profound indigenous heritage framework. Archival fieldwork successfully recorded sacred instrumental ensembles, accompanying tonal linguistic chants, and documented specific sacred groves designated for community generational transition rites.\n",
+    "code": "var Component=(()=>{var m=Object.create;var a=Object.defineProperty;var f=Object.getOwnPropertyDescriptor;var p=Object.getOwnPropertyNames;var g=Object.getPrototypeOf,v=Object.prototype.hasOwnProperty;var h=(e,n)=>()=>(n||e((n={exports:{}}).exports,n),n.exports),x=(e,n)=>{for(var t in n)a(e,t,{get:n[t],enumerable:!0})},s=(e,n,t,o)=>{if(n&&typeof n==\"object\"||typeof n==\"function\")for(let i of p(n))!v.call(e,i)&&i!==t&&a(e,i,{get:()=>n[i],enumerable:!(o=f(n,i))||o.enumerable});return e};var y=(e,n,t)=>(t=e!=null?m(g(e)):{},s(n||!e||!e.__esModule?a(t,\"default\",{value:e,enumerable:!0}):t,e)),_=e=>s(a({},\"__esModule\",{value:!0}),e);var d=h((M,c)=>{c.exports=_jsx_runtime});var O={};x(O,{default:()=>l,frontmatter:()=>w});var r=y(d()),w={title:\"Reviving the Ovia Sacred Festival in Bunu Lands\",date:\"2026-05-02\",tags:[\"culture\"],summary:\"Oral historian interviews mapping the ancestral significance of the periodic Ovia ritual celebrations, native chants transcription, and digital audio preservation efforts.\",draft:!1};function u(e){let n={p:\"p\",...e.components};return(0,r.jsx)(n.p,{children:\"Traditional Ovia masquerade invocations represent a profound indigenous heritage framework. Archival fieldwork successfully recorded sacred instrumental ensembles, accompanying tonal linguistic chants, and documented specific sacred groves designated for community generational transition rites.\"})}function l(e={}){let{wrapper:n}=e.components||{};return n?(0,r.jsx)(n,{...e,children:(0,r.jsx)(u,{...e})}):u(e)}return _(O);})();\n;return Component;"
+  },
+  "_id": "blog/reviving-ovia-festival.mdx",
+  "_raw": {
+    "sourceFilePath": "blog/reviving-ovia-festival.mdx",
+    "sourceFileName": "reviving-ovia-festival.mdx",
+    "sourceFileDir": "blog",
+    "contentType": "mdx",
+    "flattenedPath": "blog/reviving-ovia-festival"
+  },
+  "type": "Blog",
+  "readingTime": {
+    "text": "1 min read",
+    "minutes": 0.16,
+    "time": 9600,
+    "words": 32
+  },
+  "slug": "reviving-ovia-festival",
+  "path": "blog/reviving-ovia-festival",
+  "filePath": "blog/reviving-ovia-festival.mdx",
+  "toc": [],
+  "structuredData": {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Reviving the Ovia Sacred Festival in Bunu Lands",
+    "datePublished": "2026-05-02T00:00:00.000Z",
+    "dateModified": "2026-05-02T00:00:00.000Z",
+    "description": "Oral historian interviews mapping the ancestral significance of the periodic Ovia ritual celebrations, native chants transcription, and digital audio preservation efforts.",
+    "image": "/logo.png",
+    "url": "https://okunpedia.vercel.app/blog/reviving-ovia-festival"
+  }
+}

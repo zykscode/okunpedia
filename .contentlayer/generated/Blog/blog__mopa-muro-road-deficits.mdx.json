@@ -1,0 +1,48 @@
+{
+  "title": "Infrastructure Deficits: Addressing the Mopa-Muro Road Network",
+  "date": "2026-04-10T00:00:00.000Z",
+  "tags": [
+    "development"
+  ],
+  "draft": false,
+  "summary": "A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.",
+  "body": {
+    "raw": "\n# Background\n\nContinuous road infrastructure viability remains the foundational prerequisite for accelerating internal trade across Mopa-Muro local government axes. The current state assessment documents targeted priority areas requiring immediate asphalt reinforcement to connect remote farming belts directly with primary commercial terminals.\n",
+    "code": "var Component=(()=>{var m=Object.create;var i=Object.defineProperty;var h=Object.getOwnPropertyDescriptor;var p=Object.getOwnPropertyNames;var f=Object.getPrototypeOf,g=Object.prototype.hasOwnProperty;var x=(t,e)=>()=>(e||t((e={exports:{}}).exports,e),e.exports),w=(t,e)=>{for(var r in e)i(t,r,{get:e[r],enumerable:!0})},o=(t,e,r,s)=>{if(e&&typeof e==\"object\"||typeof e==\"function\")for(let n of p(e))!g.call(t,n)&&n!==r&&i(t,n,{get:()=>e[n],enumerable:!(s=h(e,n))||s.enumerable});return t};var v=(t,e,r)=>(r=t!=null?m(f(t)):{},o(e||!t||!t.__esModule?i(r,\"default\",{value:t,enumerable:!0}):r,t)),M=t=>o(i({},\"__esModule\",{value:!0}),t);var l=x((k,c)=>{c.exports=_jsx_runtime});var _={};w(_,{default:()=>u,frontmatter:()=>y});var a=v(l()),y={title:\"Infrastructure Deficits: Addressing the Mopa-Muro Road Network\",date:\"2026-04-10\",tags:[\"development\"],summary:\"A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.\",draft:!1};function d(t){let e={a:\"a\",h1:\"h1\",p:\"p\",path:\"path\",span:\"span\",svg:\"svg\",...t.components};return(0,a.jsxs)(a.Fragment,{children:[(0,a.jsxs)(e.h1,{className:\"content-header\",id:\"background\",children:[(0,a.jsx)(e.a,{\"aria-hidden\":\"true\",href:\"#background\",tabIndex:\"-1\",children:(0,a.jsx)(a.Fragment,{children:(0,a.jsx)(e.span,{className:\"content-header-link\",children:(0,a.jsxs)(e.svg,{className:\"h-5 linkicon w-5\",fill:\"currentColor\",viewBox:\"0 0 20 20\",xmlns:\"http://www.w3.org/2000/svg\",children:[(0,a.jsx)(e.path,{d:\"M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z\"}),(0,a.jsx)(e.path,{d:\"M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z\"})]})})})}),\"Background\"]}),(0,a.jsx)(e.p,{children:\"Continuous road infrastructure viability remains the foundational prerequisite for accelerating internal trade across Mopa-Muro local government axes. The current state assessment documents targeted priority areas requiring immediate asphalt reinforcement to connect remote farming belts directly with primary commercial terminals.\"})]})}function u(t={}){let{wrapper:e}=t.components||{};return e?(0,a.jsx)(e,{...t,children:(0,a.jsx)(d,{...t})}):d(t)}return M(_);})();\n;return Component;"
+  },
+  "_id": "blog/mopa-muro-road-deficits.mdx",
+  "_raw": {
+    "sourceFilePath": "blog/mopa-muro-road-deficits.mdx",
+    "sourceFileName": "mopa-muro-road-deficits.mdx",
+    "sourceFileDir": "blog",
+    "contentType": "mdx",
+    "flattenedPath": "blog/mopa-muro-road-deficits"
+  },
+  "type": "Blog",
+  "readingTime": {
+    "text": "1 min read",
+    "minutes": 0.205,
+    "time": 12300,
+    "words": 41
+  },
+  "slug": "mopa-muro-road-deficits",
+  "path": "blog/mopa-muro-road-deficits",
+  "filePath": "blog/mopa-muro-road-deficits.mdx",
+  "toc": [
+    {
+      "value": "Background",
+      "url": "#background",
+      "depth": 1
+    }
+  ],
+  "structuredData": {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Infrastructure Deficits: Addressing the Mopa-Muro Road Network",
+    "datePublished": "2026-04-10T00:00:00.000Z",
+    "dateModified": "2026-04-10T00:00:00.000Z",
+    "description": "A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.",
+    "image": "/logo.png",
+    "url": "https://okunpedia.vercel.app/blog/mopa-muro-road-deficits"
+  }
+}

@@ -1,54 +1,15 @@
 import Link from 'next/link';
-import { db } from '@/libs/DB';
-import { blogPostsSchema } from '@/models/Schema';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Newspaper } from 'lucide-react';
+import { allBlogs } from 'contentlayer/generated';
+import { sortPosts } from 'pliny/utils/contentlayer.js';
 
 export const metadata = {
   title: 'Publications & News — Okunpedia',
   description:
     'Read peer-reviewed documentation chapters, developmental blueprints, and cultural restoration updates from across Okunland.',
 };
-
-const staticPosts = [
-  {
-    id: 1,
-    title: 'Documenting the Nupe-Okun Historical Migrations',
-    slug: 'nupe-okun-migrations',
-    category: 'history',
-    excerpt: 'An investigative exploration tracing back the pre-colonial boundary dynamics, historical conflicts, and cultural cross-pollination between the Okun and bordering Nupe kingdoms.',
-    publishedAt: new Date('2026-03-15'),
-    content: '',
-  },
-  {
-    id: 2,
-    title: 'Infrastructure Deficits: Addressing the Mopa-Muro Road Network',
-    slug: 'mopa-muro-road-deficits',
-    category: 'development',
-    excerpt: 'A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.',
-    publishedAt: new Date('2026-04-10'),
-    content: '',
-  },
-  {
-    id: 3,
-    title: 'Reviving the Ovia Sacred Festival in Bunu Lands',
-    slug: 'reviving-ovia-festival',
-    category: 'culture',
-    excerpt: 'Oral historian interviews mapping the ancestral significance of the periodic Ovia ritual celebrations, native chants transcription, and digital audio preservation efforts.',
-    publishedAt: new Date('2026-05-02'),
-    content: '',
-  },
-  {
-    id: 4,
-    title: 'Linguistic Mapping: Structural Variance Across Indigenous Okun Dialects',
-    slug: 'linguistic-mapping-dialects',
-    category: 'culture',
-    excerpt: 'Comprehensive comparative phonetic matrices charting intonation and tonal shifts separating Owe, Yagba, Ijumu, Bunu, and Oworo dialects across indigenous ancestral hamlets.',
-    publishedAt: new Date('2026-05-10'),
-    content: '',
-  },
-];
 
 const categoryStyles: Record<string, { badge: 'amber' | 'emerald' | 'blue'; label: string }> = {
   development: { badge: 'amber', label: 'Development' },
@@ -57,14 +18,15 @@ const categoryStyles: Record<string, { badge: 'amber' | 'emerald' | 'blue'; labe
 };
 
 export default async function BlogPage() {
-  let posts: Array<typeof blogPostsSchema.$inferSelect> = [];
-  try {
-    posts = await db.select().from(blogPostsSchema);
-  } catch {
-    posts = [];
-  }
+  const displayPosts = sortPosts(allBlogs).map(post => ({
+    id: post._id,
+    title: post.title,
+    slug: post.slug,
+    category: post.tags && post.tags.length > 0 ? post.tags[0] : 'culture',
+    excerpt: post.summary,
+    publishedAt: new Date(post.date),
+  }));
 
-  const displayPosts = posts.length > 0 ? posts : staticPosts;
   const [featurePost, ...secondaryPosts] = displayPosts;
 
   return (
@@ -96,7 +58,7 @@ export default async function BlogPage() {
               <div className="flex items-center gap-2">
                 <Badge variant="blue">Featured</Badge>
                 {(() => {
-                  const cat = categoryStyles[featurePost.category] ?? categoryStyles.culture;
+                  const cat = categoryStyles[featurePost.category || 'culture'] ?? categoryStyles.culture;
                   const badge = cat?.badge ?? 'blue';
                   const label = cat?.label ?? featurePost.category;
                   return <Badge variant={badge}>{label}</Badge>;
@@ -140,7 +102,7 @@ export default async function BlogPage() {
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {secondaryPosts.map((post) => {
-              const cat = categoryStyles[post.category] ?? { badge: 'blue' as const, label: 'Culture' };
+              const cat = categoryStyles[post.category || 'culture'] ?? { badge: 'blue' as const, label: 'Culture' };
               const borderHover =
                 post.category === 'development' ? 'hover:border-amber-400/40'
                   : post.category === 'history' ? 'hover:border-emerald-400/40'

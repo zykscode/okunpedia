@@ -28,9 +28,12 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@/public/*": ["./public/*"]
+      "@/public/*": ["./public/*"],
+      "contentlayer/generated": ["./.contentlayer/generated"],
+      "contentlayer/generated/*": ["./.contentlayer/generated/*"]
     },
     "jsx": "react-jsx",
     "incremental": true,
@@ -48,6 +51,7 @@
     "src/**/*.tsx",
     ".storybook/**/*.ts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    ".contentlayer/generated"
   ]
 }

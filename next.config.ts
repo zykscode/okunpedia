@@ -66,5 +66,8 @@ if (!process.env.NEXT_PUBLIC_SENTRY_DISABLED) {
   });
 }
 
-const nextConfig = configWithPlugins;
+import { withContentlayer } from 'next-contentlayer2';
+
+const nextConfig = withContentlayer(configWithPlugins);
 export default nextConfig;
+

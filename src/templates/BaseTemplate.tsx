@@ -1,4 +1,4 @@
-import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { Link } from '@/libs/I18nNavigation';
 import { AppConfig } from '@/utils/AppConfig';
 

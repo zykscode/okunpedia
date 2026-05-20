@@ -1,0 +1,42 @@
+{
+  "title": "Linguistic Mapping: Structural Variance Across Indigenous Okun Dialects",
+  "date": "2026-05-10T00:00:00.000Z",
+  "tags": [
+    "culture"
+  ],
+  "draft": false,
+  "summary": "Comprehensive comparative phonetic matrices charting intonation and tonal shifts separating Owe, Yagba, Ijumu, Bunu, and Oworo dialects across indigenous ancestral hamlets.",
+  "body": {
+    "raw": "\nPhonetic syntax tracking reveals unique structural preservations separating standard Okun from adjacent regional tongues. By analyzing vowel elongation patterns across Owe, Yagba, and Ijumu speakers, researchers established comprehensive historical dialect matrices reflecting centuries of localized evolutionary adaptations.\n",
+    "code": "var Component=(()=>{var m=Object.create;var r=Object.defineProperty;var p=Object.getOwnPropertyDescriptor;var g=Object.getOwnPropertyNames;var h=Object.getPrototypeOf,f=Object.prototype.hasOwnProperty;var x=(e,t)=>()=>(t||e((t={exports:{}}).exports,t),t.exports),v=(e,t)=>{for(var n in t)r(e,n,{get:t[n],enumerable:!0})},o=(e,t,n,i)=>{if(t&&typeof t==\"object\"||typeof t==\"function\")for(let a of g(t))!f.call(e,a)&&a!==n&&r(e,a,{get:()=>t[a],enumerable:!(i=p(t,a))||i.enumerable});return e};var j=(e,t,n)=>(n=e!=null?m(h(e)):{},o(t||!e||!e.__esModule?r(n,\"default\",{value:e,enumerable:!0}):n,e)),y=e=>o(r({},\"__esModule\",{value:!0}),e);var u=x((k,c)=>{c.exports=_jsx_runtime});var O={};v(O,{default:()=>d,frontmatter:()=>w});var s=j(u()),w={title:\"Linguistic Mapping: Structural Variance Across Indigenous Okun Dialects\",date:\"2026-05-10\",tags:[\"culture\"],summary:\"Comprehensive comparative phonetic matrices charting intonation and tonal shifts separating Owe, Yagba, Ijumu, Bunu, and Oworo dialects across indigenous ancestral hamlets.\",draft:!1};function l(e){let t={p:\"p\",...e.components};return(0,s.jsx)(t.p,{children:\"Phonetic syntax tracking reveals unique structural preservations separating standard Okun from adjacent regional tongues. By analyzing vowel elongation patterns across Owe, Yagba, and Ijumu speakers, researchers established comprehensive historical dialect matrices reflecting centuries of localized evolutionary adaptations.\"})}function d(e={}){let{wrapper:t}=e.components||{};return t?(0,s.jsx)(t,{...e,children:(0,s.jsx)(l,{...e})}):l(e)}return y(O);})();\n;return Component;"
+  },
+  "_id": "blog/linguistic-mapping-dialects.mdx",
+  "_raw": {
+    "sourceFilePath": "blog/linguistic-mapping-dialects.mdx",
+    "sourceFileName": "linguistic-mapping-dialects.mdx",
+    "sourceFileDir": "blog",
+    "contentType": "mdx",
+    "flattenedPath": "blog/linguistic-mapping-dialects"
+  },
+  "type": "Blog",
+  "readingTime": {
+    "text": "1 min read",
+    "minutes": 0.185,
+    "time": 11100,
+    "words": 37
+  },
+  "slug": "linguistic-mapping-dialects",
+  "path": "blog/linguistic-mapping-dialects",
+  "filePath": "blog/linguistic-mapping-dialects.mdx",
+  "toc": [],
+  "structuredData": {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Linguistic Mapping: Structural Variance Across Indigenous Okun Dialects",
+    "datePublished": "2026-05-10T00:00:00.000Z",
+    "dateModified": "2026-05-10T00:00:00.000Z",
+    "description": "Comprehensive comparative phonetic matrices charting intonation and tonal shifts separating Owe, Yagba, Ijumu, Bunu, and Oworo dialects across indigenous ancestral hamlets.",
+    "image": "/logo.png",
+    "url": "https://okunpedia.vercel.app/blog/linguistic-mapping-dialects"
+  }
+}

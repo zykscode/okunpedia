@@ -1,0 +1,48 @@
+{
+  "title": "Documenting the Nupe-Okun Historical Migrations",
+  "date": "2026-03-15T00:00:00.000Z",
+  "tags": [
+    "history"
+  ],
+  "draft": false,
+  "summary": "An investigative exploration tracing back the pre-colonial boundary dynamics, historical conflicts, and cultural cross-pollination between the Okun and bordering Nupe kingdoms.",
+  "body": {
+    "raw": "\n# Introduction\n\nThe dynamic frontiers separating the ancestral Okun kingdoms and the downstream Nupe empire were defined by intense regional interactions during the 19th century. Early oral transmissions confirm bilateral trade routes interweaving native woven apparel for agricultural commodities, before administrative boundary demarcations restructured traditional territorial spheres.\n",
+    "code": "var Component=(()=>{var u=Object.create;var i=Object.defineProperty;var m=Object.getOwnPropertyDescriptor;var p=Object.getOwnPropertyNames;var g=Object.getPrototypeOf,f=Object.prototype.hasOwnProperty;var x=(e,n)=>()=>(n||e((n={exports:{}}).exports,n),n.exports),w=(e,n)=>{for(var a in n)i(e,a,{get:n[a],enumerable:!0})},s=(e,n,a,o)=>{if(n&&typeof n==\"object\"||typeof n==\"function\")for(let r of p(n))!f.call(e,r)&&r!==a&&i(e,r,{get:()=>n[r],enumerable:!(o=m(n,r))||o.enumerable});return e};var v=(e,n,a)=>(a=e!=null?u(g(e)):{},s(n||!e||!e.__esModule?i(a,\"default\",{value:e,enumerable:!0}):a,e)),y=e=>s(i({},\"__esModule\",{value:!0}),e);var c=x((M,l)=>{l.exports=_jsx_runtime});var k={};w(k,{default:()=>h,frontmatter:()=>b});var t=v(c()),b={title:\"Documenting the Nupe-Okun Historical Migrations\",date:\"2026-03-15\",tags:[\"history\"],summary:\"An investigative exploration tracing back the pre-colonial boundary dynamics, historical conflicts, and cultural cross-pollination between the Okun and bordering Nupe kingdoms.\",draft:!1};function d(e){let n={a:\"a\",h1:\"h1\",p:\"p\",path:\"path\",span:\"span\",svg:\"svg\",...e.components};return(0,t.jsxs)(t.Fragment,{children:[(0,t.jsxs)(n.h1,{className:\"content-header\",id:\"introduction\",children:[(0,t.jsx)(n.a,{\"aria-hidden\":\"true\",href:\"#introduction\",tabIndex:\"-1\",children:(0,t.jsx)(t.Fragment,{children:(0,t.jsx)(n.span,{className:\"content-header-link\",children:(0,t.jsxs)(n.svg,{className:\"h-5 linkicon w-5\",fill:\"currentColor\",viewBox:\"0 0 20 20\",xmlns:\"http://www.w3.org/2000/svg\",children:[(0,t.jsx)(n.path,{d:\"M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z\"}),(0,t.jsx)(n.path,{d:\"M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z\"})]})})})}),\"Introduction\"]}),(0,t.jsx)(n.p,{children:\"The dynamic frontiers separating the ancestral Okun kingdoms and the downstream Nupe empire were defined by intense regional interactions during the 19th century. Early oral transmissions confirm bilateral trade routes interweaving native woven apparel for agricultural commodities, before administrative boundary demarcations restructured traditional territorial spheres.\"})]})}function h(e={}){let{wrapper:n}=e.components||{};return n?(0,t.jsx)(n,{...e,children:(0,t.jsx)(d,{...e})}):d(e)}return y(k);})();\n;return Component;"
+  },
+  "_id": "blog/nupe-okun-migrations.mdx",
+  "_raw": {
+    "sourceFilePath": "blog/nupe-okun-migrations.mdx",
+    "sourceFileName": "nupe-okun-migrations.mdx",
+    "sourceFileDir": "blog",
+    "contentType": "mdx",
+    "flattenedPath": "blog/nupe-okun-migrations"
+  },
+  "type": "Blog",
+  "readingTime": {
+    "text": "1 min read",
+    "minutes": 0.235,
+    "time": 14100,
+    "words": 47
+  },
+  "slug": "nupe-okun-migrations",
+  "path": "blog/nupe-okun-migrations",
+  "filePath": "blog/nupe-okun-migrations.mdx",
+  "toc": [
+    {
+      "value": "Introduction",
+      "url": "#introduction",
+      "depth": 1
+    }
+  ],
+  "structuredData": {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "Documenting the Nupe-Okun Historical Migrations",
+    "datePublished": "2026-03-15T00:00:00.000Z",
+    "dateModified": "2026-03-15T00:00:00.000Z",
+    "description": "An investigative exploration tracing back the pre-colonial boundary dynamics, historical conflicts, and cultural cross-pollination between the Okun and bordering Nupe kingdoms.",
+    "image": "/logo.png",
+    "url": "https://okunpedia.vercel.app/blog/nupe-okun-migrations"
+  }
+}

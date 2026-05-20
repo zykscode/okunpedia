@@ -1,6 +1,7 @@
 @layer theme, base, clerk, components, utilities; /* Ensure Clerk is compatible with Tailwind CSS v4 */
 
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 /* Enable explicit class-based dark mode control in Tailwind CSS v4 */
 @custom-variant dark (&:where(.dark, .dark *));
