@@ -10,6 +10,73 @@ import {
   timestamp,
 } from 'drizzle-orm/pg-core';
 
+// ==========================================
+// REMOTE DATABASE TABLES (Prisma-managed, PascalCase)
+// These map to the real tables in the Neon production database.
+// ==========================================
+
+/** Maps to the `LGA` table created by the Prisma schema. */
+export const lgaTable = pgTable('LGA', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  stateId: text('stateId').notNull(),
+});
+
+/** Maps to the `Town` table created by the Prisma schema. */
+export const townTable = pgTable('Town', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').notNull(),
+  tagline: text('tagline'),
+  overview: text('overview').notNull(),
+  metaDescription: text('metaDescription'),
+  lat: doublePrecision('lat'),
+  lng: doublePrecision('lng'),
+  population: integer('population'),
+  founded: text('founded'),
+  published: boolean('published').notNull().default(false),
+  featured: boolean('featured').notNull().default(false),
+  lgaId: text('lgaId').notNull(),
+  tribeId: text('tribeId'),
+  createdById: text('createdById').notNull(),
+  rulerTitle: text('rulerTitle'),
+  traditionalRuler: text('traditionalRuler'),
+  randomFacts: text('randomFacts').array(),
+  createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull(),
+});
+
+/** Maps to the `ProminentPerson` table created by the Prisma schema. */
+export const prominentPersonTable = pgTable('ProminentPerson', {
+  id: text('id').primaryKey(),
+  townId: text('townId').notNull(),
+  name: text('name').notNull(),
+  title: text('title'),
+  role: text('role'),
+  biography: text('biography'),
+  birthYear: integer('birthYear'),
+  deathYear: integer('deathYear'),
+  isAlive: boolean('isAlive'),
+  imageUrl: text('imageUrl'),
+  createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull(),
+});
+
+// Relations for the remote tables
+export const townTableRelations = relations(townTable, ({ one, many }) => ({
+  lga: one(lgaTable, { fields: [townTable.lgaId], references: [lgaTable.id] }),
+  persons: many(prominentPersonTable),
+}));
+
+export const lgaTableRelations = relations(lgaTable, ({ many }) => ({
+  towns: many(townTable),
+}));
+
+export const prominentPersonTableRelations = relations(prominentPersonTable, ({ one }) => ({
+  town: one(townTable, { fields: [prominentPersonTable.townId], references: [townTable.id] }),
+}));
+
+
 // This file defines the structure of your database tables using the Drizzle ORM.
 
 // To modify the database schema:

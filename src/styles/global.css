@@ -140,4 +140,69 @@
     from { background-position: 200% 0; }
     to   { background-position: -200% 0; }
   }
+
+  /* ── Entrance animation keyframes ── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.94); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes slide-right {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Base — elements start hidden and transition to visible */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.55s var(--ease-cinematic),
+      transform 0.55s var(--ease-cinematic);
+  }
+
+  .animate-on-scroll.fade-in-only {
+    transform: none;
+  }
+
+  .animate-on-scroll.scale {
+    transform: scale(0.94);
+  }
+
+  .animate-on-scroll.slide-right {
+    transform: translateX(-16px);
+  }
+
+  /* Triggered state */
+  .animate-on-scroll[data-visible='true'] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Stagger delay helpers */
+  .stagger-1 { transition-delay: 0ms; }
+  .stagger-2 { transition-delay: 80ms; }
+  .stagger-3 { transition-delay: 160ms; }
+  .stagger-4 { transition-delay: 240ms; }
+  .stagger-5 { transition-delay: 320ms; }
+  .stagger-6 { transition-delay: 400ms; }
+
+  /* Respect reduced-motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-on-scroll {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }

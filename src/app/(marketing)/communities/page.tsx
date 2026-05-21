@@ -1,6 +1,7 @@
-import { db } from '@/libs/DB';
+import { eq } from 'drizzle-orm';
 import Link from 'next/link';
-import { communitiesSchema } from '@/models/Schema';
+import { db } from '@/libs/DB';
+import { townTable, lgaTable } from '@/models/Schema';
 import { Search, ArrowRight, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -12,64 +13,41 @@ export const metadata = {
     'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional clans, migration archives, and civic metrics across all six LGAs.',
 };
 
+export const dynamic = 'force-dynamic';
+
 const lgaBelts = ['Kabba/Bunu', 'Mopa-Muro', 'Yagba East', 'Yagba West', 'Ijumu'];
 
-const staticCommunities = [
-  {
-    id: 1,
-    name: 'Kabba (Owe)',
-    slug: 'kabba',
-    lga: 'Kabba/Bunu',
-    districtOrClan: 'Owe Clan',
-    historicalBackground:
-      'The ancestral headquarters of the Okun people, historically famous for traditional weaving, sacred monolith structures, and serving as the provincial capital during the colonial administration.',
-  },
-  {
-    id: 2,
-    name: 'Mopa',
-    slug: 'mopa',
-    lga: 'Mopa-Muro',
-    districtOrClan: 'Mopa Clan',
-    historicalBackground:
-      'Known as the intellectual hub of the Mopa-Muro local government area, home to renowned educational foundations and prominent indigenes contributing deeply to national development.',
-  },
-  {
-    id: 3,
-    name: 'Isanlu',
-    slug: 'isanlu',
-    lga: 'Yagba East',
-    districtOrClan: 'Yagba Clan',
-    historicalBackground:
-      'A major trading junction and municipal center within the Yagba belt, characterized by vibrant historical festivals and rich agricultural output.',
-  },
-  {
-    id: 4,
-    name: 'Egbe',
-    slug: 'egbe',
-    lga: 'Yagba West',
-    districtOrClan: 'Yagba Clan',
-    historicalBackground:
-      'Famous for housing the oldest pioneer missionary healthcare institutions in the region and bordered by iconic high-altitude topographical landmarks.',
-  },
-  {
-    id: 5,
-    name: 'Iyara',
-    slug: 'iyara',
-    lga: 'Ijumu',
-    districtOrClan: 'Ijumu Clan',
-    historicalBackground:
-      'The administrative capital of Ijumu local government area, celebrated for vibrant cultural expressions, high literacy indexes, and centralized governance frameworks.',
-  },
-  {
-    id: 6,
-    name: 'Ekinrin-Adde',
-    slug: 'ekinrin-adde',
-    lga: 'Ijumu',
-    districtOrClan: 'Ijumu Clan',
-    historicalBackground:
-      'A deeply proactive regional center renowned for strong community self-help infrastructure, annual heritage carnivals, and influential commercial diasporas.',
-  },
-];
+type TownRow = {
+  id: string;
+  name: string;
+  slug: string;
+  lga: string;
+  districtOrClan: string;
+  historicalBackground: string | null;
+};
+
+/** Fetches all published towns joined with their LGA name. */
+async function fetchTowns(): Promise<TownRow[]> {
+  const rows = await db
+    .select({
+      id: townTable.id,
+      name: townTable.name,
+      slug: townTable.slug,
+      lga: lgaTable.name,
+      districtOrClan: townTable.tagline,
+      historicalBackground: townTable.overview,
+    })
+    .from(townTable)
+    .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
+    .where(eq(townTable.published, true))
+    .orderBy(townTable.name);
+
+  return rows.map((r) => ({
+    ...r,
+    districtOrClan: r.districtOrClan ?? `${r.lga} LGA`,
+    historicalBackground: r.historicalBackground ?? null,
+  }));
+}
 
 export default async function CommunitiesPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -78,22 +56,20 @@ export default async function CommunitiesPage(props: {
   const rawSearch = typeof searchParams.search === 'string' ? searchParams.search : '';
   const query = rawSearch.toLowerCase().trim();
 
-  let communities: Array<typeof communitiesSchema.$inferSelect> = [];
+  let towns: TownRow[] = [];
   try {
-    communities = await db.select().from(communitiesSchema);
+    towns = await fetchTowns();
   } catch {
-    communities = [];
+    towns = [];
   }
 
-  const baseList = communities.length > 0 ? communities : staticCommunities;
-
-  const displayList = baseList.filter((town) => {
+  const displayList = towns.filter((town) => {
     if (!query) return true;
     return (
-      town.name.toLowerCase().includes(query) ||
-      (town.lga && town.lga.toLowerCase().includes(query)) ||
-      (town.districtOrClan && town.districtOrClan.toLowerCase().includes(query)) ||
-      (town.historicalBackground && town.historicalBackground.toLowerCase().includes(query))
+      town.name.toLowerCase().includes(query)
+      || town.lga.toLowerCase().includes(query)
+      || town.districtOrClan.toLowerCase().includes(query)
+      || (town.historicalBackground && town.historicalBackground.toLowerCase().includes(query))
     );
   });
 
@@ -130,7 +106,7 @@ export default async function CommunitiesPage(props: {
                 type="text"
                 name="search"
                 defaultValue={rawSearch}
-                placeholder="Filter by town, clan, or local government..."
+                placeholder="Filter by town, LGA, or keyword..."
                 className="w-full bg-transparent px-2 py-2 text-sm text-white placeholder-gray-400 focus:outline-hidden"
                 aria-label="Filter communities"
               />
