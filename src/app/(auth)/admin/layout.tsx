@@ -1,14 +1,22 @@
-import { SignOutButton } from '@clerk/nextjs';
+import { SignOutButton } from '@/components/SignOutButton';
 import type { Metadata } from 'next';
 import { Link } from '@/libs/I18nNavigation';
 import { BaseTemplate } from '@/templates/BaseTemplate';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'Contributor Hub Admin - Okunpedia Heritage',
+  title: 'Contributor Desk - Okunpedia Admin',
   description: 'Submit and verify comprehensive local community monographs and publication posts.',
 };
 
-export default function AdminLayout(props: { children: React.ReactNode }) {
+export default async function AdminLayout(props: { children: React.ReactNode }) {
+  const session = await auth();
+
+  if (!session) {
+    redirect('/sign-in');
+  }
+
   return (
     <BaseTemplate
       leftNav={
@@ -53,3 +61,4 @@ export default function AdminLayout(props: { children: React.ReactNode }) {
     </BaseTemplate>
   );
 }
+

@@ -1,11 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
 import { eq } from 'drizzle-orm';
-
 import { db } from '@/libs/DB';
-import { blogPostsSchema, townTable, lgaTable } from '@/models/Schema';
+import { blogPostsSchema, townTable, lgaTable, townRevisionsTable } from '@/models/Schema';
+import { auth } from '@/auth';
 
 export type ActionState = {
   success: boolean;
@@ -31,7 +30,8 @@ export async function publishBlogAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    const { userId } = await auth();
+    const session = await auth();
+    const userId = session?.user?.id;
 
     if (!userId) {
       return { success: false, message: 'Unauthorized. Please sign in.' };
@@ -79,7 +79,9 @@ export async function createCommunityAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    const { userId } = await auth();
+    const session = await auth();
+    const userId = session?.user?.id;
+    const role = session?.user?.role;
 
     if (!userId) {
       return { success: false, message: 'Unauthorized. Please sign in.' };
@@ -115,6 +117,8 @@ export async function createCommunityAction(
     const slug = generateSlug(name);
     const id = generateId();
 
+    const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
+
     await db.insert(townTable).values({
       id,
       name,
@@ -123,7 +127,7 @@ export async function createCommunityAction(
       overview: overview || `Community profile for ${name} in ${lgaName} LGA.`,
       lgaId: lgaRows[0].id,
       createdById: userId,
-      published: true,
+      published: isAdmin, // Auto-published only for admins
       featured: false,
       updatedAt: new Date(),
     });
@@ -134,4 +138,170 @@ export async function createCommunityAction(
 
   // Redirect must be called outside try/catch block
   redirect('/admin');
+}
+
+// -------------------------------------------------------------
+// ADMIN APPROVAL ACTIONS
+// -------------------------------------------------------------
+
+export async function approveTownAction(townId: string): Promise<ActionState> {
+  try {
+    const session = await auth();
+    const role = session?.user?.role;
+    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
+      return { success: false, message: 'Unauthorized. Admin privileges required.' };
+    }
+
+    await db
+      .update(townTable)
+      .set({ published: true, updatedAt: new Date() })
+      .where(eq(townTable.id, townId));
+
+    return { success: true, message: 'Town approved and published.' };
+  } catch (error) {
+    console.error('Error approving town:', error);
+    return { success: false, message: 'Failed to approve town.' };
+  }
+}
+
+export async function rejectTownAction(townId: string): Promise<ActionState> {
+  try {
+    const session = await auth();
+    const role = session?.user?.role;
+    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
+      return { success: false, message: 'Unauthorized. Admin privileges required.' };
+    }
+
+    await db.delete(townTable).where(eq(townTable.id, townId));
+
+    return { success: true, message: 'Town submission rejected and removed.' };
+  } catch (error) {
+    console.error('Error rejecting town:', error);
+    return { success: false, message: 'Failed to reject town.' };
+  }
+}
+
+export async function submitTownRevisionAction(
+  townId: string,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await auth();
+    const userId = session?.user?.id;
+    const role = session?.user?.role;
+
+    if (!userId) {
+      return { success: false, message: 'Unauthorized. Please sign in.' };
+    }
+
+    const name = formData.get('name') as string;
+    const tagline = formData.get('tagline') as string;
+    const overview = formData.get('overview') as string;
+    const rulerTitle = formData.get('rulerTitle') as string;
+    const traditionalRuler = formData.get('traditionalRuler') as string;
+
+    if (!name || !overview) {
+      return { success: false, message: 'Name and overview are required.' };
+    }
+
+    const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
+
+    if (isAdmin) {
+      // Admins apply edits immediately
+      await db
+        .update(townTable)
+        .set({
+          name,
+          tagline: tagline || null,
+          overview,
+          rulerTitle: rulerTitle || null,
+          traditionalRuler: traditionalRuler || null,
+          updatedAt: new Date(),
+        })
+        .where(eq(townTable.id, townId));
+
+      return { success: true, message: 'Changes applied directly.' };
+    }
+
+    // Normal contributors submit a pending revision
+    await db.insert(townRevisionsTable).values({
+      townId,
+      name,
+      tagline: tagline || null,
+      overview,
+      rulerTitle: rulerTitle || null,
+      traditionalRuler: traditionalRuler || null,
+      submittedById: userId,
+      status: 'pending',
+    });
+
+    return { success: true, message: 'Edit submitted for review.' };
+  } catch (error) {
+    console.error('Error submitting revision:', error);
+    return { success: false, message: 'Failed to submit edit. Please try again.' };
+  }
+}
+
+export async function approveRevisionAction(revisionId: number): Promise<ActionState> {
+  try {
+    const session = await auth();
+    const role = session?.user?.role;
+    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
+      return { success: false, message: 'Unauthorized. Admin privileges required.' };
+    }
+
+    const [revision] = await db
+      .select()
+      .from(townRevisionsTable)
+      .where(eq(townRevisionsTable.id, revisionId))
+      .limit(1);
+
+    if (!revision) {
+      return { success: false, message: 'Revision not found.' };
+    }
+
+    // Apply changes to the Town table
+    await db
+      .update(townTable)
+      .set({
+        name: revision.name,
+        tagline: revision.tagline,
+        overview: revision.overview,
+        rulerTitle: revision.rulerTitle,
+        traditionalRuler: revision.traditionalRuler,
+        updatedAt: new Date(),
+      })
+      .where(eq(townTable.id, revision.townId));
+
+    // Update revision status
+    await db
+      .update(townRevisionsTable)
+      .set({ status: 'approved' })
+      .where(eq(townRevisionsTable.id, revisionId));
+
+    return { success: true, message: 'Revision approved and changes applied.' };
+  } catch (error) {
+    console.error('Error approving revision:', error);
+    return { success: false, message: 'Failed to approve revision.' };
+  }
+}
+
+export async function rejectRevisionAction(revisionId: number): Promise<ActionState> {
+  try {
+    const session = await auth();
+    const role = session?.user?.role;
+    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
+      return { success: false, message: 'Unauthorized. Admin privileges required.' };
+    }
+
+    await db
+      .update(townRevisionsTable)
+      .set({ status: 'rejected' })
+      .where(eq(townRevisionsTable.id, revisionId));
+
+    return { success: true, message: 'Revision rejected.' };
+  } catch (error) {
+    console.error('Error rejecting revision:', error);
+    return { success: false, message: 'Failed to reject revision.' };
+  }
 }

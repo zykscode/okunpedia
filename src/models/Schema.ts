@@ -62,10 +62,41 @@ export const prominentPersonTable = pgTable('ProminentPerson', {
   updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull(),
 });
 
+/** Maps to the `User` table created by the Prisma schema. */
+export const userTable = pgTable('User', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull(),
+  emailVerified: timestamp('emailVerified', { mode: 'date' }),
+  name: text('name'),
+  image: text('image'),
+  password: text('password'),
+  role: text('role'), // 'SUPER_ADMIN', 'ADMIN', 'USER'
+  status: text('status'), // 'ACTIVE', 'INACTIVE'
+  bio: text('bio'),
+  location: text('location'),
+  createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull().defaultNow(),
+});
+
+/** Maps to the `town_revisions` table. */
+export const townRevisionsTable = pgTable('town_revisions', {
+  id: serial('id').primaryKey(),
+  townId: text('townId').notNull(),
+  name: text('name').notNull(),
+  tagline: text('tagline'),
+  overview: text('overview').notNull(),
+  rulerTitle: text('rulerTitle'),
+  traditionalRuler: text('traditionalRuler'),
+  submittedById: text('submittedById').notNull(),
+  status: text('status').default('pending').notNull(),
+  createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
+});
+
 // Relations for the remote tables
 export const townTableRelations = relations(townTable, ({ one, many }) => ({
   lga: one(lgaTable, { fields: [townTable.lgaId], references: [lgaTable.id] }),
   persons: many(prominentPersonTable),
+  revisions: many(townRevisionsTable),
 }));
 
 export const lgaTableRelations = relations(lgaTable, ({ many }) => ({
@@ -75,6 +106,16 @@ export const lgaTableRelations = relations(lgaTable, ({ many }) => ({
 export const prominentPersonTableRelations = relations(prominentPersonTable, ({ one }) => ({
   town: one(townTable, { fields: [prominentPersonTable.townId], references: [townTable.id] }),
 }));
+
+export const townRevisionsRelations = relations(townRevisionsTable, ({ one }) => ({
+  town: one(townTable, { fields: [townRevisionsTable.townId], references: [townTable.id] }),
+  user: one(userTable, { fields: [townRevisionsTable.submittedById], references: [userTable.id] }),
+}));
+
+export const userTableRelations = relations(userTable, ({ many }) => ({
+  revisions: many(townRevisionsTable),
+}));
+
 
 
 // This file defines the structure of your database tables using the Drizzle ORM.

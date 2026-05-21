@@ -1,6 +1,59 @@
+import { auth } from '@/auth';
+import { db } from '@/libs/DB';
+import { townTable, townRevisionsTable, userTable, lgaTable } from '@/models/Schema';
+import { eq, desc } from 'drizzle-orm';
 import { Link } from '@/libs/I18nNavigation';
+import { CurationList } from './CurationList';
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const session = await auth();
+  const role = session?.user?.role;
+  const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
+
+  // Fetch pending towns
+  const pendingTowns = isAdmin
+    ? await db
+        .select({
+          id: townTable.id,
+          name: townTable.name,
+          tagline: townTable.tagline,
+          overview: townTable.overview,
+          lgaName: lgaTable.name,
+          createdAt: townTable.updatedAt,
+        })
+        .from(townTable)
+        .leftJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
+        .where(eq(townTable.published, false))
+        .orderBy(desc(townTable.updatedAt))
+    : [];
+
+  // Fetch pending revisions
+  const pendingRevisions = isAdmin
+    ? await db
+        .select({
+          id: townRevisionsTable.id,
+          townId: townRevisionsTable.townId,
+          townName: townTable.name,
+          originalName: townTable.name,
+          originalTagline: townTable.tagline,
+          originalOverview: townTable.overview,
+          originalRulerTitle: townTable.rulerTitle,
+          originalTraditionalRuler: townTable.traditionalRuler,
+          name: townRevisionsTable.name,
+          tagline: townRevisionsTable.tagline,
+          overview: townRevisionsTable.overview,
+          rulerTitle: townRevisionsTable.rulerTitle,
+          traditionalRuler: townRevisionsTable.traditionalRuler,
+          submittedBy: userTable.name,
+          createdAt: townRevisionsTable.createdAt,
+        })
+        .from(townRevisionsTable)
+        .leftJoin(townTable, eq(townRevisionsTable.townId, townTable.id))
+        .leftJoin(userTable, eq(townRevisionsTable.submittedById, userTable.id))
+        .where(eq(townRevisionsTable.status, 'pending'))
+        .orderBy(desc(townRevisionsTable.createdAt))
+    : [];
+
   return (
     <div className="mx-auto max-w-5xl space-y-8 py-4 sm:py-8">
       {/* Official Curation Hub Banner */}
@@ -13,7 +66,7 @@ export default function AdminPage() {
             <span>🛡️ Protected Archival Workspace</span>
           </div>
           <span className="text-xs font-medium text-gray-400">
-            Authenticated Contributor Session
+            Authenticated Contributor Session ({role})
           </span>
         </div>
 
@@ -26,6 +79,22 @@ export default function AdminPage() {
           </p>
         </div>
       </div>
+
+      {/* Admin Verification Desk Queue (Admins only) */}
+      {isAdmin && (
+        <div className="p-6 bg-gray-50 dark:bg-gray-900/50 border border-gray-250/20 dark:border-gray-800 rounded-3xl space-y-4">
+          <h2 className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+            🛡️ Administrative Curation Queue
+          </h2>
+          <p className="text-sm text-gray-500">
+            Review community uploads and proposed edits submitted by the contributor community.
+          </p>
+          <CurationList
+            pendingTowns={pendingTowns}
+            pendingRevisions={pendingRevisions}
+          />
+        </div>
+      )}
 
       {/* Module Shortcuts Section */}
       <div className="grid gap-8 md:grid-cols-2">
