@@ -1,4 +1,3 @@
-import { enUS } from '@clerk/localizations';
 
 /** Centralized application configuration */
 export const AppConfig = {
@@ -100,6 +99,3 @@ export const AppConfig = {
   },
 };
 
-export const ClerkLocalizations = {
-  defaultLocale: enUS,
-};

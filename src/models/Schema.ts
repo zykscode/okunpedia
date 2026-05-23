@@ -224,7 +224,7 @@ export const amenitiesSchema = pgTable('amenities', {
 });
 
 export const userProfilesSchema = pgTable('user_profiles', {
-  id: text('id').primaryKey(), // Clerk user ID
+  id: text('id').primaryKey(), // user ID
   username: text('username').unique().notNull(),
   fullName: text('full_name'),
   communityId: integer('community_id').references(() => communitiesSchema.id, {

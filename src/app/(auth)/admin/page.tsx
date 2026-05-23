@@ -1,8 +1,8 @@
+import { eq, desc } from 'drizzle-orm';
 import { auth } from '@/auth';
 import { db } from '@/libs/DB';
-import { townTable, townRevisionsTable, userTable, lgaTable } from '@/models/Schema';
-import { eq, desc } from 'drizzle-orm';
 import { Link } from '@/libs/I18nNavigation';
+import { townTable, townRevisionsTable, userTable, lgaTable } from '@/models/Schema';
 import { CurationList } from './CurationList';
 
 export default async function AdminPage() {
@@ -75,24 +75,22 @@ export default async function AdminPage() {
             Okunpedia Curation Center
           </h1>
           <p className="mt-2 max-w-2xl text-xs text-gray-300 sm:text-base">
-            Select a designated administrative node below to draft or sync regional monographs and localized municipal records.
+            Select a designated administrative node below to draft or sync regional monographs and
+            localized municipal records.
           </p>
         </div>
       </div>
 
       {/* Admin Verification Desk Queue (Admins only) */}
       {isAdmin && (
-        <div className="p-6 bg-gray-50 dark:bg-gray-900/50 border border-gray-250/20 dark:border-gray-800 rounded-3xl space-y-4">
-          <h2 className="text-xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+        <div className="border-gray-250/20 space-y-4 rounded-3xl border bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900/50">
+          <h2 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
             🛡️ Administrative Curation Queue
           </h2>
           <p className="text-sm text-gray-500">
             Review community uploads and proposed edits submitted by the contributor community.
           </p>
-          <CurationList
-            pendingTowns={pendingTowns}
-            pendingRevisions={pendingRevisions}
-          />
+          <CurationList pendingTowns={pendingTowns} pendingRevisions={pendingRevisions} />
         </div>
       )}
 
@@ -115,7 +113,8 @@ export default async function AdminPage() {
               Municipalities & Towns
             </h2>
             <p className="mt-2.5 text-xs leading-relaxed text-gray-600 sm:text-sm">
-              Create and upload comprehensive encyclopedia records for Okun towns, including founding stories, lacking infrastructure, and traditional leadership hierarchies.
+              Create and upload comprehensive encyclopedia records for Okun towns, including
+              founding stories, lacking infrastructure, and traditional leadership hierarchies.
             </p>
           </div>
 
@@ -149,7 +148,8 @@ export default async function AdminPage() {
               Publications & News
             </h2>
             <p className="mt-2.5 text-xs leading-relaxed text-gray-600 sm:text-sm">
-              Publish official cultural documentation, socio-economic discussions, featured indigenes highlight interviews, and local news updates.
+              Publish official cultural documentation, socio-economic discussions, featured
+              indigenes highlight interviews, and local news updates.
             </p>
           </div>
 
