@@ -5,6 +5,7 @@ import '@/styles/global.css';
 import { AppConfig } from '@/utils/AppConfig';
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { SearchProvider } from 'pliny/search/index.js';
+import { Analytics } from "@vercel/analytics/next"
 
 const inter = Inter({
   subsets: ['latin'],
@@ -110,6 +111,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           <SearchProvider searchConfig={AppConfig.search as any}>
             {props.children}
           </SearchProvider>
+          <Analytics />
           <PwaRegistration />
         </ThemeProvider>
       </body>
