@@ -435,3 +435,92 @@ export const gisPolygonsRelations = relations(gisPolygonsSchema, ({ one }) => ({
     references: [communitiesSchema.id],
   }),
 }));
+
+// ==========================================
+// DRIZZLE AUTH & SECURITY TABLES
+// ==========================================
+
+export const accountsTable = pgTable('accounts', {
+  userId: text('userId')
+    .notNull()
+    .references(() => userTable.id, { onDelete: 'cascade' }),
+  type: text('type').notNull(),
+  provider: text('provider').notNull(),
+  providerAccountId: text('providerAccountId').notNull(),
+  refresh_token: text('refresh_token'),
+  access_token: text('access_token'),
+  expires_at: integer('expires_at'),
+  token_type: text('token_type'),
+  scope: text('scope'),
+  id_token: text('id_token'),
+  session_state: text('session_state'),
+}, (table) => [
+  {
+    pk: {
+      columns: [table.provider, table.providerAccountId],
+      name: 'accounts_provider_providerAccountId_pk',
+    },
+  }
+]);
+
+export const sessionsTable = pgTable('sessions', {
+  sessionToken: text('sessionToken').primaryKey(),
+  userId: text('userId')
+    .notNull()
+    .references(() => userTable.id, { onDelete: 'cascade' }),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+export const verificationTokensTable = pgTable('verification_tokens', {
+  identifier: text('identifier').notNull(),
+  token: text('token').notNull(),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+}, (table) => [
+  {
+    pk: {
+      columns: [table.identifier, table.token],
+      name: 'verification_tokens_identifier_token_pk',
+    },
+  }
+]);
+
+export const passwordResetTokensTable = pgTable('password_reset_tokens', {
+  email: text('email').notNull(),
+  token: text('token').primaryKey(),
+  expires: timestamp('expires', { mode: 'date' }).notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+export const loginActivityTable = pgTable('login_activity', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id')
+    .references(() => userTable.id, { onDelete: 'cascade' }),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  status: text('status').notNull(), // 'success', 'failed'
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+});
+
+// Relations for Auth tables
+export const accountsRelations = relations(accountsTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [accountsTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
+export const sessionsRelations = relations(sessionsTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [sessionsTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
+export const loginActivityRelations = relations(loginActivityTable, ({ one }) => ({
+  user: one(userTable, {
+    fields: [loginActivityTable.userId],
+    references: [userTable.id],
+  }),
+}));
+
