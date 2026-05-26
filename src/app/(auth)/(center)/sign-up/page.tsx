@@ -2,10 +2,12 @@
 
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState, useTransition, useEffect } from 'react';
 import { signUpAction } from '@/app/(auth)/actions';
 
 export default function SignUpPage() {
+  const router = useRouter();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -91,14 +93,7 @@ export default function SignUpPage() {
       if (res?.error) {
         setError(res.error);
       } else {
-        setSuccess(
-          'Account created successfully! Verification email sent. Please check your inbox.',
-        );
-        setUsername('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        setAcceptTerms(false);
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
       }
     });
   };

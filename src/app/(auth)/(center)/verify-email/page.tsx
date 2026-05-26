@@ -1,3 +1,4 @@
+// oxlint-disable typescript/prefer-nullish-coalescing
 // oxlint-disable typescript/no-confusing-void-expression
 // oxlint-disable typescript/no-floating-promises
 'use client';
@@ -19,28 +20,35 @@ function VerifyEmailForm() {
   const [error, setError] = useState('');
 
   // Resend code states
-  const [resendEmail, setResendEmail] = useState('');
+  const [resendEmail, setResendEmail] = useState(emailParam);
   const [resendSuccess, setResendSuccess] = useState('');
   const [resendError, setResendError] = useState('');
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    if (token && emailParam) {
-      setVerifying(true);
-      setError('');
-      verifyEmailAction(token, emailParam).then((res) => {
-        setVerifying(false);
-        if (res?.error) {
-          setError(res.error);
-        } else {
-          setSuccess(true);
-          // Redirect to sign in after success
-          setTimeout(() => {
-            router.push('/sign-in');
-          }, 3000);
+    const runVerification = async () => {
+      if (token && emailParam) {
+        setVerifying(true);
+        setError('');
+        try {
+          const res = await verifyEmailAction(token, emailParam);
+          setVerifying(false);
+          if (res?.error) {
+            setError(res.error);
+          } else {
+            setSuccess(true);
+            // Redirect to sign in after success
+            setTimeout(() => {
+              router.push('/sign-in');
+            }, 3000);
+          }
+        } catch (err: any) {
+          setVerifying(false);
+          setError(err?.message || 'An unexpected error occurred during email verification.');
         }
-      });
-    }
+      }
+    };
+    runVerification();
   }, [token, emailParam, router]);
 
   const handleResend = (e: React.FormEvent) => {
@@ -133,7 +141,13 @@ function VerifyEmailForm() {
         </div>
       </div>
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-        We've sent a verification link to your email. Click on the link to confirm your account.
+        We've sent a verification link to{' '}
+        {emailParam ? (
+          <strong className="font-semibold text-gray-900 dark:text-white">{emailParam}</strong>
+        ) : (
+          'your email'
+        )}
+        . Click on the link to confirm your account.
       </p>
 
       <form
