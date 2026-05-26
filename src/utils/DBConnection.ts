@@ -13,8 +13,13 @@ export const createDbConnection = () => {
     );
   }
 
+  let connectionString = Env.DATABASE_URL;
+  if (connectionString.includes('sslmode=require') && !connectionString.includes('uselibpqcompat')) {
+    connectionString = connectionString.replace('sslmode=require', 'sslmode=verify-full');
+  }
+
   const pool = new Pool({
-    connectionString: Env.DATABASE_URL,
+    connectionString,
   });
 
   pool.on('error', (error) => {

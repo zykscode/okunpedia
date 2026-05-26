@@ -171,6 +171,23 @@ export default function SignInPage() {
             Sign Up
           </Link>
         </p>
+        <p className="mt-4 text-xs text-gray-400 dark:text-gray-500">
+          By signing in, you agree to our{' '}
+          <Link
+            href="/terms"
+            className="font-semibold text-gray-500 hover:text-blue-600 dark:text-gray-450"
+          >
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link
+            href="/privacy"
+            className="font-semibold text-gray-500 hover:text-blue-600 dark:text-gray-450"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
       </div>
     </div>
   );

@@ -12,6 +12,40 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   session: {
     strategy: 'jwt',
   },
+  logger: {
+    error(error) {
+      const isCredentialsError =
+        (error.name === 'CallbackRouteError' || error.message?.includes('CallbackRouteError')) &&
+        error.cause &&
+        typeof error.cause === 'object' &&
+        'err' in error.cause &&
+        error.cause.err instanceof Error &&
+        (error.cause.err.message === 'Invalid email or password.' ||
+          error.cause.err.message === 'Your account has been blocked.' ||
+          error.cause.err.message.includes('Too many failed login attempts'));
+
+      if (isCredentialsError) {
+        console.warn(`[auth][credentials-failure]: ${(error.cause as any).err.message}`);
+        return;
+      }
+
+      console.error(`[auth][error] ${error.name}: ${error.message}`);
+      if (
+        error.cause &&
+        typeof error.cause === 'object' &&
+        'err' in error.cause &&
+        error.cause.err instanceof Error
+      ) {
+        const { err, ...data } = error.cause as { err: Error; [key: string]: any };
+        console.error(`[auth][cause]:`, err.stack);
+        if (data && Object.keys(data).length > 0) {
+          console.error(`[auth][details]:`, JSON.stringify(data, null, 2));
+        }
+      } else if (error.stack) {
+        console.error(error.stack.replace(/.*/, '').substring(1));
+      }
+    },
+  },
   providers: [
     Credentials({
       name: 'Credentials',
