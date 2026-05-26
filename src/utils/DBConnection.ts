@@ -7,6 +7,12 @@ import * as schema from '@/models/Schema';
 // Need a database for production? Check out https://get.neon.com/BMFYNtx
 // Tested and compatible with Next.js Boilerplate
 export const createDbConnection = () => {
+  if (!Env.DATABASE_URL) {
+    throw new Error(
+      'DATABASE_URL environment variable is missing. Please configure it in your environment settings (e.g. Vercel Project Settings).',
+    );
+  }
+
   const pool = new Pool({
     connectionString: Env.DATABASE_URL,
   });

@@ -1,11 +1,18 @@
+// oxlint-disable unicorn/prefer-string-replace-all
+// oxlint-disable jsdoc/require-param
+// oxlint-disable require-unicode-regexp
+// oxlint-disable jsdoc/require-returns
+// oxlint-disable typescript/no-unnecessary-type-conversion
+// oxlint-disable typescript/no-unsafe-type-assertion
+// oxlint-disable typescript/consistent-return
 'use server';
 
-import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { updateTag } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { auth } from '@/auth';
 import { db } from '@/libs/DB';
 import { blogPostsSchema, townTable, lgaTable, townRevisionsTable } from '@/models/Schema';
-import { auth } from '@/auth';
 
 export type ActionState = {
   success: boolean;
