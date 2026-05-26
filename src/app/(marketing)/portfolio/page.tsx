@@ -5,9 +5,32 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import sentryLogo from '@/public/assets/images/sentry-dark.png';
 
+import { AppConfig } from '@/utils/AppConfig';
+
 export const metadata: Metadata = {
-  title: 'Archival Portfolio - Curated Collections',
+  title: 'Archival Portfolio — Curated Collections | Okunpedia',
   description: 'Specialized photographic records and visual heritage snapshots across documented communities.',
+  openGraph: {
+    title: 'Archival Portfolio — Curated Collections',
+    description: 'Specialized photographic records and visual heritage snapshots across documented communities.',
+    url: `${AppConfig.siteUrl}/portfolio`,
+    siteName: AppConfig.title,
+    images: [
+      {
+        url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Okunpedia Portfolio',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Archival Portfolio — Curated Collections',
+    description: 'Specialized photographic records and visual heritage snapshots across documented communities.',
+    images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+  },
 };
 
 export default function Portfolio() {

@@ -1,9 +1,34 @@
 import { InteractiveOkunMap } from '@/components/maps/InteractiveOkunMap';
 
+import { AppConfig } from '@/utils/AppConfig';
+
 export const metadata = {
-  title: 'Interactive Okun Map - Digital Geospatial Atlas',
+  title: 'Interactive Okun Map — Digital Geospatial Atlas | Okunpedia',
   description:
     'Navigate visually through all documented Okun towns, traditional boundary delineations, and cultural geographical coordinates.',
+  openGraph: {
+    title: 'Interactive Okun Map — Digital Geospatial Atlas',
+    description:
+      'Navigate visually through all documented Okun towns, traditional boundary delineations, and cultural geographical coordinates.',
+    url: `${AppConfig.siteUrl}/map`,
+    siteName: AppConfig.title,
+    images: [
+      {
+        url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Interactive Okun Map',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Interactive Okun Map — Digital Geospatial Atlas',
+    description:
+      'Navigate visually through all documented Okun towns, traditional boundary delineations, and cultural geographical coordinates.',
+    images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+  },
 };
 
 export default function InteractiveMapPage() {

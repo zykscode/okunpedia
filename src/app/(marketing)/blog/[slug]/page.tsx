@@ -5,6 +5,8 @@ import { ArticleHeaderBlock } from '@/features/editorial/ArticleHeaderBlock';
 import { MDXRenderer } from '@/components/blog/MDXRenderer';
 import { allBlogs } from 'contentlayer/generated';
 
+import { AppConfig } from '@/utils/AppConfig';
+
 type BlogDetailProps = {
   params: Promise<{ slug: string }>;
 };
@@ -21,10 +23,33 @@ export async function generateMetadata(props: BlogDetailProps) {
 
   const post = allBlogs.find((p) => p.slug === slug);
   const title = post ? post.title : slug.replace(/-/g, ' ');
+  const cleanTitle = `${title} — Okunpedia Dispatch`;
+  const description = post?.summary || `Official peer-reviewed archival publication addressing ${title} across Okun municipal districts.`;
+  const image = post?.images && post.images.length > 0 ? post.images[0] : `${AppConfig.siteUrl}/static/images/hero-bg.jpg`;
 
   return {
-    title: `${title} - Okunpedia Dispatch`,
-    description: post?.summary || `Official peer-reviewed archival publication addressing ${title} across Okun municipal districts.`,
+    title: cleanTitle,
+    description,
+    openGraph: {
+      title: cleanTitle,
+      description,
+      type: 'article',
+      url: `${AppConfig.siteUrl}/blog/${slug}`,
+      siteName: AppConfig.title,
+      images: [
+        {
+          url: image,
+          alt: title,
+        },
+      ],
+      publishedTime: post ? post.date : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: cleanTitle,
+      description,
+      images: [image],
+    },
   };
 }
 

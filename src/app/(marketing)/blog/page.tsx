@@ -5,10 +5,35 @@ import { ArrowRight, Newspaper } from 'lucide-react';
 import { allBlogs } from 'contentlayer/generated';
 import { sortPosts } from 'pliny/utils/contentlayer.js';
 
+import { AppConfig } from '@/utils/AppConfig';
+
 export const metadata = {
-  title: 'Publications & News — Okunpedia',
+  title: 'Publications & News — Okunpedia Dispatch',
   description:
     'Read peer-reviewed documentation chapters, developmental blueprints, and cultural restoration updates from across Okunland.',
+  openGraph: {
+    title: 'Publications & News — Okunpedia Dispatch',
+    description:
+      'Read peer-reviewed documentation chapters, developmental blueprints, and cultural restoration updates from across Okunland.',
+    url: `${AppConfig.siteUrl}/blog`,
+    siteName: AppConfig.title,
+    images: [
+      {
+        url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Okunpedia Blog Publications',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Publications & News — Okunpedia Dispatch',
+    description:
+      'Read peer-reviewed documentation chapters, developmental blueprints, and cultural restoration updates from across Okunland.',
+    images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+  },
 };
 
 const categoryStyles: Record<string, { badge: 'amber' | 'emerald' | 'blue'; label: string }> = {

@@ -8,15 +8,40 @@ import { CommunityProfileCard } from '@/features/communities/CommunityProfileCar
 import { db } from '@/libs/DB';
 import { townTable, lgaTable } from '@/models/Schema';
 
+import { AppConfig } from '@/utils/AppConfig';
+
 export const metadata = {
-  title: 'Okun Communities — Explore Traditional Towns & Lineages',
+  title: 'Okun Communities — Explore Traditional Towns & Lineages | Okunpedia',
   description:
     'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional clans, migration archives, and civic metrics across all six LGAs.',
+  openGraph: {
+    title: 'Okun Communities — Explore Traditional Towns & Lineages',
+    description:
+      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional clans, migration archives, and civic metrics across all six LGAs.',
+    url: `${AppConfig.siteUrl}/communities`,
+    siteName: AppConfig.title,
+    images: [
+      {
+        url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'Okun Communities',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Okun Communities — Explore Traditional Towns & Lineages',
+    description:
+      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional clans, migration archives, and civic metrics across all six LGAs.',
+    images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+  },
 };
 
 export const dynamic = 'force-dynamic';
 
-const lgaBelts = ['Kabba/Bunu', 'Mopa-Muro', 'Yagba East', 'Yagba West', 'Ijumu'];
+const lgaBelts = ['Kabba/Bunu', 'Mopa-Muro', 'Yagba East', 'Yagba West', 'Ijumu', 'Lokoja'];
 
 type TownRow = {
   id: string;

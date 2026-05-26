@@ -5,10 +5,40 @@ import { Newspaper } from 'lucide-react';
 import { ListLayout } from '@/components/blog/ListLayout';
 import { slug } from 'github-slugger';
 
-export const metadata = {
-  title: 'Publications by Category — Okunpedia',
-  description: 'Filter peer-reviewed documentation and updates by category across Okunland.',
-};
+import { AppConfig } from '@/utils/AppConfig';
+
+export async function generateMetadata(props: { params: Promise<{ category: string }> }) {
+  const { category } = await props.params;
+  const capitalized = category.charAt(0).toUpperCase() + category.slice(1);
+  const title = `Publications on ${capitalized} — Okunpedia`;
+  const description = `Browse peer-reviewed documentation, updates, and archival publications categorized under ${capitalized} across Okunland.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${AppConfig.siteUrl}/blog/category/${category}`,
+      siteName: AppConfig.title,
+      images: [
+        {
+          url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `Okunpedia ${capitalized} Publications`,
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+    },
+  };
+}
 
 const getBlogPosts = unstable_cache(
   async () => {

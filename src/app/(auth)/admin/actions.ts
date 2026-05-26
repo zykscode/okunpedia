@@ -14,6 +14,7 @@ import {
   townRevisionsTable,
   userTable,
   auditLogsTable,
+  communitiesSchema,
 } from '@/models/Schema';
 
 export type ActionState = {
@@ -71,6 +72,7 @@ const CreateCommunitySchema = z.object({
 
 const UpdateTownSchema = z.object({
   name:              z.string().min(2).max(200),
+  lga:               z.string().min(1, 'LGA is required'),
   tagline:           z.string().max(300).optional(),
   overview:          z.string().min(10, 'Overview must be at least 10 characters').max(20_000),
   rulerTitle:        z.string().max(100).optional(),
@@ -165,6 +167,7 @@ export async function updateTownAction(
 
     const parsed = UpdateTownSchema.safeParse({
       name:             formData.get('name'),
+      lga:              formData.get('lga'),
       tagline:          formData.get('tagline'),
       overview:         formData.get('overview'),
       rulerTitle:       formData.get('rulerTitle'),
@@ -176,7 +179,17 @@ export async function updateTownAction(
       return { success: false, message: parsed.error.issues[0]?.message ?? 'Validation failed.' };
     }
 
-    const { name, tagline, overview, rulerTitle, traditionalRuler, published } = parsed.data;
+    const { name, lga: lgaName, tagline, overview, rulerTitle, traditionalRuler, published } = parsed.data;
+
+    const lgaRows = await db
+      .select({ id: lgaTable.id })
+      .from(lgaTable)
+      .where(eq(lgaTable.name, lgaName))
+      .limit(1);
+
+    if (!lgaRows[0]) {
+      return { success: false, message: `LGA "${lgaName}" not found.` };
+    }
 
     // Snapshot before update
     const [before] = await db.select().from(townTable).where(eq(townTable.id, townId)).limit(1);
@@ -188,12 +201,26 @@ export async function updateTownAction(
         slug: generateSlug(name),
         tagline: tagline || null,
         overview,
+        lgaId: lgaRows[0].id,
         rulerTitle: rulerTitle || null,
         traditionalRuler: traditionalRuler || null,
         published,
         updatedAt: new Date(),
       })
       .where(eq(townTable.id, townId));
+
+    if (before?.slug) {
+      await db
+        .update(communitiesSchema)
+        .set({
+          name,
+          slug: generateSlug(name),
+          lga: lgaName,
+          districtOrClan: tagline || '',
+          updatedAt: new Date(),
+        })
+        .where(eq(communitiesSchema.slug, before.slug));
+    }
 
     await insertAuditLog({
       actorId: session.user.id,

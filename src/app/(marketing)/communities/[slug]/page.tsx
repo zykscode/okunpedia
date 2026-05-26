@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { db } from '@/libs/DB';
 import { townTable, lgaTable, prominentPersonTable } from '@/models/Schema';
 
+import { AppConfig } from '@/utils/AppConfig';
+
 type DetailPageProps = { params: Promise<{ slug: string }> };
 
 type RulerItem = { title: string; name: string };
@@ -73,9 +75,35 @@ export async function generateMetadata(props: DetailPageProps) {
   try {
     const town = await getTownBySlug(slug);
     const name = town?.name ?? slug.charAt(0).toUpperCase() + slug.slice(1);
+    const title = `${name} — Heritage & Infrastructure Profile | Okunpedia`;
+    const description = town?.overview
+      ? (town.overview.length > 160 ? `${town.overview.slice(0, 157)}...` : town.overview)
+      : `Detailed heritage, historical migration patterns, ancestral governance, paramount monarchs, and public amenities for ${name}.`;
+
     return {
-      title: `${name} — Heritage & Infrastructure Profile`,
-      description: `Detailed documentation covering historical migration patterns, ancestral governance, paramount monarchs, and public amenity indexes for ${name}.`,
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: 'article',
+        url: `${AppConfig.siteUrl}/communities/${slug}`,
+        siteName: AppConfig.title,
+        images: [
+          {
+            url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+            width: 1200,
+            height: 630,
+            alt: `${name} Community Heritage Profile`,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+      },
     };
   } catch (error) {
     console.error(`Error in generateMetadata for community slug ${slug}:`, error);

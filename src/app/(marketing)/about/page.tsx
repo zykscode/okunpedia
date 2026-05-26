@@ -4,10 +4,35 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, BookOpen, Users, Globe, Target } from 'lucide-react';
 
+import { AppConfig } from '@/utils/AppConfig';
+
 export const metadata: Metadata = {
   title: 'About Okunpedia — Digital Heritage Platform',
   description:
     'Learn about our foundational framework dedicated to preserving the cultural histories, dialects, migration routes, and development metrics of the Okun communities in Kogi State, Nigeria.',
+  openGraph: {
+    title: 'About Okunpedia — Digital Heritage Platform',
+    description:
+      'Learn about our foundational framework dedicated to preserving the cultural histories, dialects, migration routes, and development metrics of the Okun communities in Kogi State, Nigeria.',
+    url: `${AppConfig.siteUrl}/about`,
+    siteName: AppConfig.title,
+    images: [
+      {
+        url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+        width: 1200,
+        height: 630,
+        alt: 'About Okunpedia',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'About Okunpedia — Digital Heritage Platform',
+    description:
+      'Learn about our foundational framework dedicated to preserving the cultural histories, dialects, migration routes, and development metrics of the Okun communities in Kogi State, Nigeria.',
+    images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+  },
 };
 
 const pillars = [

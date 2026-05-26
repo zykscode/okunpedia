@@ -70,6 +70,28 @@ export function EditTownForm(props: { town: Town }) {
             />
           </div>
 
+          {/* LGA */}
+          <div>
+            <label htmlFor="lga" className="mb-1.5 block text-xs font-bold tracking-wider text-gray-600 uppercase dark:text-gray-400">
+              Local Government Area *
+            </label>
+            <select
+              id="lga"
+              name="lga"
+              defaultValue={props.town.lgaName ?? ''}
+              required
+              disabled={isPending}
+              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
+            >
+              <option value="Kabba/Bunu">Kabba/Bunu</option>
+              <option value="Lokoja">Lokoja</option>
+              <option value="Mopa-Muro">Mopa-Muro</option>
+              <option value="Ijumu">Ijumu</option>
+              <option value="Yagba East">Yagba East</option>
+              <option value="Yagba West">Yagba West</option>
+            </select>
+          </div>
+
           {/* Tagline */}
           <div>
             <label htmlFor="tagline" className="mb-1.5 block text-xs font-bold tracking-wider text-gray-600 uppercase dark:text-gray-400">

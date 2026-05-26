@@ -12,13 +12,37 @@ export function generateStaticParams() {
   }));
 }
 
+import { AppConfig } from '@/utils/AppConfig';
+
 export async function generateMetadata(props: PortfolioDetailPageProps): Promise<Metadata> {
   const params = await props.params;
   const slug = params.slug;
+  const title = `Visual Showcase #${Number(slug) + 1} — Archival Capture | Okunpedia`;
+  const description = `Detailed visual record showcase collection index #${slug} documenting regional architecture and topographical boundaries of Okunland.`;
+  const image = `${AppConfig.siteUrl}/static/images/hero-bg.jpg`;
 
   return {
-    title: `Visual Showcase #${Number(slug) + 1} - Archival Capture`,
-    description: `Detailed visual record showcase collection index #${slug} documenting regional architecture and topographical boundaries.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      url: `${AppConfig.siteUrl}/portfolio/${slug}`,
+      siteName: AppConfig.title,
+      images: [
+        {
+          url: image,
+          alt: `Visual Capture #${slug}`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
   };
 }
 
