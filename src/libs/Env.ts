@@ -2,6 +2,7 @@ import { createEnv } from '@t3-oss/env-nextjs';
 import * as z from 'zod';
 
 export const Env = createEnv({
+  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   server: {
     ARCJET_KEY: z.string().startsWith('ajkey_').optional(),
     AUTH_SECRET: z.string().min(1),
@@ -48,4 +49,3 @@ export const Env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
   },
 });
-
