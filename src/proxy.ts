@@ -29,10 +29,19 @@ export default auth(async (req) => {
 
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
+  const role = req.auth?.user?.role;
 
   const isProtectedRoute = nextUrl.pathname.startsWith('/dashboard') || nextUrl.pathname.startsWith('/admin');
+  const isAdminRoute = nextUrl.pathname.startsWith('/admin');
 
-  if (isProtectedRoute && !isLoggedIn) {
+  if (isAdminRoute) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL('/sign-in', nextUrl));
+    }
+    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
+      return NextResponse.redirect(new URL('/dashboard', nextUrl));
+    }
+  } else if (isProtectedRoute && !isLoggedIn) {
     return NextResponse.redirect(new URL('/sign-in', nextUrl));
   }
 

@@ -4,7 +4,7 @@ import React, { useState, useTransition, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { updateSecuritySettingsAction } from "@/app/(auth)/actions";
 
-export default function SecuritySettingsForm() {
+export function SecuritySettingsForm() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");

@@ -22,6 +22,13 @@
       "when": 1779493892986,
       "tag": "0002_volatile_silver_sable",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1779778682754,
+      "tag": "0003_dazzling_hitman",
+      "breakpoints": true
     }
   ]
 }

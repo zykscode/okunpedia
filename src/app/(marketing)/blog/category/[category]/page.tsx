@@ -1,7 +1,8 @@
+import { unstable_cache } from 'next/cache';
 import { db } from '@/libs/DB';
 import { blogPostsSchema } from '@/models/Schema';
 import { Newspaper } from 'lucide-react';
-import ListLayout from '@/components/blog/ListLayout';
+import { ListLayout } from '@/components/blog/ListLayout';
 import { slug } from 'github-slugger';
 
 export const metadata = {
@@ -9,13 +10,41 @@ export const metadata = {
   description: 'Filter peer-reviewed documentation and updates by category across Okunland.',
 };
 
+const getBlogPosts = unstable_cache(
+  async () => {
+    return db.select().from(blogPostsSchema);
+  },
+  ['all-blog-posts-cache'],
+  { tags: ['blog-posts'] }
+);
+
+export async function generateStaticParams() {
+  let posts: Array<typeof blogPostsSchema.$inferSelect> = [];
+  try {
+    posts = await getBlogPosts();
+  } catch {
+    posts = [];
+  }
+  const categories = new Set(posts.map((p) => slug(p.category || 'Uncategorized')));
+  // Pre-render standard fallback categories
+  categories.add('history');
+  categories.add('culture');
+  categories.add('news');
+  categories.add('development');
+  categories.add('editorial');
+  
+  return Array.from(categories).map((cat) => ({
+    category: cat,
+  }));
+}
+
 export default async function CategoryPage(props: { params: Promise<{ category: string }> }) {
   const params = await props.params;
   const categoryParam = params.category;
 
   let posts: Array<typeof blogPostsSchema.$inferSelect> = [];
   try {
-    posts = await db.select().from(blogPostsSchema);
+    posts = await getBlogPosts();
   } catch {
     posts = [];
   }

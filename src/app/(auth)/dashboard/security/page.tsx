@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { db } from "@/libs/DB";
 import { loginActivityTable, userTable } from "@/models/Schema";
 import { eq, desc } from "drizzle-orm";
-import SecuritySettingsForm from "./SecuritySettingsForm";
+import { SecuritySettingsForm } from "./SecuritySettingsForm";
 
 export default async function SecuritySettingsPage() {
   const session = await auth();

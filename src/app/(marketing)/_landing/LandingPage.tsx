@@ -1,5 +1,3 @@
-'use client';
-
 import {
   BookOpen,
   Map,
@@ -11,68 +9,9 @@ import {
   Globe,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useRef, type RefObject } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-
-// ── Reveal hooks ─────────────────────────────────────────────────────────────
-
-/** Observes an element and sets data-visible="true" when it enters the viewport. */
-function useReveal<T extends HTMLElement>(threshold = 0.12): RefObject<T | null> {
-  const ref = useRef<T | null>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          el.dataset.visible = 'true';
-          observer.disconnect();
-        }
-      },
-      { threshold },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold]);
-
-  return ref;
-}
-
-/**
- * Observes a container and sets data-visible="true" on all
- * .animate-on-scroll children when the container enters the viewport.
- */
-function useRevealChildren<T extends HTMLElement>(threshold = 0.08): RefObject<T | null> {
-  const ref = useRef<T | null>(null);
-
-  useEffect(() => {
-    const container = ref.current;
-    if (!container) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          container
-            .querySelectorAll<HTMLElement>('.animate-on-scroll')
-            .forEach((child) => {
-              child.dataset.visible = 'true';
-            });
-          observer.disconnect();
-        }
-      },
-      { threshold },
-    );
-
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [threshold]);
-
-  return ref;
-}
+import { ScrollRevealWrapper } from '@/components/ScrollRevealWrapper';
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -156,29 +95,13 @@ const popularTowns = ['Kabba', 'Isanlu', 'Mopa', 'Egbe', 'Iyara', 'Ekinrin-Adde'
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function LandingPage() {
-  const heroRef = useRef<HTMLElement | null>(null);
-  const featuresRef = useRevealChildren<HTMLElement>();
-  const statsRef = useRevealChildren<HTMLElement>();
-  const missionRef = useReveal<HTMLElement>();
-
-  // Fire hero animations on first paint
-  useEffect(() => {
-    const el = heroRef.current;
-    if (!el) return;
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        el.querySelectorAll<HTMLElement>('.animate-on-scroll').forEach((child) => {
-          child.dataset.visible = 'true';
-        });
-      });
-    });
-  }, []);
-
   return (
     <div className="space-y-20">
       {/* ── Hero ── */}
-      <section
-        ref={heroRef}
+      <ScrollRevealWrapper
+        tagName="section"
+        mode="children"
+        immediate={true}
         className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-gray-900 to-amber-950 px-6 py-16 text-white shadow-2xl sm:px-12 lg:px-20 lg:py-24"
       >
         {/* Ambient glows */}
@@ -257,10 +180,15 @@ export function LandingPage() {
             </div>
           </div>
         </div>
-      </section>
+      </ScrollRevealWrapper>
 
       {/* ── Feature cards ── */}
-      <section ref={featuresRef} aria-label="Platform features">
+      <ScrollRevealWrapper
+        tagName="section"
+        mode="children"
+        threshold={0.08}
+        aria-label="Platform features"
+      >
         <div className="animate-on-scroll mb-8 text-center">
           <h2 className="font-serif text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
             Explore Okunpedia
@@ -308,10 +236,15 @@ export function LandingPage() {
             );
           })}
         </div>
-      </section>
+      </ScrollRevealWrapper>
 
       {/* ── Stats ── */}
-      <section ref={statsRef} aria-label="Platform statistics">
+      <ScrollRevealWrapper
+        tagName="section"
+        mode="children"
+        threshold={0.08}
+        aria-label="Platform statistics"
+      >
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:gap-6">
           {stats.map((stat, i) => (
             <div
@@ -332,11 +265,13 @@ export function LandingPage() {
             </div>
           ))}
         </div>
-      </section>
+      </ScrollRevealWrapper>
 
       {/* ── Mission strip ── */}
-      <section
-        ref={missionRef}
+      <ScrollRevealWrapper
+        tagName="section"
+        mode="self"
+        threshold={0.12}
         className="animate-on-scroll rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-50 to-amber-50/30 p-8 dark:border-emerald-500/15 dark:from-emerald-950/30 dark:to-amber-950/20"
       >
         <div className="mx-auto max-w-2xl text-center">
@@ -360,7 +295,7 @@ export function LandingPage() {
             </Link>
           </div>
         </div>
-      </section>
+      </ScrollRevealWrapper>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
+import { unstable_cache } from 'next/cache';
 import { db } from '@/libs/DB';
 import { townTable, lgaTable } from '@/models/Schema';
 import { Search, ArrowRight, MapPin } from 'lucide-react';
@@ -26,28 +27,31 @@ type TownRow = {
   historicalBackground: string | null;
 };
 
-/** Fetches all published towns joined with their LGA name. */
-async function fetchTowns(): Promise<TownRow[]> {
-  const rows = await db
-    .select({
-      id: townTable.id,
-      name: townTable.name,
-      slug: townTable.slug,
-      lga: lgaTable.name,
-      districtOrClan: townTable.tagline,
-      historicalBackground: townTable.overview,
-    })
-    .from(townTable)
-    .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-    .where(eq(townTable.published, true))
-    .orderBy(townTable.name);
+const fetchTownsCached = unstable_cache(
+  async (): Promise<TownRow[]> => {
+    const rows = await db
+      .select({
+        id: townTable.id,
+        name: townTable.name,
+        slug: townTable.slug,
+        lga: lgaTable.name,
+        districtOrClan: townTable.tagline,
+        historicalBackground: townTable.overview,
+      })
+      .from(townTable)
+      .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
+      .where(eq(townTable.published, true))
+      .orderBy(townTable.name);
 
-  return rows.map((r) => ({
-    ...r,
-    districtOrClan: r.districtOrClan ?? `${r.lga} LGA`,
-    historicalBackground: r.historicalBackground ?? null,
-  }));
-}
+    return rows.map((r) => ({
+      ...r,
+      districtOrClan: r.districtOrClan ?? `${r.lga} LGA`,
+      historicalBackground: r.historicalBackground ?? null,
+    }));
+  },
+  ['all-published-towns-cache'],
+  { tags: ['communities'] }
+);
 
 export default async function CommunitiesPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -58,7 +62,7 @@ export default async function CommunitiesPage(props: {
 
   let towns: TownRow[] = [];
   try {
-    towns = await fetchTowns();
+    towns = await fetchTownsCached();
   } catch {
     towns = [];
   }

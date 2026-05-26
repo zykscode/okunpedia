@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { eq } from 'drizzle-orm';
+import { updateTag } from 'next/cache';
 import { db } from '@/libs/DB';
 import { blogPostsSchema, townTable, lgaTable, townRevisionsTable } from '@/models/Schema';
 import { auth } from '@/auth';
@@ -65,6 +66,7 @@ export async function publishBlogAction(
       status: 'published',
       publishedAt: new Date(),
     });
+    updateTag('blog-posts');
   } catch (error) {
     console.error('Error creating blog post:', error);
     return { success: false, message: 'Failed to create blog post. Please try again.' };
@@ -131,6 +133,7 @@ export async function createCommunityAction(
       featured: false,
       updatedAt: new Date(),
     });
+    updateTag('communities');
   } catch (error) {
     console.error('Error creating community:', error);
     return { success: false, message: 'Failed to create community. Please try again.' };
@@ -157,6 +160,7 @@ export async function approveTownAction(townId: string): Promise<ActionState> {
       .set({ published: true, updatedAt: new Date() })
       .where(eq(townTable.id, townId));
 
+    updateTag('communities');
     return { success: true, message: 'Town approved and published.' };
   } catch (error) {
     console.error('Error approving town:', error);
@@ -174,6 +178,7 @@ export async function rejectTownAction(townId: string): Promise<ActionState> {
 
     await db.delete(townTable).where(eq(townTable.id, townId));
 
+    updateTag('communities');
     return { success: true, message: 'Town submission rejected and removed.' };
   } catch (error) {
     console.error('Error rejecting town:', error);
@@ -220,6 +225,7 @@ export async function submitTownRevisionAction(
         })
         .where(eq(townTable.id, townId));
 
+      updateTag('communities');
       return { success: true, message: 'Changes applied directly.' };
     }
 
@@ -235,6 +241,7 @@ export async function submitTownRevisionAction(
       status: 'pending',
     });
 
+    updateTag('communities');
     return { success: true, message: 'Edit submitted for review.' };
   } catch (error) {
     console.error('Error submitting revision:', error);
@@ -279,6 +286,7 @@ export async function approveRevisionAction(revisionId: number): Promise<ActionS
       .set({ status: 'approved' })
       .where(eq(townRevisionsTable.id, revisionId));
 
+    updateTag('communities');
     return { success: true, message: 'Revision approved and changes applied.' };
   } catch (error) {
     console.error('Error approving revision:', error);

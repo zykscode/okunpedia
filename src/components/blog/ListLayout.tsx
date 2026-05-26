@@ -71,7 +71,7 @@ function Pagination({ totalPages, currentPage }: PaginationProps) {
   );
 }
 
-export default function ListLayout({
+export function ListLayout({
   posts,
   title,
   initialDisplayPosts = [],

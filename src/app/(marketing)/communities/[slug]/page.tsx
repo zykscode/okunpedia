@@ -1,27 +1,73 @@
 import { eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { unstable_cache } from 'next/cache';
 import { db } from '@/libs/DB';
 import { townTable, lgaTable, prominentPersonTable } from '@/models/Schema';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ChevronLeft, Crown, Star, AlertCircle } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-
 type DetailPageProps = { params: Promise<{ slug: string }> };
 
 type RulerItem = { title: string; name: string };
 type IndigeneItem = { name: string; biography: string };
 
+const getTownBySlug = unstable_cache(
+  async (slug: string) => {
+    const townRows = await db
+      .select({
+        id: townTable.id,
+        name: townTable.name,
+        slug: townTable.slug,
+        tagline: townTable.tagline,
+        overview: townTable.overview,
+        rulerTitle: townTable.rulerTitle,
+        traditionalRuler: townTable.traditionalRuler,
+        lat: townTable.lat,
+        lng: townTable.lng,
+        population: townTable.population,
+        founded: townTable.founded,
+        randomFacts: townTable.randomFacts,
+        lga: lgaTable.name,
+      })
+      .from(townTable)
+      .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
+      .where(eq(townTable.slug, slug))
+      .limit(1);
+    return townRows[0] || null;
+  },
+  ['town-by-slug-cache'],
+  { tags: ['communities'] }
+);
+
+const getPersonsByTownId = unstable_cache(
+  async (townId: string) => {
+    return db
+      .select({
+        id: prominentPersonTable.id,
+        name: prominentPersonTable.name,
+        title: prominentPersonTable.title,
+        biography: prominentPersonTable.biography,
+      })
+      .from(prominentPersonTable)
+      .where(eq(prominentPersonTable.townId, townId));
+  },
+  ['persons-by-town-cache'],
+  { tags: ['communities'] }
+);
+
+export async function generateStaticParams() {
+  const towns = await db.select({ slug: townTable.slug }).from(townTable);
+  return towns.map((town) => ({
+    slug: town.slug,
+  }));
+}
+
 export async function generateMetadata(props: DetailPageProps) {
   const { slug } = await props.params;
-  const rows = await db
-    .select({ name: townTable.name })
-    .from(townTable)
-    .where(eq(townTable.slug, slug))
-    .limit(1);
-  const name = rows[0]?.name ?? (slug.charAt(0).toUpperCase() + slug.slice(1));
+  const town = await getTownBySlug(slug);
+  const name = town?.name ?? (slug.charAt(0).toUpperCase() + slug.slice(1));
   return {
     title: `${name} — Heritage & Infrastructure Profile`,
     description: `Detailed documentation covering historical migration patterns, ancestral governance, paramount monarchs, and public amenity indexes for ${name}.`,
@@ -31,41 +77,10 @@ export async function generateMetadata(props: DetailPageProps) {
 export default async function CommunityDetailPage(props: DetailPageProps) {
   const { slug } = await props.params;
 
-  // Fetch town joined with LGA
-  const townRows = await db
-    .select({
-      id: townTable.id,
-      name: townTable.name,
-      slug: townTable.slug,
-      tagline: townTable.tagline,
-      overview: townTable.overview,
-      rulerTitle: townTable.rulerTitle,
-      traditionalRuler: townTable.traditionalRuler,
-      lat: townTable.lat,
-      lng: townTable.lng,
-      population: townTable.population,
-      founded: townTable.founded,
-      randomFacts: townTable.randomFacts,
-      lga: lgaTable.name,
-    })
-    .from(townTable)
-    .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-    .where(eq(townTable.slug, slug))
-    .limit(1);
-
-  const town = townRows[0];
+  const town = await getTownBySlug(slug);
   if (!town) notFound();
 
-  // Fetch prominent persons for this town
-  const persons = await db
-    .select({
-      id: prominentPersonTable.id,
-      name: prominentPersonTable.name,
-      title: prominentPersonTable.title,
-      biography: prominentPersonTable.biography,
-    })
-    .from(prominentPersonTable)
-    .where(eq(prominentPersonTable.townId, town.id));
+  const persons = await getPersonsByTownId(town.id);
 
   const rulers: RulerItem[] = town.rulerTitle && town.traditionalRuler
     ? [{ title: town.rulerTitle, name: town.traditionalRuler }]

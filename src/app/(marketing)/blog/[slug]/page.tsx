@@ -9,6 +9,12 @@ type BlogDetailProps = {
   params: Promise<{ slug: string }>;
 };
 
+export async function generateStaticParams() {
+  return allBlogs.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
 export async function generateMetadata(props: BlogDetailProps) {
   const params = await props.params;
   const slug = params.slug;

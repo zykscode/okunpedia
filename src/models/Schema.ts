@@ -2,12 +2,14 @@ import { relations } from 'drizzle-orm';
 import {
   boolean,
   doublePrecision,
+  index,
   integer,
   jsonb,
   pgTable,
   serial,
   text,
   timestamp,
+  uniqueIndex,
 } from 'drizzle-orm/pg-core';
 
 // ==========================================
@@ -44,7 +46,11 @@ export const townTable = pgTable('Town', {
   randomFacts: text('randomFacts').array(),
   createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
   updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull(),
-});
+}, (table) => [
+  index('town_slug_idx').on(table.slug),
+  index('town_published_idx').on(table.published),
+  index('town_lgaId_idx').on(table.lgaId),
+]);
 
 /** Maps to the `ProminentPerson` table created by the Prisma schema. */
 export const prominentPersonTable = pgTable('ProminentPerson', {
@@ -60,7 +66,9 @@ export const prominentPersonTable = pgTable('ProminentPerson', {
   imageUrl: text('imageUrl'),
   createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
   updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull(),
-});
+}, (table) => [
+  index('prominent_person_townId_idx').on(table.townId),
+]);
 
 /** Maps to the `User` table created by the Prisma schema. */
 export const userTable = pgTable('User', {
@@ -76,7 +84,9 @@ export const userTable = pgTable('User', {
   location: text('location'),
   createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
   updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull().defaultNow(),
-});
+}, (table) => [
+  uniqueIndex('User_email_key').on(table.email),
+]);
 
 /** Maps to the `town_revisions` table. */
 export const townRevisionsTable = pgTable('town_revisions', {
@@ -90,7 +100,10 @@ export const townRevisionsTable = pgTable('town_revisions', {
   submittedById: text('submittedById').notNull(),
   status: text('status').default('pending').notNull(),
   createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
-});
+}, (table) => [
+  index('town_revisions_townId_idx').on(table.townId),
+  index('town_revisions_status_idx').on(table.status),
+]);
 
 // Relations for the remote tables
 export const townTableRelations = relations(townTable, ({ one, many }) => ({
@@ -261,7 +274,10 @@ export const blogPostsSchema = pgTable('blog_posts', {
     .$onUpdate(() => new Date())
     .notNull(),
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
-});
+}, (table) => [
+  index('blog_posts_category_idx').on(table.category),
+  index('blog_posts_status_idx').on(table.status),
+]);
 
 export const communityStoriesSchema = pgTable('community_stories', {
   id: serial('id').primaryKey(),
