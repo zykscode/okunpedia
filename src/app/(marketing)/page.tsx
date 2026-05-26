@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
-import { LandingPage } from './_landing/LandingPage';
-
 import { AppConfig } from '@/utils/AppConfig';
+import { LandingPage } from './_landing/LandingPage';
 
 export const metadata: Metadata = {
   title: 'Okunpedia — Encyclopedia of Okun Heritage, Culture & History',
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
     siteName: AppConfig.title,
     images: [
       {
-        url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+        url: `${AppConfig.siteUrl}/logo.png`,
         width: 1200,
         height: 630,
         alt: 'Okunpedia Digital Heritage Platform',

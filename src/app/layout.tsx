@@ -1,11 +1,11 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata, Viewport } from 'next';
 import { Inter, Lora } from 'next/font/google';
-import { PwaRegistration } from '@/components/PwaRegistration';
 import '@/styles/global.css';
-import { AppConfig } from '@/utils/AppConfig';
-import { ThemeProvider } from '@/components/theme/theme-provider';
 import { SearchProvider } from 'pliny/search/index.js';
-import { Analytics } from "@vercel/analytics/next"
+import { PwaRegistration } from '@/components/PwaRegistration';
+import { ThemeProvider } from '@/components/theme/theme-provider';
+import { AppConfig } from '@/utils/AppConfig';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -106,11 +106,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       <head>
         <link rel="apple-touch-icon" sizes="192x192" href="/static/favicons/apple-touch-icon.png" />
       </head>
-      <body>  
-      <ThemeProvider attribute="class" defaultTheme={AppConfig.theme} enableSystem>
-          <SearchProvider searchConfig={AppConfig.search as any}>
-            {props.children}
-          </SearchProvider>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme={AppConfig.theme} enableSystem>
+          <SearchProvider searchConfig={AppConfig.search as any}>{props.children}</SearchProvider>
           <Analytics />
           <PwaRegistration />
         </ThemeProvider>
