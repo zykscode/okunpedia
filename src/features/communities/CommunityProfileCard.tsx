@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { ArrowRight } from 'lucide-react';
+import { getClanSlug } from '@/utils/clanMatcher';
 
 /**
- * Interface for community data displayed in cards.
+ * Type for community data displayed in cards.
  */
-export interface CommunityProfileCardProps {
+export type CommunityProfileCardProps = {
   community: {
     name: string;
     slug: string;
@@ -15,13 +16,23 @@ export interface CommunityProfileCardProps {
     languagesAndDialects?: unknown;
     status?: string;
   };
-}
+};
 
 /**
  * Card displaying a community summary with name, LGA, historical context, and navigation link.
+ * @param props Props containing the community object to render.
+ * @returns React node representing the community card.
  */
 export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
   const data = props.community;
+  
+  const lgaSlug = data.lga.toLowerCase().replaceAll(/[^a-z0-9]+/gu, '-').replaceAll(/(^-|-$)/gu, '');
+  const clanSlug = getClanSlug({
+    districtOrClan: data.districtOrClan,
+    lgaName: data.lga,
+    townName: data.name,
+    overview: data.historicalBackground,
+  });
 
   return (
     <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/50 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900/60 dark:hover:border-emerald-500/30">
@@ -34,10 +45,18 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
       <div className="p-6">
         {/* Meta row */}
         <div className="flex items-center justify-between gap-2">
-          <Badge variant="emerald">{data.lga}</Badge>
-          <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
-            {data.districtOrClan}
-          </span>
+          <Link href={`/lgas/${lgaSlug}`} className="hover:scale-[1.02] active:scale-[0.98] transition-transform">
+            <Badge variant="emerald">{data.lga} LGA</Badge>
+          </Link>
+          {clanSlug ? (
+            <Link href={`/clans/${clanSlug}`} className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline">
+              {data.districtOrClan}
+            </Link>
+          ) : (
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
+              {data.districtOrClan}
+            </span>
+          )}
         </div>
 
         {/* Title */}
@@ -65,3 +84,4 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
     </article>
   );
 };
+

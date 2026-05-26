@@ -7,6 +7,7 @@ import {
   Landmark,
   ScrollText,
   Globe,
+  Shield,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
@@ -91,6 +92,25 @@ const accentMap = {
 };
 
 const popularTowns = ['Kabba', 'Isanlu', 'Mopa', 'Egbe', 'Iyara', 'Ekinrin-Adde'];
+
+const lgas = [
+  { name: 'Kabba/Bunu', slug: 'kabba-bunu', info: 'Headquarters: Kabba · Owe, Bunu & Kiri clans' },
+  { name: 'Ijumu', slug: 'ijumu', info: 'Headquarters: Iyara · Gbede & Ijumu clans' },
+  { name: 'Mopa-Muro', slug: 'mopa-muro', info: 'Headquarters: Mopa · Yagba clans' },
+  { name: 'Yagba West', slug: 'yagba-west', info: 'Headquarters: Odo-Ere · Yagba clans' },
+  { name: 'Yagba East', slug: 'yagba-east', info: 'Headquarters: Isanlu · Yagba clans' },
+  { name: 'Lokoja (Oworo)', slug: 'lokoja', info: 'Headquarters: Lokoja · Oworo clan' },
+];
+
+const clans = [
+  { name: 'Bunu', slug: 'bunu', desc: 'Sparsely populated agricultural region with rich lineages' },
+  { name: 'Owe', slug: 'owe', desc: 'Centered around Kabba, historic provincial hub' },
+  { name: 'Oworo', slug: 'oworo', desc: 'Easternmost Okun group along the Niger Confluence' },
+  { name: 'Ijumu', slug: 'ijumu', desc: 'Rich historic settlements in southern hills' },
+  { name: 'Kiri', slug: 'kiri', desc: 'Lineages nestled in Bunu highland ridges' },
+  { name: 'Gbede', slug: 'gbede', desc: 'Northern Ijumu region with unique dialects' },
+  { name: 'Yagba', slug: 'yagba', desc: 'The largest dialectal group in western hills' },
+];
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -235,6 +255,81 @@ export function LandingPage() {
               </div>
             );
           })}
+        </div>
+      </ScrollRevealWrapper>
+
+      {/* ── LGAs & Clans Heritage ── */}
+      <ScrollRevealWrapper
+        tagName="section"
+        mode="children"
+        threshold={0.08}
+        aria-label="Okun LGAs and Clans"
+      >
+        <div className="animate-on-scroll mb-10 text-center">
+          <h2 className="font-serif text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
+            Clans & Local Government Areas
+          </h2>
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            Discover the rich historical administrative and dialectal divisions of Okunland.
+          </p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2">
+          {/* LGAs Column */}
+          <div className="space-y-4">
+            <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-gray-900 dark:text-white">
+              <Landmark className="size-5 text-emerald-600 dark:text-emerald-400" />
+              6 Local Government Areas (LGAs)
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {lgas.map((lga, i) => (
+                <Link
+                  key={lga.slug}
+                  href={`/lgas/${lga.slug}`}
+                  className={`animate-on-scroll stagger-${i + 1} group flex flex-col justify-between rounded-xl border border-gray-200/80 bg-white p-4 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/50 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/60`}
+                >
+                  <div>
+                    <h4 className="font-serif text-base font-bold text-gray-900 group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400">
+                      {lga.name}
+                    </h4>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{lga.info}</p>
+                  </div>
+                  <span className="mt-3 flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 group-hover:underline">
+                    View Profile
+                    <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Clans Column */}
+          <div className="space-y-4">
+            <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-gray-900 dark:text-white">
+              <Shield className="size-5 text-amber-600 dark:text-amber-400" />
+              7 Dialectal Clans (Tribes)
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {clans.map((clan, i) => (
+                <Link
+                  key={clan.slug}
+                  href={`/clans/${clan.slug}`}
+                  className={`animate-on-scroll stagger-${i + 1} group flex flex-col justify-between rounded-xl border border-gray-200/80 bg-white p-4 shadow-2xs transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-400/50 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/60`}
+                >
+                  <div>
+                    <h4 className="font-serif text-base font-bold text-gray-900 group-hover:text-amber-700 dark:text-white dark:group-hover:text-amber-400">
+                      {clan.name}
+                    </h4>
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{clan.desc}</p>
+                  </div>
+                  <span className="mt-3 flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-400 group-hover:underline">
+                    Explore lineage
+                    <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </ScrollRevealWrapper>
 
