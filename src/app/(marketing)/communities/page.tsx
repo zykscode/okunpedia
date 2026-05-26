@@ -1,12 +1,12 @@
 import { eq } from 'drizzle-orm';
-import Link from 'next/link';
+import { Search, ArrowRight, MapPin, AlertCircle } from 'lucide-react';
 import { unstable_cache } from 'next/cache';
+import Link from 'next/link';
+import { Badge } from '@/components/ui/Badge';
+import { Button } from '@/components/ui/Button';
+import { CommunityProfileCard } from '@/features/communities/CommunityProfileCard';
 import { db } from '@/libs/DB';
 import { townTable, lgaTable } from '@/models/Schema';
-import { Search, ArrowRight, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { CommunityProfileCard } from '@/features/communities/CommunityProfileCard';
 
 export const metadata = {
   title: 'Okun Communities — Explore Traditional Towns & Lineages',
@@ -50,7 +50,7 @@ const fetchTownsCached = unstable_cache(
     }));
   },
   ['all-published-towns-cache'],
-  { tags: ['communities'] }
+  { tags: ['communities'] },
 );
 
 export default async function CommunitiesPage(props: {
@@ -61,27 +61,108 @@ export default async function CommunitiesPage(props: {
   const query = rawSearch.toLowerCase().trim();
 
   let towns: TownRow[] = [];
+  let fetchError = false;
   try {
     towns = await fetchTownsCached();
-  } catch {
-    towns = [];
+  } catch (error) {
+    console.error('Error fetching communities:', error);
+    fetchError = true;
   }
 
   const displayList = towns.filter((town) => {
-    if (!query) return true;
+    if (!query) {
+      return true;
+    }
     return (
-      town.name.toLowerCase().includes(query)
-      || town.lga.toLowerCase().includes(query)
-      || town.districtOrClan.toLowerCase().includes(query)
-      || (town.historicalBackground && town.historicalBackground.toLowerCase().includes(query))
+      town.name.toLowerCase().includes(query) ||
+      town.lga.toLowerCase().includes(query) ||
+      town.districtOrClan.toLowerCase().includes(query) ||
+      (town.historicalBackground && town.historicalBackground.toLowerCase().includes(query))
     );
   });
+
+  let content;
+  if (fetchError) {
+    content = (
+      <div className="rounded-2xl border border-red-500/25 bg-red-50/50 p-8 text-center dark:border-red-950/40 dark:bg-red-950/15">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400">
+          <AlertCircle className="size-6" aria-hidden="true" />
+        </div>
+        <h2 className="mt-5 font-serif text-lg font-bold text-gray-900 dark:text-white">
+          Connection Timeout
+        </h2>
+        <p className="mx-auto mt-2 max-w-md text-sm text-gray-600 dark:text-gray-400">
+          A temporary connection issue occurred while loading community profiles. Please reload the
+          page to try again.
+        </p>
+        <div className="mt-6">
+          <Link href="/communities/" className="focus:outline-hidden">
+            <Button variant="outline" size="md">
+              Retry Connection
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  } else if (displayList.length === 0) {
+    content = (
+      <div className="rounded-2xl border border-dashed border-gray-200 bg-white py-20 text-center dark:border-gray-800 dark:bg-gray-900/60">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+          <Search className="size-6" aria-hidden="true" />
+        </div>
+        <h2 className="mt-5 font-serif text-lg font-bold text-gray-900 dark:text-white">
+          No communities match your search
+        </h2>
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+          Try adjusting your query or clear the filter to view all registered archives.
+        </p>
+        <div className="mt-6">
+          <Link href="/communities/" className="focus:outline-hidden">
+            <Button variant="outline" size="md">
+              Reset Filters
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  } else {
+    content = (
+      <>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {displayList.length}
+            </span>{' '}
+            {displayList.length === 1 ? 'community' : 'communities'} found
+            {query && (
+              <span>
+                {' '}
+                for{' '}
+                <span className="font-medium text-gray-900 dark:text-white">
+                  &ldquo;{rawSearch}&rdquo;
+                </span>
+              </span>
+            )}
+          </p>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {displayList.map((town) => (
+            <CommunityProfileCard key={town.id} community={town} />
+          ))}
+        </div>
+      </>
+    );
+  }
 
   return (
     <div className="space-y-12">
       {/* Page header */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-gray-900 to-amber-950 px-6 py-14 text-center text-white shadow-xl sm:px-12">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" aria-hidden="true" />
+        <div
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent"
+          aria-hidden="true"
+        />
 
         <div className="relative z-10">
           <div className="mb-4 inline-flex items-center gap-2">
@@ -103,7 +184,7 @@ export default async function CommunitiesPage(props: {
             <form
               action="/communities/"
               method="GET"
-              className="flex items-center gap-2 rounded-2xl bg-white/10 p-1.5 backdrop-blur-md ring-1 ring-white/20 focus-within:ring-2 focus-within:ring-amber-400/70"
+              className="flex items-center gap-2 rounded-2xl bg-white/10 p-1.5 ring-1 ring-white/20 backdrop-blur-md focus-within:ring-2 focus-within:ring-amber-400/70"
             >
               <Search className="ml-3 size-4 shrink-0 text-gray-400" aria-hidden="true" />
               <input
@@ -149,47 +230,7 @@ export default async function CommunitiesPage(props: {
       </div>
 
       {/* Results */}
-      {displayList.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-200 bg-white py-20 text-center dark:border-gray-800 dark:bg-gray-900/60">
-          <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-            <Search className="size-6" aria-hidden="true" />
-          </div>
-          <h2 className="mt-5 font-serif text-lg font-bold text-gray-900 dark:text-white">
-            No communities match your search
-          </h2>
-          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            Try adjusting your query or clear the filter to view all registered archives.
-          </p>
-          <div className="mt-6">
-            <Link href="/communities/" className="focus:outline-hidden">
-              <Button variant="outline" size="md">
-                Reset Filters
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              <span className="font-semibold text-gray-900 dark:text-white">{displayList.length}</span>{' '}
-              {displayList.length === 1 ? 'community' : 'communities'} found
-              {query && (
-                <span>
-                  {' '}for{' '}
-                  <span className="font-medium text-gray-900 dark:text-white">&ldquo;{rawSearch}&rdquo;</span>
-                </span>
-              )}
-            </p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {displayList.map((town) => (
-              <CommunityProfileCard key={town.id} community={town} />
-            ))}
-          </div>
-        </>
-      )}
+      {content}
     </div>
   );
 }
