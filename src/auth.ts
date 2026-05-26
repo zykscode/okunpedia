@@ -77,10 +77,6 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           throw new Error('Your account has been blocked.');
         }
 
-        if (!user.emailVerified) {
-          throw new Error('Please verify your email address before logging in.');
-        }
-
         return {
           id: user.id,
           name: user.name,

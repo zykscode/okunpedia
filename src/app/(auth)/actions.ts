@@ -196,7 +196,7 @@ export async function signUpAction(formData: FormData) {
         password: hashedPassword,
         role: 'USER',
         status: 'ACTIVE',
-        emailVerified: null,
+        emailVerified: new Date(),
         updatedAt: new Date(),
       });
 
@@ -208,18 +208,6 @@ export async function signUpAction(formData: FormData) {
         updatedAt: new Date(),
       });
     });
-
-    // Generate verify token (expires in 24 hours)
-    const token = crypto.randomBytes(32).toString('hex');
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
-    await db.insert(verificationTokensTable).values({
-      identifier: email,
-      token,
-      expires,
-    });
-
-    await sendVerificationEmail(email, token);
 
     return { success: true };
   } catch (error: any) {

@@ -46,6 +46,11 @@ export async function createCommunityAction(
       return { success: false, message: 'Unauthorized. Please sign in.' };
     }
 
+    const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
+    if (!isAdmin) {
+      return { success: false, message: 'Unauthorized. Admin privileges required.' };
+    }
+
     const nameEntry = formData.get('name');
     const name = typeof nameEntry === 'string' ? nameEntry.trim() : '';
 
@@ -75,8 +80,6 @@ export async function createCommunityAction(
 
     const slug = generateSlug(name);
     const id = generateId();
-
-    const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
 
     await db.insert(townTable).values({
       id,
@@ -168,38 +171,25 @@ export async function submitTownRevisionAction(
 
     const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
 
-    if (isAdmin) {
-      // Admins apply edits immediately
-      await db
-        .update(townTable)
-        .set({
-          name,
-          tagline: tagline || null,
-          overview,
-          rulerTitle: rulerTitle || null,
-          traditionalRuler: traditionalRuler || null,
-          updatedAt: new Date(),
-        })
-        .where(eq(townTable.id, townId));
-
-      updateTag('communities');
-      return { success: true, message: 'Changes applied directly.' };
+    if (!isAdmin) {
+      return { success: false, message: 'Unauthorized. Admin privileges required.' };
     }
 
-    // Normal contributors submit a pending revision
-    await db.insert(townRevisionsTable).values({
-      townId,
-      name,
-      tagline: tagline || null,
-      overview,
-      rulerTitle: rulerTitle || null,
-      traditionalRuler: traditionalRuler || null,
-      submittedById: userId,
-      status: 'pending',
-    });
+    // Admins apply edits immediately
+    await db
+      .update(townTable)
+      .set({
+        name,
+        tagline: tagline || null,
+        overview,
+        rulerTitle: rulerTitle || null,
+        traditionalRuler: traditionalRuler || null,
+        updatedAt: new Date(),
+      })
+      .where(eq(townTable.id, townId));
 
     updateTag('communities');
-    return { success: true, message: 'Edit submitted for review.' };
+    return { success: true, message: 'Changes applied directly.' };
   } catch (error) {
     console.error('Error submitting revision:', error);
     return { success: false, message: 'Failed to submit edit. Please try again.' };

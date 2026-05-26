@@ -93,7 +93,7 @@ export default function SignUpPage() {
       if (res?.error) {
         setError(res.error);
       } else {
-        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        router.push('/sign-in?registered=true');
       }
     });
   };

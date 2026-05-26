@@ -17,6 +17,13 @@ export default async function AdminLayout(props: { children: React.ReactNode }) 
     redirect('/sign-in');
   }
 
+  const role = session.user?.role;
+  const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
+
+  if (!isAdmin) {
+    redirect('/dashboard');
+  }
+
   return (
     <BaseTemplate
       leftNav={
