@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
-import { auth } from '@/auth';
+import { requireRole } from '@/libs/auth/guards';
 import { MainTemplate } from '@/templates/MainTemplate';
 
 export const metadata: Metadata = {
@@ -9,18 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout(props: { children: React.ReactNode }) {
-  const session = await auth();
-
-  if (!session) {
-    redirect('/sign-in');
-  }
-
-  const role = session.user?.role;
-  const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
-
-  if (!isAdmin) {
-    redirect('/dashboard');
-  }
-
+  await requireRole('ADMIN', '/dashboard');
   return <MainTemplate>{props.children}</MainTemplate>;
 }
+

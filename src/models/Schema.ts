@@ -5,12 +5,26 @@ import {
   index,
   integer,
   jsonb,
+  pgEnum,
   pgTable,
   serial,
   text,
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+export const userRoleEnum         = pgEnum('user_role',          ['SUPER_ADMIN', 'ADMIN', 'EDITOR', 'MODERATOR', 'USER']);
+export const userStatusEnum       = pgEnum('user_status',        ['ACTIVE', 'SUSPENDED', 'BANNED']);
+export const communityStatusEnum  = pgEnum('community_status',   ['draft', 'published', 'archived']);
+export const revisionStatusEnum   = pgEnum('revision_status',    ['pending', 'approved', 'rejected']);
+export const amenityStatusEnum    = pgEnum('amenity_status',     ['functional', 'dilapidated', 'under_construction', 'abandoned']);
+export const amenityCategoryEnum  = pgEnum('amenity_category',   ['education', 'healthcare', 'road', 'water', 'power', 'market', 'security']);
+export const mediaTypeEnum        = pgEnum('media_type',         ['image', 'video', 'audio', 'document']);
+export const auditTargetTypeEnum  = pgEnum('audit_target_type',  ['community', 'revision', 'user', 'media', 'indigene', 'ruler', 'amenity']);
 
 // ==========================================
 // REMOTE DATABASE TABLES (Prisma-managed, PascalCase)
@@ -78,14 +92,16 @@ export const userTable = pgTable('User', {
   name: text('name'),
   image: text('image'),
   password: text('password'),
-  role: text('role'), // 'SUPER_ADMIN', 'ADMIN', 'USER'
-  status: text('status'), // 'ACTIVE', 'INACTIVE'
+  role: text('role'), // 'SUPER_ADMIN', 'ADMIN', 'EDITOR', 'MODERATOR', 'USER'
+  status: text('status'), // 'ACTIVE', 'SUSPENDED', 'BANNED'
   bio: text('bio'),
   location: text('location'),
   createdAt: timestamp('createdAt', { mode: 'date' }).notNull().defaultNow(),
   updatedAt: timestamp('updatedAt', { mode: 'date' }).notNull().defaultNow(),
 }, (table) => [
   uniqueIndex('User_email_key').on(table.email),
+  index('user_role_idx').on(table.role),
+  index('user_status_idx').on(table.status),
 ]);
 
 /** Maps to the `town_revisions` table. */
@@ -501,7 +517,10 @@ export const loginActivityTable = pgTable('login_activity', {
   userAgent: text('user_agent'),
   status: text('status').notNull(), // 'success', 'failed'
   createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
-});
+}, (table) => [
+  index('login_user_idx').on(table.userId),
+  index('login_status_idx').on(table.status),
+]);
 
 // Relations for Auth tables
 export const sessionsRelations = relations(sessionsTable, ({ one }) => ({
@@ -518,3 +537,80 @@ export const loginActivityRelations = relations(loginActivityTable, ({ one }) =>
   }),
 }));
 
+// ==========================================
+// VERSIONING & AUDIT
+// ==========================================
+
+/**
+ * Stores full JSON snapshots of community rows before each edit.
+ * Enables rollback to any previous state.
+ */
+export const communityVersionsTable = pgTable('community_versions', {
+  id:          serial('id').primaryKey(),
+  communityId: text('community_id').notNull(),
+  snapshot:    jsonb('snapshot').notNull(),
+  changedById: text('changed_by_id').references(() => userTable.id, { onDelete: 'set null' }),
+  changeNote:  text('change_note'),
+  createdAt:   timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, (table) => [
+  index('community_versions_community_idx').on(table.communityId),
+  index('community_versions_changed_by_idx').on(table.changedById),
+]);
+
+/**
+ * Immutable audit trail — records who performed which action on which record.
+ */
+export const auditLogsTable = pgTable('audit_logs', {
+  id:         serial('id').primaryKey(),
+  actorId:    text('actor_id').references(() => userTable.id, { onDelete: 'set null' }),
+  action:     text('action').notNull(), // 'publish', 'archive', 'approve_revision', 'promote_user', 'delete', ...
+  targetType: auditTargetTypeEnum('target_type').notNull(),
+  targetId:   text('target_id').notNull(),
+  before:     jsonb('before'),
+  after:      jsonb('after'),
+  ipAddress:  text('ip_address'),
+  createdAt:  timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, (table) => [
+  index('audit_actor_idx').on(table.actorId),
+  index('audit_target_idx').on(table.targetType, table.targetId),
+  index('audit_action_idx').on(table.action),
+]);
+
+/**
+ * Structured media records replacing jsonb mediaUrls arrays.
+ * Linked to any community via communityId.
+ */
+export const mediaTable = pgTable('media', {
+  id:           text('id').primaryKey(),
+  communityId:  text('community_id'),
+  uploadedById: text('uploaded_by_id').references(() => userTable.id, { onDelete: 'set null' }),
+  type:         mediaTypeEnum('type').notNull().default('image'),
+  url:          text('url').notNull(),
+  thumbnailUrl: text('thumbnail_url'),
+  caption:      text('caption'),
+  altText:      text('alt_text'),
+  mimeType:     text('mime_type'),
+  sizeBytes:    integer('size_bytes'),
+  width:        integer('width'),
+  height:       integer('height'),
+  isHero:       boolean('is_hero').default(false).notNull(),
+  sortOrder:    integer('sort_order').default(0).notNull(),
+  createdAt:    timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, (table) => [
+  index('media_community_idx').on(table.communityId),
+  index('media_type_idx').on(table.type),
+  index('media_hero_idx').on(table.isHero),
+]);
+
+// Relations for new tables
+export const communityVersionsRelations = relations(communityVersionsTable, ({ one }) => ({
+  changedBy: one(userTable, { fields: [communityVersionsTable.changedById], references: [userTable.id] }),
+}));
+
+export const auditLogsRelations = relations(auditLogsTable, ({ one }) => ({
+  actor: one(userTable, { fields: [auditLogsTable.actorId], references: [userTable.id] }),
+}));
+
+export const mediaRelations = relations(mediaTable, ({ one }) => ({
+  uploadedBy: one(userTable, { fields: [mediaTable.uploadedById], references: [userTable.id] }),
+}));
