@@ -35,7 +35,7 @@ export async function requireRole(
     redirect('/sign-in');
   }
 
-  const role = (session.user.role ?? 'USER') as UserRole;
+  const role = (session.user.role?.trim() ?? 'USER') as UserRole;
   const rank = ROLE_RANK[role] ?? 0;
   const minRank = ROLE_RANK[minRole];
 
@@ -48,7 +48,7 @@ export async function requireRole(
 
 /** Returns true if the role meets the minimum threshold (non-redirecting check). */
 export function hasRole(role: string | null | undefined, minRole: UserRole): boolean {
-  const userRole = (role ?? 'USER') as UserRole;
+  const userRole = (role?.trim() ?? 'USER') as UserRole;
   const rank = ROLE_RANK[userRole] ?? 0;
   const minRank = ROLE_RANK[minRole];
   return rank >= minRank;

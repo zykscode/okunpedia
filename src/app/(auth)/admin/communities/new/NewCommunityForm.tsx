@@ -26,10 +26,7 @@ export function NewCommunityForm() {
   });
 
   return (
-    <form
-      action={formAction}
-      className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs"
-    >
+    <form action={formAction} className="rounded-xl border border-gray-200 bg-white p-6 shadow-xs">
       {state.message && (
         <div
           className={`mb-6 rounded-md p-4 text-sm ${state.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}
@@ -66,6 +63,7 @@ export function NewCommunityForm() {
             className="mt-1 block w-full rounded-md border border-gray-300 p-2.5 text-sm shadow-xs focus:border-blue-500 focus:ring-blue-500"
           >
             <option value="Kabba/Bunu">Kabba/Bunu</option>
+            <option value="Lokoja">Lokoja</option>
             <option value="Mopa-Muro">Mopa-Muro</option>
             <option value="Ijumu">Ijumu</option>
             <option value="Yagba East">Yagba East</option>

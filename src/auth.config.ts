@@ -9,7 +9,7 @@ export const authConfig = {
     jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.role = user.role || 'USER';
+        token.role = (user.role || 'USER').trim();
         token.isEmailVerified = !!user.emailVerified;
       }
       // Handle update session events (e.g. from security/profile page)
@@ -29,7 +29,7 @@ export const authConfig = {
     session({ session, token }) {
       if (session.user && token) {
         session.user.id = token.id as string;
-        session.user.role = token.role as string;
+        session.user.role = (token.role as string || 'USER').trim();
         session.user.isEmailVerified = token.isEmailVerified as boolean;
       }
       return session;

@@ -16,13 +16,16 @@ export const metadata: Metadata = {
 
 /** Maps a user role string to a readable label and badge variant. */
 function roleLabel(role: string | null | undefined) {
-  switch (role) {
+  const cleanRole = role?.trim();
+  switch (cleanRole) {
     case 'SUPER_ADMIN':
       return { label: 'Super Admin', variant: 'purple' as const };
     case 'ADMIN':
       return { label: 'Admin', variant: 'amber' as const };
+    case 'USER':
+      return { label: 'User', variant: 'neutral' as const };
     default:
-      return { label: 'Contributor', variant: 'neutral' as const };
+      return { label: cleanRole || 'User', variant: 'neutral' as const };
   }
 }
 
