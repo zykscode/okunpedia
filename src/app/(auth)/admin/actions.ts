@@ -2,9 +2,6 @@
 // oxlint-disable jsdoc/require-param
 // oxlint-disable require-unicode-regexp
 // oxlint-disable jsdoc/require-returns
-// oxlint-disable typescript/no-unnecessary-type-conversion
-// oxlint-disable typescript/no-unsafe-type-assertion
-// oxlint-disable typescript/consistent-return
 'use server';
 
 import { eq } from 'drizzle-orm';
@@ -12,7 +9,7 @@ import { updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { db } from '@/libs/DB';
-import { townTable, lgaTable, townRevisionsTable } from '@/models/Schema';
+import { townTable, lgaTable, townRevisionsTable, userTable } from '@/models/Schema';
 
 export type ActionState = {
   success: boolean;
@@ -33,41 +30,43 @@ const generateSlug = (input: string) =>
 const generateId = () =>
   `cmp_${Math.random().toString(36).slice(2, 11)}_${Date.now().toString(36)}`;
 
+/** Checks if session user is an admin. */
+async function requireAdmin(): Promise<{ userId: string; role: string } | ActionState> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  const role = session?.user?.role ?? 'USER';
+
+  if (!userId) {
+    return { success: false, message: 'Unauthorized. Please sign in.' };
+  }
+  if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
+    return { success: false, message: 'Unauthorized. Admin privileges required.' };
+  }
+  return { userId, role };
+}
+
+// -------------------------------------------------------------
+// COMMUNITY CREATE
+// -------------------------------------------------------------
+
 export async function createCommunityAction(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    const session = await auth();
-    const userId = session?.user?.id;
-    const role = session?.user?.role;
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
+    const { userId, role } = auth as { userId: string; role: string };
 
-    if (!userId) {
-      return { success: false, message: 'Unauthorized. Please sign in.' };
-    }
-
-    const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
-    if (!isAdmin) {
-      return { success: false, message: 'Unauthorized. Admin privileges required.' };
-    }
-
-    const nameEntry = formData.get('name');
-    const name = typeof nameEntry === 'string' ? nameEntry.trim() : '';
-
-    const lgaNameEntry = formData.get('lga');
-    const lgaName = typeof lgaNameEntry === 'string' ? lgaNameEntry : '';
-
-    const taglineEntry = formData.get('districtOrClan');
-    const tagline = typeof taglineEntry === 'string' ? taglineEntry.trim() : '';
-
-    const overviewEntry = formData.get('historicalBackground');
-    const overview = typeof overviewEntry === 'string' ? overviewEntry.trim() : '';
+    const name = (formData.get('name') as string | null)?.trim() ?? '';
+    const lgaName = (formData.get('lga') as string | null) ?? '';
+    const tagline = (formData.get('districtOrClan') as string | null)?.trim() ?? '';
+    const overview = (formData.get('historicalBackground') as string | null)?.trim() ?? '';
 
     if (!name || !lgaName) {
       return { success: false, message: 'Missing required parameters.' };
     }
 
-    // Look up the LGA record by display name
     const lgaRows = await db
       .select({ id: lgaTable.id })
       .from(lgaTable)
@@ -80,6 +79,7 @@ export async function createCommunityAction(
 
     const slug = generateSlug(name);
     const id = generateId();
+    const isAdmin = role === 'SUPER_ADMIN' || role === 'ADMIN';
 
     await db.insert(townTable).values({
       id,
@@ -89,7 +89,7 @@ export async function createCommunityAction(
       overview: overview || `Community profile for ${name} in ${lgaName} LGA.`,
       lgaId: lgaRows[0].id,
       createdById: userId,
-      published: isAdmin, // Auto-published only for admins
+      published: isAdmin,
       featured: false,
       updatedAt: new Date(),
     });
@@ -99,8 +99,130 @@ export async function createCommunityAction(
     return { success: false, message: 'Failed to create community. Please try again.' };
   }
 
-  // Redirect must be called outside try/catch block
-  redirect('/admin');
+  redirect('/admin/communities');
+}
+
+// -------------------------------------------------------------
+// COMMUNITY UPDATE
+// -------------------------------------------------------------
+
+export async function updateTownAction(
+  townId: string,
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
+
+    const name = (formData.get('name') as string | null)?.trim() ?? '';
+    const tagline = formData.get('tagline') as string | null;
+    const overview = (formData.get('overview') as string | null)?.trim() ?? '';
+    const rulerTitle = formData.get('rulerTitle') as string | null;
+    const traditionalRuler = formData.get('traditionalRuler') as string | null;
+    const publishedRaw = formData.get('published');
+    const published = publishedRaw === 'true';
+
+    if (!name || !overview) {
+      return { success: false, message: 'Name and overview are required.' };
+    }
+
+    await db
+      .update(townTable)
+      .set({
+        name,
+        slug: generateSlug(name),
+        tagline: tagline || null,
+        overview,
+        rulerTitle: rulerTitle || null,
+        traditionalRuler: traditionalRuler || null,
+        published,
+        updatedAt: new Date(),
+      })
+      .where(eq(townTable.id, townId));
+
+    updateTag('communities');
+    return { success: true, message: 'Community updated successfully.' };
+  } catch (error) {
+    console.error('Error updating community:', error);
+    return { success: false, message: 'Failed to update community.' };
+  }
+}
+
+// -------------------------------------------------------------
+// COMMUNITY TOGGLE PUBLISH
+// -------------------------------------------------------------
+
+export async function toggleTownPublishedAction(
+  townId: string,
+  published: boolean,
+): Promise<ActionState> {
+  try {
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
+
+    await db
+      .update(townTable)
+      .set({ published, updatedAt: new Date() })
+      .where(eq(townTable.id, townId));
+
+    updateTag('communities');
+    return { success: true, message: published ? 'Community published.' : 'Community unpublished.' };
+  } catch (error) {
+    console.error('Error toggling town:', error);
+    return { success: false, message: 'Failed to update community.' };
+  }
+}
+
+// -------------------------------------------------------------
+// COMMUNITY DELETE
+// -------------------------------------------------------------
+
+export async function deleteTownAction(townId: string): Promise<ActionState> {
+  try {
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
+
+    await db.delete(townTable).where(eq(townTable.id, townId));
+
+    updateTag('communities');
+    return { success: true, message: 'Community deleted.' };
+  } catch (error) {
+    console.error('Error deleting town:', error);
+    return { success: false, message: 'Failed to delete community.' };
+  }
+}
+
+// -------------------------------------------------------------
+// USER ROLE MANAGEMENT (SUPER_ADMIN only)
+// -------------------------------------------------------------
+
+export async function updateUserRoleAction(
+  targetUserId: string,
+  newRole: 'USER' | 'ADMIN',
+): Promise<ActionState> {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return { success: false, message: 'Unauthorized. Please sign in.' };
+    }
+    if (session.user.role !== 'SUPER_ADMIN') {
+      return { success: false, message: 'Only super-admins can manage user roles.' };
+    }
+    if (targetUserId === session.user.id) {
+      return { success: false, message: 'You cannot change your own role.' };
+    }
+
+    await db
+      .update(userTable)
+      .set({ role: newRole, updatedAt: new Date() })
+      .where(eq(userTable.id, targetUserId));
+
+    return { success: true, message: `User role updated to ${newRole}.` };
+  } catch (error) {
+    console.error('Error updating user role:', error);
+    return { success: false, message: 'Failed to update user role.' };
+  }
 }
 
 // -------------------------------------------------------------
@@ -109,11 +231,8 @@ export async function createCommunityAction(
 
 export async function approveTownAction(townId: string): Promise<ActionState> {
   try {
-    const session = await auth();
-    const role = session?.user?.role;
-    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
-      return { success: false, message: 'Unauthorized. Admin privileges required.' };
-    }
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
 
     await db
       .update(townTable)
@@ -130,11 +249,8 @@ export async function approveTownAction(townId: string): Promise<ActionState> {
 
 export async function rejectTownAction(townId: string): Promise<ActionState> {
   try {
-    const session = await auth();
-    const role = session?.user?.role;
-    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
-      return { success: false, message: 'Unauthorized. Admin privileges required.' };
-    }
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
 
     await db.delete(townTable).where(eq(townTable.id, townId));
 
@@ -175,7 +291,6 @@ export async function submitTownRevisionAction(
       return { success: false, message: 'Unauthorized. Admin privileges required.' };
     }
 
-    // Admins apply edits immediately
     await db
       .update(townTable)
       .set({
@@ -198,11 +313,8 @@ export async function submitTownRevisionAction(
 
 export async function approveRevisionAction(revisionId: number): Promise<ActionState> {
   try {
-    const session = await auth();
-    const role = session?.user?.role;
-    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
-      return { success: false, message: 'Unauthorized. Admin privileges required.' };
-    }
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
 
     const [revision] = await db
       .select()
@@ -214,7 +326,6 @@ export async function approveRevisionAction(revisionId: number): Promise<ActionS
       return { success: false, message: 'Revision not found.' };
     }
 
-    // Apply changes to the Town table
     await db
       .update(townTable)
       .set({
@@ -227,7 +338,6 @@ export async function approveRevisionAction(revisionId: number): Promise<ActionS
       })
       .where(eq(townTable.id, revision.townId));
 
-    // Update revision status
     await db
       .update(townRevisionsTable)
       .set({ status: 'approved' })
@@ -243,11 +353,8 @@ export async function approveRevisionAction(revisionId: number): Promise<ActionS
 
 export async function rejectRevisionAction(revisionId: number): Promise<ActionState> {
   try {
-    const session = await auth();
-    const role = session?.user?.role;
-    if (role !== 'SUPER_ADMIN' && role !== 'ADMIN') {
-      return { success: false, message: 'Unauthorized. Admin privileges required.' };
-    }
+    const auth = await requireAdmin();
+    if ('message' in auth && !auth.success) return auth as ActionState;
 
     await db
       .update(townRevisionsTable)
