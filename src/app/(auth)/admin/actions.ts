@@ -12,7 +12,7 @@ import { updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { db } from '@/libs/DB';
-import { blogPostsSchema, townTable, lgaTable, townRevisionsTable } from '@/models/Schema';
+import { townTable, lgaTable, townRevisionsTable } from '@/models/Schema';
 
 export type ActionState = {
   success: boolean;
@@ -32,56 +32,6 @@ const generateSlug = (input: string) =>
 /** Generates a CUID-like ID for Prisma-managed rows. */
 const generateId = () =>
   `cmp_${Math.random().toString(36).slice(2, 11)}_${Date.now().toString(36)}`;
-
-export async function publishBlogAction(
-  _prevState: ActionState,
-  formData: FormData,
-): Promise<ActionState> {
-  try {
-    const session = await auth();
-    const userId = session?.user?.id;
-
-    if (!userId) {
-      return { success: false, message: 'Unauthorized. Please sign in.' };
-    }
-
-    const titleEntry = formData.get('title');
-    const title = typeof titleEntry === 'string' ? titleEntry : '';
-
-    const excerptEntry = formData.get('excerpt');
-    const excerpt = typeof excerptEntry === 'string' ? excerptEntry : '';
-
-    const contentEntry = formData.get('content');
-    const content = typeof contentEntry === 'string' ? contentEntry : '';
-
-    const catEntry = formData.get('category');
-    const category = typeof catEntry === 'string' ? catEntry : '';
-
-    if (!title || !content) {
-      return { success: false, message: 'Missing required article contents.' };
-    }
-
-    const slug = generateSlug(title);
-
-    await db.insert(blogPostsSchema).values({
-      title,
-      slug,
-      excerpt: excerpt ?? '',
-      content,
-      category: category ?? 'history',
-      authorId: userId,
-      status: 'published',
-      publishedAt: new Date(),
-    });
-    updateTag('blog-posts');
-  } catch (error) {
-    console.error('Error creating blog post:', error);
-    return { success: false, message: 'Failed to create blog post. Please try again.' };
-  }
-
-  // Redirect must be called outside try/catch block because it throws
-  redirect('/admin');
-}
 
 export async function createCommunityAction(
   _prevState: ActionState,

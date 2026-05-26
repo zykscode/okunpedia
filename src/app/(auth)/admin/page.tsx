@@ -95,7 +95,7 @@ export default async function AdminPage() {
       )}
 
       {/* Module Shortcuts Section */}
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="mx-auto max-w-2xl">
         {/* Upload Town / Community Entry Portal Card */}
         <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/30 hover:shadow-xl sm:p-8">
           <div>
@@ -124,41 +124,6 @@ export default async function AdminPage() {
               className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-amber-600 to-emerald-600 px-4 py-3 text-xs font-bold text-white shadow-md transition-all hover:opacity-95 sm:text-sm"
             >
               <span>+ Add Community Monograph</span>
-              <span className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1">
-                &rarr;
-              </span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Publish Blog Post Portal Card */}
-        <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-blue-500/30 hover:shadow-xl sm:p-8">
-          <div>
-            <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-blue-50 p-3 text-blue-700 ring-1 ring-blue-600/10 transition-transform duration-300 group-hover:scale-110">
-              <svg className="size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-            </div>
-            <h2 className="font-serif text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
-              Publications & News
-            </h2>
-            <p className="mt-2.5 text-xs leading-relaxed text-gray-600 sm:text-sm">
-              Publish official cultural documentation, socio-economic discussions, featured
-              indigenes highlight interviews, and local news updates.
-            </p>
-          </div>
-
-          <div className="mt-8 pt-2">
-            <Link
-              href="/admin/blog/new/"
-              className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-xs font-bold text-white shadow-md transition-all hover:opacity-95 sm:text-sm"
-            >
-              <span>+ Draft Publication Article</span>
               <span className="ml-1.5 transition-transform duration-300 group-hover:translate-x-1">
                 &rarr;
               </span>

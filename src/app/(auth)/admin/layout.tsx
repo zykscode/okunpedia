@@ -38,11 +38,6 @@ export default async function AdminLayout(props: { children: React.ReactNode }) 
             </Link>
           </li>
           <li>
-            <Link href="/admin/blog/new/" className="border-none text-gray-700 hover:text-gray-900">
-              + Draft Publication
-            </Link>
-          </li>
-          <li>
             <Link href="/" className="border-none text-gray-500 hover:text-gray-900">
               &larr; View live atlas
             </Link>
