@@ -237,7 +237,9 @@ export const amenitiesSchema = pgTable('amenities', {
 });
 
 export const userProfilesSchema = pgTable('user_profiles', {
-  id: text('id').primaryKey(), // user ID
+  id: text('id')
+    .primaryKey()
+    .references(() => userTable.id, { onDelete: 'cascade' }), // user ID
   username: text('username').unique().notNull(),
   fullName: text('full_name'),
   communityId: integer('community_id').references(() => communitiesSchema.id, {
@@ -246,6 +248,12 @@ export const userProfilesSchema = pgTable('user_profiles', {
   bio: text('bio'),
   role: text('role').default('member').notNull(), // member, moderator, editor, admin
   profileImageUrl: text('profile_image_url'),
+  occupation: text('occupation'),
+  phoneNumber: text('phone_number'),
+  phoneNumberVerified: boolean('phone_number_verified').default(false).notNull(),
+  verificationDocumentUrl: text('verification_document_url'),
+  verificationStatus: text('verification_status').default('unverified').notNull(),
+  socialLinks: jsonb('social_links').default({}).notNull(),
   updatedAt: timestamp('updated_at', { mode: 'date' })
     .defaultNow()
     .$onUpdate(() => new Date())
@@ -456,29 +464,6 @@ export const gisPolygonsRelations = relations(gisPolygonsSchema, ({ one }) => ({
 // DRIZZLE AUTH & SECURITY TABLES
 // ==========================================
 
-export const accountsTable = pgTable('accounts', {
-  userId: text('userId')
-    .notNull()
-    .references(() => userTable.id, { onDelete: 'cascade' }),
-  type: text('type').notNull(),
-  provider: text('provider').notNull(),
-  providerAccountId: text('providerAccountId').notNull(),
-  refresh_token: text('refresh_token'),
-  access_token: text('access_token'),
-  expires_at: integer('expires_at'),
-  token_type: text('token_type'),
-  scope: text('scope'),
-  id_token: text('id_token'),
-  session_state: text('session_state'),
-}, (table) => [
-  {
-    pk: {
-      columns: [table.provider, table.providerAccountId],
-      name: 'accounts_provider_providerAccountId_pk',
-    },
-  }
-]);
-
 export const sessionsTable = pgTable('sessions', {
   sessionToken: text('sessionToken').primaryKey(),
   userId: text('userId')
@@ -519,13 +504,6 @@ export const loginActivityTable = pgTable('login_activity', {
 });
 
 // Relations for Auth tables
-export const accountsRelations = relations(accountsTable, ({ one }) => ({
-  user: one(userTable, {
-    fields: [accountsTable.userId],
-    references: [userTable.id],
-  }),
-}));
-
 export const sessionsRelations = relations(sessionsTable, ({ one }) => ({
   user: one(userTable, {
     fields: [sessionsTable.userId],

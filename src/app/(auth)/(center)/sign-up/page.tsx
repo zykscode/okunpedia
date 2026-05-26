@@ -1,80 +1,90 @@
-"use client";
+'use client';
 
-import React, { useState, useTransition, useEffect } from "react";
-import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
-import { signUpAction } from "@/app/(auth)/actions";
+import { Eye, EyeOff } from 'lucide-react';
+import Link from 'next/link';
+import React, { useState, useTransition, useEffect } from 'react';
+import { signUpAction } from '@/app/(auth)/actions';
 
 export default function SignUpPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isPending, startTransition] = useTransition();
 
   // Password strength states
   const [strengthScore, setStrengthScore] = useState(0);
-  const [strengthLabel, setStrengthLabel] = useState("Weak");
+  const [strengthLabel, setStrengthLabel] = useState('Weak');
 
   useEffect(() => {
     let score = 0;
     if (!password) {
       setStrengthScore(0);
-      setStrengthLabel("None");
+      setStrengthLabel('None');
       return;
     }
 
-    if (password.length >= 12) score += 1;
-    if (/[A-Z]/.test(password)) score += 1;
-    if (/[a-z]/.test(password)) score += 1;
-    if (/[0-9]/.test(password)) score += 1;
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 1;
+    if (password.length >= 12) {
+      score += 1;
+    }
+    if (/[A-Z]/u.test(password)) {
+      score += 1;
+    }
+    if (/[a-z]/u.test(password)) {
+      score += 1;
+    }
+    if (/[0-9]/u.test(password)) {
+      score += 1;
+    }
+    if (/[!@#$%^&*(),.?":{}|<>]/u.test(password)) {
+      score += 1;
+    }
 
     setStrengthScore(score);
 
     if (score <= 2) {
-      setStrengthLabel("Weak");
+      setStrengthLabel('Weak');
     } else if (score === 3) {
-      setStrengthLabel("Fair");
+      setStrengthLabel('Fair');
     } else if (score === 4) {
-      setStrengthLabel("Strong");
+      setStrengthLabel('Strong');
     } else {
-      setStrengthLabel("Very Strong");
+      setStrengthLabel('Very Strong');
     }
   }, [password]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields.");
+    if (!username || !email || !password || !confirmPassword) {
+      setError('Please fill in all fields.');
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError('Passwords do not match.');
       return;
     }
 
     if (!acceptTerms) {
-      setError("You must accept the Terms and Privacy Policy.");
+      setError('You must accept the Terms and Privacy Policy.');
       return;
     }
 
-    setError("");
-    setSuccess("");
+    setError('');
+    setSuccess('');
 
     startTransition(async () => {
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("email", email);
-      formData.append("password", password);
-      formData.append("confirmPassword", confirmPassword);
-      formData.append("acceptTerms", String(acceptTerms));
+      formData.append('username', username);
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('confirmPassword', confirmPassword);
+      formData.append('acceptTerms', String(acceptTerms));
 
       const res = await signUpAction(formData);
 
@@ -82,12 +92,12 @@ export default function SignUpPage() {
         setError(res.error);
       } else {
         setSuccess(
-          "Account created successfully! Verification email sent. Please check your inbox.",
+          'Account created successfully! Verification email sent. Please check your inbox.',
         );
-        setName("");
-        setEmail("");
-        setPassword("");
-        setConfirmPassword("");
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
         setAcceptTerms(false);
       }
     });
@@ -95,23 +105,28 @@ export default function SignUpPage() {
 
   const getStrengthBarColor = () => {
     switch (strengthLabel) {
-      case "Weak":
-        return "bg-red-500";
-      case "Fair":
-        return "bg-orange-500";
-      case "Strong":
-        return "bg-yellow-500";
-      case "Very Strong":
-        return "bg-green-500";
-      default:
-        return "bg-gray-250";
+      case 'Weak': {
+        return 'bg-red-500';
+      }
+      case 'Fair': {
+        return 'bg-orange-500';
+      }
+      case 'Strong': {
+        return 'bg-yellow-500';
+      }
+      case 'Very Strong': {
+        return 'bg-green-500';
+      }
+      default: {
+        return 'bg-gray-250';
+      }
     }
   };
 
   return (
-    <div className="w-full max-w-md p-8 bg-white/85 dark:bg-gray-900/85 backdrop-blur-md rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 transition-all duration-300">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight mb-2">
+    <div className="w-full max-w-md rounded-2xl border border-gray-100 bg-white/85 p-8 shadow-xl backdrop-blur-md transition-all duration-300 dark:border-gray-800 dark:bg-gray-900/85">
+      <div className="mb-8 text-center">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
           Create Account
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -120,42 +135,50 @@ export default function SignUpPage() {
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 text-sm rounded-xl border border-red-100 dark:border-red-900/50">
+        <div className="mb-6 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-600 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 text-sm rounded-xl border border-green-100 dark:border-green-900/50">
+        <div className="mb-6 rounded-xl border border-green-100 bg-green-50 p-4 text-sm text-green-600 dark:border-green-900/50 dark:bg-green-950/30 dark:text-green-400">
           {success}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
-            Full Name
+          <label
+            htmlFor="username"
+            className="mb-2 block text-xs font-semibold tracking-wider text-gray-600 uppercase dark:text-gray-400"
+          >
+            Username
           </label>
           <input
+            id="username"
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
-            placeholder="John Doe"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-gray-900 placeholder-gray-400 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
+            placeholder="johndoe"
             required
             disabled={isPending}
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
+          <label
+            htmlFor="email"
+            className="mb-2 block text-xs font-semibold tracking-wider text-gray-600 uppercase dark:text-gray-400"
+          >
             Email Address
           </label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+            className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-gray-900 placeholder-gray-400 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
             placeholder="name@example.com"
             required
             disabled={isPending}
@@ -163,15 +186,19 @@ export default function SignUpPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
+          <label
+            htmlFor="password"
+            className="mb-2 block text-xs font-semibold tracking-wider text-gray-600 uppercase dark:text-gray-400"
+          >
             Password
           </label>
           <div className="relative mb-2">
             <input
-              type={showPassword ? "text" : "password"}
+              id="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full pl-4 pr-11 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-3 pr-11 pl-4 text-gray-900 placeholder-gray-400 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
               placeholder="••••••••••••"
               required
               disabled={isPending}
@@ -179,49 +206,48 @@ export default function SignUpPage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 p-1 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
               tabIndex={-1}
             >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
 
           {password && (
             <div className="space-y-2">
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-500">Strength:</span>
                 <span className="font-semibold text-gray-700 dark:text-gray-300">
                   {strengthLabel}
                 </span>
               </div>
-              <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
                 <div
                   className={`h-full ${getStrengthBarColor()} transition-all duration-300`}
                   style={{ width: `${(strengthScore / 5) * 100}%` }}
                 />
               </div>
               <p className="text-[10px] text-gray-400">
-                Password should be 12+ characters, with uppercase, lowercase,
-                numbers, and symbols.
+                Password should be 12+ characters, with uppercase, lowercase, numbers, and symbols.
               </p>
             </div>
           )}
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2">
+          <label
+            htmlFor="confirmPassword"
+            className="mb-2 block text-xs font-semibold tracking-wider text-gray-600 uppercase dark:text-gray-400"
+          >
             Confirm Password
           </label>
           <div className="relative mb-1">
             <input
-              type={showConfirmPassword ? "text" : "password"}
+              id="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full pl-4 pr-11 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+              className="w-full rounded-xl border border-gray-200 bg-gray-50/50 py-3 pr-11 pl-4 text-gray-900 placeholder-gray-400 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
               placeholder="••••••••••••"
               required
               disabled={isPending}
@@ -229,14 +255,10 @@ export default function SignUpPage() {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="absolute top-1/2 right-3.5 -translate-y-1/2 p-1 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
               tabIndex={-1}
             >
-              {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
+              {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
           {confirmPassword && password !== confirmPassword && (
@@ -244,32 +266,26 @@ export default function SignUpPage() {
           )}
         </div>
 
-        <div className="flex items-start gap-3 mt-4">
+        <div className="mt-4 flex items-start gap-3">
           <input
             id="acceptTerms"
             type="checkbox"
             checked={acceptTerms}
             onChange={(e) => setAcceptTerms(e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700"
+            className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-800"
             required
             disabled={isPending}
           />
           <label
             htmlFor="acceptTerms"
-            className="text-xs text-gray-500 dark:text-gray-400 leading-tight"
+            className="text-xs leading-tight text-gray-500 dark:text-gray-400"
           >
-            I accept the{" "}
-            <Link
-              href="/terms"
-              className="font-semibold text-blue-600 hover:text-blue-500"
-            >
+            I accept the{' '}
+            <Link href="/terms" className="font-semibold text-blue-600 hover:text-blue-500">
               Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/privacy"
-              className="font-semibold text-blue-600 hover:text-blue-500"
-            >
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="font-semibold text-blue-600 hover:text-blue-500">
               Privacy Policy
             </Link>
             .
@@ -278,18 +294,11 @@ export default function SignUpPage() {
 
         <button
           type="submit"
-          disabled={
-            isPending ||
-            (confirmPassword !== "" && password !== confirmPassword)
-          }
-          className="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.99] transition-all duration-150 flex items-center justify-center cursor-pointer border-none mt-6"
+          disabled={isPending || (confirmPassword !== '' && password !== confirmPassword)}
+          className="mt-6 flex w-full cursor-pointer items-center justify-center rounded-xl border-none bg-blue-600 px-4 py-3.5 font-semibold text-white shadow-lg shadow-blue-500/10 transition-all duration-150 hover:bg-blue-700 hover:shadow-blue-500/20 active:scale-[0.99] disabled:bg-blue-400"
         >
           {isPending ? (
-            <svg
-              className="animate-spin h-5 w-5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-5 w-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
               <circle
                 className="opacity-25"
                 cx="12"
@@ -305,17 +314,17 @@ export default function SignUpPage() {
               />
             </svg>
           ) : (
-            "Sign Up"
+            'Sign Up'
           )}
         </button>
       </form>
 
-      <div className="mt-8 text-center border-t border-gray-100 dark:border-gray-800/50 pt-6">
+      <div className="mt-8 border-t border-gray-100 pt-6 text-center dark:border-gray-800/50">
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link
             href="/sign-in"
-            className="font-semibold text-blue-600 hover:text-blue-500 transition-colors duration-150"
+            className="font-semibold text-blue-600 transition-colors duration-150 hover:text-blue-500"
           >
             Sign In
           </Link>

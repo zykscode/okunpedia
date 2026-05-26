@@ -1,61 +1,84 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
-import { eq, and } from "drizzle-orm";
-import bcrypt from "bcryptjs";
-import { db } from "@/libs/DB";
-import { userTable, accountsTable, loginActivityTable } from "@/models/Schema";
-import { authConfig } from "./auth.config";
-import { headers } from "next/headers";
+import { compare } from 'bcryptjs';
+import { eq, and, sql } from 'drizzle-orm';
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import { headers } from 'next/headers';
+import { db } from '@/libs/DB';
+import { userTable, loginActivityTable } from '@/models/Schema';
+import { authConfig } from './auth.config';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
     Credentials({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
+        const reqHeaders = await headers();
+        const ipAddress =
+          reqHeaders.get('x-forwarded-for') || reqHeaders.get('x-real-ip') || '127.0.0.1';
+        const userAgent = reqHeaders.get('user-agent') || 'Unknown';
+
+        // Brute-force protection: check recent failed attempts for this IP
+        const [failedCount] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(loginActivityTable)
+          .where(
+            and(
+              eq(loginActivityTable.ipAddress, ipAddress),
+              eq(loginActivityTable.status, 'failed'),
+              sql`created_at > NOW() - INTERVAL '15 minutes'`,
+            ),
+          );
+
+        if (failedCount && Number(failedCount.count) >= 5) {
+          throw new Error('Too many failed login attempts. Please try again in 15 minutes.');
+        }
+
         const [user] = await db
           .select()
           .from(userTable)
-          .where(
-            eq(
-              userTable.email,
-              (credentials.email as string).toLowerCase().trim(),
-            ),
-          )
+          .where(eq(userTable.email, (credentials.email as string).toLowerCase().trim()))
           .limit(1);
 
         if (!user || !user.password) {
-          return null;
+          await db.insert(loginActivityTable).values({
+            userId: null,
+            ipAddress,
+            userAgent,
+            status: 'failed',
+          });
+          throw new Error('Invalid email or password.');
         }
 
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password as string,
-          user.password,
-        );
+        const isPasswordValid = await compare(credentials.password as string, user.password);
 
         if (!isPasswordValid) {
-          return null;
+          await db.insert(loginActivityTable).values({
+            userId: user.id,
+            ipAddress,
+            userAgent,
+            status: 'failed',
+          });
+          throw new Error('Invalid email or password.');
         }
 
-        if (user.status === "BLOCKED") {
-          throw new Error("Your account has been blocked.");
+        if (user.status === 'BLOCKED') {
+          throw new Error('Your account has been blocked.');
+        }
+
+        if (!user.emailVerified) {
+          throw new Error('Please verify your email address before logging in.');
         }
 
         return {
@@ -63,147 +86,45 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           name: user.name,
           email: user.email,
           image: user.image,
-          role: user.role ?? "USER",
+          role: user.role ?? 'USER',
           emailVerified: user.emailVerified,
-          isOAuth: false,
         };
       },
     }),
   ],
   callbacks: {
     ...authConfig.callbacks,
-    async signIn({ user, account }) {
+    async signIn({ user }) {
       const reqHeaders = await headers();
       const ipAddress =
-        reqHeaders.get("x-forwarded-for") ||
-        reqHeaders.get("x-real-ip") ||
-        "127.0.0.1";
-      const userAgent = reqHeaders.get("user-agent") || "Unknown";
+        reqHeaders.get('x-forwarded-for') || reqHeaders.get('x-real-ip') || '127.0.0.1';
+      const userAgent = reqHeaders.get('user-agent') || 'Unknown';
 
-      if (account?.provider === "google") {
-        const email = user.email?.toLowerCase().trim();
-        if (!email) return false;
+      const email = user.email?.toLowerCase().trim();
+      if (!email) {
+        return false;
+      }
 
-        // Check if user already exists
-        let [dbUser] = await db
-          .select()
-          .from(userTable)
-          .where(eq(userTable.email, email))
-          .limit(1);
+      // Check if user already exists
+      const [dbUser] = await db.select().from(userTable).where(eq(userTable.email, email)).limit(1);
 
-        if (dbUser) {
-          if (dbUser.status === "BLOCKED") {
-            return false;
-          }
-
-          // If email is not yet verified in DB, mark verified as Google email is pre-verified
-          if (!dbUser.emailVerified) {
-            await db
-              .update(userTable)
-              .set({ emailVerified: new Date(), updatedAt: new Date() })
-              .where(eq(userTable.id, dbUser.id));
-          }
-
-          // Check if Google account connection exists
-          const [link] = await db
-            .select()
-            .from(accountsTable)
-            .where(
-              and(
-                eq(accountsTable.provider, "google"),
-                eq(accountsTable.providerAccountId, account.providerAccountId),
-              ),
-            )
-            .limit(1);
-
-          if (!link) {
-            await db.insert(accountsTable).values({
-              userId: dbUser.id,
-              type: account.type as string,
-              provider: account.provider as string,
-              providerAccountId: account.providerAccountId as string,
-              refresh_token: (account.refresh_token as string) || null,
-              access_token: (account.access_token as string) || null,
-              expires_at: account.expires_at
-                ? Number(account.expires_at)
-                : null,
-              token_type: (account.token_type as string) || null,
-              scope: (account.scope as string) || null,
-              id_token: (account.id_token as string) || null,
-              session_state: (account.session_state as string) || null,
-            });
-          }
-        } else {
-          // Auto-create new user
-          const newId = `usr_${Math.random().toString(36).slice(2, 11)}_${Date.now().toString(36)}`;
-          await db.insert(userTable).values({
-            id: newId,
-            email,
-            name: user.name || email.split("@")[0],
-            image: user.image || null,
-            role: "USER",
-            status: "ACTIVE",
-            emailVerified: new Date(),
-            updatedAt: new Date(),
-          });
-
-          await db.insert(accountsTable).values({
-            userId: newId,
-            type: account.type as string,
-            provider: account.provider as string,
-            providerAccountId: account.providerAccountId as string,
-            refresh_token: (account.refresh_token as string) || null,
-            access_token: (account.access_token as string) || null,
-            expires_at: account.expires_at ? Number(account.expires_at) : null,
-            token_type: (account.token_type as string) || null,
-            scope: (account.scope as string) || null,
-            id_token: (account.id_token as string) || null,
-            session_state: (account.session_state as string) || null,
-          });
-        }
+      if (!dbUser || dbUser.status === 'BLOCKED') {
+        return false;
       }
 
       // Log successful login activity
-      const [finalUser] = await db
-        .select({ id: userTable.id })
-        .from(userTable)
-        .where(eq(userTable.email, user.email?.toLowerCase().trim() || ""))
-        .limit(1);
-
-      if (finalUser) {
-        await db.insert(loginActivityTable).values({
-          userId: finalUser.id,
-          ipAddress,
-          userAgent,
-          status: "success",
-        });
-      }
+      await db.insert(loginActivityTable).values({
+        userId: dbUser.id,
+        ipAddress,
+        userAgent,
+        status: 'success',
+      });
 
       return true;
     },
-    async jwt({ token, user, account, trigger, session }) {
+    jwt({ token, user, trigger, session }) {
       // Run base configuration jwt callback first
-      // @ts-ignore
-      token = await authConfig.callbacks.jwt({ token, user, trigger, session });
-
-      if (account?.provider === "google") {
-        const email = token.email?.toLowerCase().trim();
-        if (email) {
-          const [dbUser] = await db
-            .select()
-            .from(userTable)
-            .where(eq(userTable.email, email))
-            .limit(1);
-
-          if (dbUser) {
-            token.id = dbUser.id;
-            token.role = dbUser.role || "USER";
-            token.isEmailVerified = !!dbUser.emailVerified;
-            token.isOAuth = true;
-          }
-        }
-      }
-      return token;
+      return authConfig.callbacks.jwt({ token, user, trigger, session });
     },
   },
 });

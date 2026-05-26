@@ -28,7 +28,6 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@/public/*": ["./public/*"],
