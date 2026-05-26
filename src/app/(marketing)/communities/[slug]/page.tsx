@@ -7,14 +7,21 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Markdown } from '@/components/Markdown';
 import { db } from '@/libs/DB';
-import { townTable, lgaTable, prominentPersonTable, communitiesSchema } from '@/models/Schema';
+import {
+  townTable,
+  lgaTable,
+  prominentPersonTable,
+  communitiesSchema,
+  prominentIndigenesSchema,
+  traditionalRulersSchema,
+} from '@/models/Schema';
 
 import { AppConfig } from '@/utils/AppConfig';
 import { getClanSlug } from '@/utils/clanMatcher';
 
 type DetailPageProps = { params: Promise<{ slug: string }> };
 
-type RulerItem = { title: string; name: string };
+type RulerItem = { title: string; name: string; isIncumbent?: boolean };
 type IndigeneItem = { name: string; biography: string };
 
 type ErrorViewProps = {
@@ -250,9 +257,11 @@ function DetailContent(props: DetailContentProps) {
                     <span className="text-sm font-bold text-gray-900 dark:text-white">
                       {r.title}
                     </span>
-                    <Badge variant="success" className="text-[10px]">
-                      Incumbent
-                    </Badge>
+                    {r.isIncumbent && (
+                      <Badge variant="success" className="text-[10px]">
+                        Incumbent
+                      </Badge>
+                    )}
                   </div>
                   <span className="text-sm text-gray-600 dark:text-gray-400">{r.name}</span>
                 </li>
@@ -331,6 +340,7 @@ const getTownBySlug = unstable_cache(
         festivalsAndRituals: communitiesSchema.festivalsAndRituals,
         economicActivities: communitiesSchema.economicActivities,
         districtOrClan: communitiesSchema.districtOrClan,
+        communityId: communitiesSchema.id,
       })
       .from(townTable)
       .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
@@ -355,6 +365,37 @@ const getPersonsByTownId = unstable_cache(
       .from(prominentPersonTable)
       .where(eq(prominentPersonTable.townId, townId)),
   ['persons-by-town-cache'],
+  { tags: ['communities'] },
+);
+
+const getNewRulersByCommunityId = unstable_cache(
+  async (communityId: number) =>
+    await db
+      .select({
+        id: traditionalRulersSchema.id,
+        title: traditionalRulersSchema.title,
+        name: traditionalRulersSchema.name,
+        reignStart: traditionalRulersSchema.reignStart,
+        reignEnd: traditionalRulersSchema.reignEnd,
+        isIncumbent: traditionalRulersSchema.isIncumbent,
+      })
+      .from(traditionalRulersSchema)
+      .where(eq(traditionalRulersSchema.communityId, communityId)),
+  ['new-rulers-by-community-cache'],
+  { tags: ['communities'] },
+);
+
+const getNewIndigenesByCommunityId = unstable_cache(
+  async (communityId: number) =>
+    await db
+      .select({
+        id: prominentIndigenesSchema.id,
+        name: prominentIndigenesSchema.name,
+        biography: prominentIndigenesSchema.biography,
+      })
+      .from(prominentIndigenesSchema)
+      .where(eq(prominentIndigenesSchema.communityId, communityId)),
+  ['new-indigenes-by-community-cache'],
   { tags: ['communities'] },
 );
 
@@ -419,13 +460,23 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
   const { slug } = await props.params;
 
   let town = null;
-  let persons: Awaited<ReturnType<typeof getPersonsByTownId>> = [];
+  let persons: { id: string; name: string; title: string | null; biography: string | null }[] = [];
+  let newRulers: { id: number; title: string; name: string; reignStart: string | null; reignEnd: string | null; isIncumbent: boolean | null }[] = [];
+  let newIndigenes: { id: number; name: string; biography: string }[] = [];
   let fetchError = false;
 
   try {
     town = await getTownBySlug(slug);
     if (town) {
-      persons = await getPersonsByTownId(town.id);
+      const { id: townId, communityId } = town;
+      const [resPersons, resNewRulers, resNewIndigenes] = await Promise.all([
+        getPersonsByTownId(townId),
+        communityId ? getNewRulersByCommunityId(communityId) : Promise.resolve([]),
+        communityId ? getNewIndigenesByCommunityId(communityId) : Promise.resolve([]),
+      ]);
+      persons = resPersons;
+      newRulers = resNewRulers;
+      newIndigenes = resNewIndigenes;
     }
   } catch (error) {
     console.error(`Error loading community detail for slug ${slug}:`, error);
@@ -440,14 +491,36 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
     notFound();
   }
 
-  const rulers: RulerItem[] =
-    town.rulerTitle && town.traditionalRuler
-      ? [{ title: town.rulerTitle, name: town.traditionalRuler }]
-      : [];
+  const customRulers: RulerItem[] = newRulers.map((r) => {
+    let titleStr = r.title;
+    if (r.reignStart || r.reignEnd) {
+      const startStr = r.reignStart || '';
+      const endStr = r.reignEnd || '';
+      titleStr = startStr && endStr
+        ? `${r.title} (${startStr}–${endStr})`
+        : `${r.title} (${startStr || endStr})`;
+    }
+    return { title: titleStr, name: r.name, isIncumbent: r.isIncumbent ?? false };
+  });
 
-  const indigenes: IndigeneItem[] = persons
-    .filter((p) => p.biography)
-    .map((p) => ({ name: p.name, biography: p.biography ?? '' }));
+  let rulers: RulerItem[] = [];
+  if (customRulers.length > 0) {
+    rulers = customRulers;
+  } else if (town.rulerTitle && town.traditionalRuler) {
+    rulers = [{ title: town.rulerTitle, name: town.traditionalRuler, isIncumbent: true }];
+  }
+
+  const customIndigenes: IndigeneItem[] = newIndigenes.map((ind) => ({
+    name: ind.name,
+    biography: ind.biography,
+  }));
+
+  const indigenes: IndigeneItem[] = [
+    ...customIndigenes,
+    ...persons
+      .filter((p) => p.biography && !customIndigenes.some((ci) => ci.name.toLowerCase() === p.name.toLowerCase()))
+      .map((p) => ({ name: p.name, biography: p.biography ?? '' })),
+  ];
 
   const districtOrClan = town.districtOrClan || town.tagline || `${town.lga} LGA`;
   const lgaSlug = town.lga.toLowerCase().replaceAll(/[^a-z0-9]+/gu, '-').replaceAll(/(^-|-$)/gu, '');

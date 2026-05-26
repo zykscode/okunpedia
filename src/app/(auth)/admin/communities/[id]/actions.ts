@@ -125,6 +125,7 @@ export async function addIndigeneAction(
     }
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Indigene added successfully.' };
   } catch (error) {
     console.error(error);
@@ -140,6 +141,7 @@ export async function deleteIndigeneAction(townId: string, indigeneId: number): 
     await logAction(session.user.id, 'delete_indigene', 'indigene', String(indigeneId));
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Indigene removed successfully.' };
   } catch (error) {
     console.error(error);
@@ -194,6 +196,7 @@ export async function addRulerAction(
     }
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Traditional ruler added successfully.' };
   } catch (error) {
     console.error(error);
@@ -209,6 +212,7 @@ export async function deleteRulerAction(townId: string, rulerId: number): Promis
     await logAction(session.user.id, 'delete_ruler', 'ruler', String(rulerId));
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Traditional ruler removed successfully.' };
   } catch (error) {
     console.error(error);
@@ -263,6 +267,7 @@ export async function addAmenityAction(
     }
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Amenity added successfully.' };
   } catch (error) {
     console.error(error);
@@ -278,6 +283,7 @@ export async function deleteAmenityAction(townId: string, amenityId: number): Pr
     await logAction(session.user.id, 'delete_amenity', 'amenity', String(amenityId));
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Amenity removed successfully.' };
   } catch (error) {
     console.error(error);
@@ -328,6 +334,7 @@ export async function saveGisPolygonAction(
     await logAction(session.user.id, 'save_gis', 'community', String(communityId));
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'GIS polygon boundary saved successfully.' };
   } catch (error) {
     console.error(error);
@@ -341,6 +348,7 @@ export async function deleteMediaAction(townId: string, mediaId: string): Promis
     await db.delete(mediaTable).where(eq(mediaTable.id, mediaId));
     await logAction(session.user.id, 'delete_media', 'media', mediaId);
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Media removed successfully.' };
   } catch (error) {
     console.error(error);
@@ -385,6 +393,7 @@ export async function updateCommunitySectionsAction(
     await logAction(session.user.id, 'update_sections', 'community', String(communityId));
 
     revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
     return { success: true, message: 'Sections updated successfully.' };
   } catch (error) {
     console.error(error);
