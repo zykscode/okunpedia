@@ -158,7 +158,24 @@ export default async function AdminPage() {
             </div>
           </Link>
         )}
+
+        {/* Tracker — todos & issues */}
+        <Link
+          href="/admin/tracker"
+          className="group flex flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300/60 hover:shadow-md dark:border-gray-800 dark:bg-gray-900/60"
+        >
+          <div className="inline-flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700 ring-1 ring-indigo-600/10 transition-transform group-hover:scale-105 dark:bg-indigo-950/40 dark:text-indigo-400">
+            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="font-semibold text-gray-900 dark:text-white">Tracker</h2>
+            <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">Todos &amp; app issues</p>
+          </div>
+        </Link>
       </div>
     </div>
   );
 }
+

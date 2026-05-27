@@ -43,6 +43,13 @@
       "when": 1779814690974,
       "tag": "0005_clumsy_ser_duncan",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1779890410068,
+      "tag": "0006_simple_veda",
+      "breakpoints": true
     }
   ]
 }

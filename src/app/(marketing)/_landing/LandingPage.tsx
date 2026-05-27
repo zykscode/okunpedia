@@ -159,9 +159,9 @@ export function LandingPage() {
           </h1>
 
           {/* Subtitle */}
-          <p className="animate-on-scroll stagger-3 mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg dark:text-gray-400">
-            Explore community profiles, traditional monarchy structures, migration narratives, and
-            infrastructural records across the six local government areas of Okun.
+          <p className="animate-on-scroll stagger-3 mx-auto mt-6 max-w-3xl text-base leading-relaxed text-pretty text-slate-300 sm:text-lg lg:text-xl dark:text-slate-400">
+            Explore the rich history and cultural heritage of Okunland, learn about notable
+            indigenes and traditional institutions, and connect with people who share your roots.
           </p>
 
           {/* Search form */}

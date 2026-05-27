@@ -614,3 +614,33 @@ export const auditLogsRelations = relations(auditLogsTable, ({ one }) => ({
 export const mediaRelations = relations(mediaTable, ({ one }) => ({
   uploadedBy: one(userTable, { fields: [mediaTable.uploadedById], references: [userTable.id] }),
 }));
+
+// ==========================================
+// ADMIN TRACKER TABLES
+// ==========================================
+
+/** Personal admin todo items. */
+export const adminTodosTable = pgTable('admin_todos', {
+  id:          serial('id').primaryKey(),
+  title:       text('title').notNull(),
+  notes:       text('notes'),
+  completed:   boolean('completed').default(false).notNull(),
+  createdAt:   timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt:   timestamp('updated_at', { mode: 'date' }).defaultNow().$onUpdate(() => new Date()).notNull(),
+});
+
+/** App issues: bugs, feature requests, technical debt. */
+export const adminIssuesTable = pgTable('admin_issues', {
+  id:          serial('id').primaryKey(),
+  title:       text('title').notNull(),
+  description: text('description'),
+  type:        text('type').default('bug').notNull(),     // 'bug' | 'feature' | 'debt' | 'improvement'
+  priority:    text('priority').default('medium').notNull(), // 'low' | 'medium' | 'high' | 'critical'
+  status:      text('status').default('open').notNull(),  // 'open' | 'in_progress' | 'resolved' | 'closed'
+  createdAt:   timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt:   timestamp('updated_at', { mode: 'date' }).defaultNow().$onUpdate(() => new Date()).notNull(),
+}, (table) => [
+  index('admin_issues_status_idx').on(table.status),
+  index('admin_issues_priority_idx').on(table.priority),
+]);
+
