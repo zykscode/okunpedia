@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: `${AppConfig.siteUrl}/logo.png`,
-        width: 1200,
-        height: 630,
+        width: 40,
+        height: 40,
         alt: 'Okunpedia Digital Heritage Platform',
       },
     ],
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     title: 'Okunpedia — Encyclopedia of Okun Heritage, Culture & History',
     description:
       'The definitive digital encyclopedia documenting Okun traditional lineages, migration chronicles, community infrastructure, and cultural heritage across six local government areas in Kogi State.',
-    images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+    images: [`${AppConfig.siteUrl}/logo.png`],
   },
 };
 

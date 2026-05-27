@@ -1,9 +1,10 @@
+// oxlint-disable jsdoc/require-returns
 'use client';
 
+import { motion } from 'framer-motion';
+import { Home, Map, Users, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Map, Users, BookOpen } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { cn } from '@/utils/utils';
 
 const navItems = [
@@ -20,8 +21,15 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed right-4 bottom-4 left-4 z-50 overflow-hidden rounded-2xl border border-gray-200/80 bg-white/90 shadow-lg shadow-black/10 backdrop-blur-xl saturate-150 md:hidden dark:border-gray-800/80 dark:bg-gray-950/90">
-      <div className="flex items-center justify-around px-2" style={{ height: '60px' }}>
+    <div className="fixed right-0 bottom-0 left-0 z-50 overflow-hidden border-t border-gray-200/80 shadow-lg shadow-black/10 saturate-150 backdrop-blur-xl md:hidden dark:border-gray-800/80 dark:bg-gray-950/90">
+      <div
+        className="flex items-center justify-between px-2"
+        style={{
+          height: '60px',
+          backdropFilter: 'saturate(180%) blur(16px)',
+          WebkitBackdropFilter: 'saturate(180%) blur(16px)',
+        }}
+      >
         {navItems.map((item) => {
           const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
 

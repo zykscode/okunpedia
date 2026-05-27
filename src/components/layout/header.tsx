@@ -1,8 +1,9 @@
+// oxlint-disable jsdoc/require-returns
 'use client';
 
+import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search } from 'lucide-react';
 import { KBarButton } from 'pliny/search/KBarButton.js';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { PageLogo } from '@/components/ui/PageLogo';
@@ -51,10 +52,10 @@ export function Header() {
               <PageLogo />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-serif text-base font-bold tracking-tight text-gray-900 transition-colors group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400 sm:text-lg">
+              <span className="font-serif text-base font-bold tracking-tight text-gray-900 transition-colors group-hover:text-emerald-700 sm:text-lg dark:text-white dark:group-hover:text-emerald-400">
                 Okunpedia
               </span>
-              <span className="hidden text-[10px] font-medium tracking-widest text-gray-500 uppercase dark:text-gray-400 sm:block">
+              <span className="hidden text-[10px] font-medium tracking-widest text-gray-500 uppercase sm:block dark:text-gray-400">
                 Encyclopedia of Okun Land
               </span>
             </div>
