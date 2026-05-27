@@ -41,7 +41,7 @@ export function Footer() {
                 A community-driven digital encyclopedia preserving the rich history, culture, and
                 heritage of Okun towns in Kogi State, Nigeria — for future generations.
               </p>
-              <p className="mt-4 flex items-center justify-center gap-1.5 text-sm text-gray-400 md:justify-start dark:text-gray-500">
+              <p className="mt-4 hidden items-center justify-center gap-1.5 text-sm text-gray-400 md:flex md:justify-start dark:text-gray-500">
                 <MapPin className="size-3.5 shrink-0 text-emerald-500" aria-hidden="true" />
                 Kabba/Bunu · Ijumu · Mopa-Muro · Yagba East · Yagba West, Kogi State
               </p>
@@ -68,7 +68,7 @@ export function Footer() {
             </div>
 
             {/* Featured Communities */}
-            <div>
+            <div className="hidden md:block">
               <h3 className="mb-4 flex items-center justify-center gap-2 text-xs font-semibold tracking-widest text-gray-900 uppercase md:justify-start dark:text-white">
                 <Users className="size-3.5 text-emerald-500" aria-hidden="true" />
                 Communities
