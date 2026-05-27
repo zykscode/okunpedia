@@ -10,9 +10,9 @@ import {
   Shield,
 } from 'lucide-react';
 import Link from 'next/link';
+import { ScrollRevealWrapper } from '@/components/ScrollRevealWrapper';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { ScrollRevealWrapper } from '@/components/ScrollRevealWrapper';
 
 // ── Data ─────────────────────────────────────────────────────────────────────
 
@@ -122,7 +122,7 @@ export function LandingPage() {
         tagName="section"
         mode="children"
         immediate={true}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950 via-gray-900 to-amber-950 px-6 py-16 text-white shadow-2xl sm:px-12 lg:px-20 lg:py-24"
+        className="relative overflow-hidden rounded-3xl bg-linear-to-br from-emerald-950 via-gray-900 to-amber-950 px-6 py-16 text-white shadow-2xl sm:px-12 lg:px-20 lg:py-24"
       >
         {/* Ambient glows */}
         <div
@@ -134,7 +134,7 @@ export function LandingPage() {
           aria-hidden="true"
         />
         <div
-          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent"
+          className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,var(--tw-gradient-stops))] from-emerald-500/5 via-transparent to-transparent"
           aria-hidden="true"
         />
 
@@ -146,17 +146,16 @@ export function LandingPage() {
                 className="flex size-1.5 animate-pulse rounded-full bg-amber-400"
                 aria-hidden="true"
               />
-              Digital Archival Platform · Kogi State, Nigeria
+              Digital Archival Platform · Okun People & Heritage
             </Badge>
           </div>
 
           {/* Headline */}
-          <h1 className="animate-on-scroll stagger-2 font-serif text-4xl leading-tight font-extrabold tracking-tight text-white sm:text-5xl lg:text-7xl">
-            Preserving the{' '}
-            <span className="text-glow-emerald bg-gradient-to-r from-emerald-300 to-amber-300 bg-clip-text text-transparent">
-              History & Lineages
-            </span>{' '}
-            of Okunland
+          <h1 className="animate-on-scroll stagger-2 max-w-5xl font-serif text-3xl leading-tight font-black tracking-tight text-white sm:text-5xl lg:text-7xl">
+            A Living Digital Archive of{' '}
+            <span className="bg-linear-to-r from-emerald-300 via-yellow-200 to-amber-300 bg-clip-text text-transparent">
+              Okun History, Culture, Communities & Heritage
+            </span>
           </h1>
 
           {/* Subtitle */}
@@ -278,8 +277,8 @@ export function LandingPage() {
           {/* LGAs Column */}
           <div className="space-y-4">
             <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-gray-900 dark:text-white">
-              <Landmark className="size-5 text-emerald-600 dark:text-emerald-400" />
-              6 Local Government Areas (LGAs)
+              <Landmark className="size-5 text-emerald-600 dark:text-emerald-400" />6 Local
+              Government Areas (LGAs)
             </h3>
             <div className="grid gap-3 sm:grid-cols-2">
               {lgas.map((lga, i) => (
@@ -294,7 +293,7 @@ export function LandingPage() {
                     </h4>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{lga.info}</p>
                   </div>
-                  <span className="mt-3 flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 group-hover:underline">
+                  <span className="mt-3 flex items-center gap-1 text-xs font-semibold text-emerald-700 group-hover:underline dark:text-emerald-400">
                     View Profile
                     <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-0.5" />
                   </span>
@@ -306,8 +305,8 @@ export function LandingPage() {
           {/* Clans Column */}
           <div className="space-y-4">
             <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-gray-900 dark:text-white">
-              <Shield className="size-5 text-amber-600 dark:text-amber-400" />
-              7 Dialectal Clans (Tribes)
+              <Shield className="size-5 text-amber-600 dark:text-amber-400" />7 Dialectal Clans
+              (Tribes)
             </h3>
             <div className="grid gap-3 sm:grid-cols-2">
               {clans.map((clan, i) => (
@@ -322,7 +321,7 @@ export function LandingPage() {
                     </h4>
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{clan.desc}</p>
                   </div>
-                  <span className="mt-3 flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-400 group-hover:underline">
+                  <span className="mt-3 flex items-center gap-1 text-xs font-semibold text-amber-700 group-hover:underline dark:text-amber-400">
                     Explore lineage
                     <ArrowRight className="size-3 transition-transform duration-300 group-hover:translate-x-0.5" />
                   </span>
