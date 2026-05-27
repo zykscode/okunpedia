@@ -71,16 +71,16 @@ export function NewCommunityForm() {
           </select>
         </div>
 
-        {/* District or Clan */}
+        {/* District or Sub-group */}
         <div>
           <label htmlFor="districtOrClan" className="block text-sm font-medium text-gray-700">
-            Traditional District or Clan
+            Traditional District or Sub-group
           </label>
           <input
             type="text"
             id="districtOrClan"
             name="districtOrClan"
-            placeholder="e.g. Gbede, Bunu, Mopa clan"
+            placeholder="e.g. Gbede, Bunu, Mopa sub-group"
             className="mt-1 block w-full rounded-md border border-gray-300 p-2.5 text-sm shadow-xs focus:border-blue-500 focus:ring-blue-500"
           />
         </div>

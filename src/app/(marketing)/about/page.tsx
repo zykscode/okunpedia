@@ -46,7 +46,7 @@ const pillars = [
     icon: Globe,
     title: 'Geographic Documentation',
     description:
-      'Mapping the physical, political, and historical boundaries of all Okun clans and LGA territories.',
+      'Mapping the physical, political, and historical boundaries of all Okun sub-groups and LGA territories.',
   },
   {
     icon: Users,

@@ -13,11 +13,11 @@ import { AppConfig } from '@/utils/AppConfig';
 export const metadata = {
   title: 'Okun Communities — Explore Traditional Towns & Lineages | Okunpedia',
   description:
-    'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional clans, migration archives, and civic metrics across all six LGAs.',
+    'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.',
   openGraph: {
     title: 'Okun Communities — Explore Traditional Towns & Lineages',
     description:
-      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional clans, migration archives, and civic metrics across all six LGAs.',
+      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.',
     url: `${AppConfig.siteUrl}/communities`,
     siteName: AppConfig.title,
     images: [
@@ -34,7 +34,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Okun Communities — Explore Traditional Towns & Lineages',
     description:
-      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional clans, migration archives, and civic metrics across all six LGAs.',
+      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.',
     images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
   },
 };

@@ -66,7 +66,7 @@ export const AtlasMapViewer = (props: AtlasMapViewerProps) => {
           </h3>
 
           <p className="mt-2 text-xs leading-relaxed text-slate-300 dark:text-gray-400 sm:text-sm">
-            Displaying dynamic geospatial clusters, clan terrain demarcations, and adjacent boundary coordinates for the selected municipal target area:{' '}
+            Displaying dynamic geospatial clusters, sub-group terrain demarcations, and adjacent boundary coordinates for the selected municipal target area:{' '}
             <span className="font-semibold text-white">{activeLga}</span>.
           </p>
 

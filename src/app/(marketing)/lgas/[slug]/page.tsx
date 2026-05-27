@@ -121,7 +121,7 @@ export default async function LgaPage(props: LgaPageProps) {
             </span>
           </div>
           <div>
-            <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400">Primary Clans</span>
+            <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400">Primary Sub-groups</span>
             <span className="mt-1 flex items-center gap-1.5 text-base font-bold text-white sm:text-lg">
               <Users className="size-4 text-emerald-400" />
               {lga.keyStats.primaryTribes.join(', ')}
@@ -169,7 +169,7 @@ export default async function LgaPage(props: LgaPageProps) {
               Okun Heritage Map Note
             </h3>
             <p className="mt-3 text-xs leading-relaxed text-amber-900/80 dark:text-amber-300/80">
-              Traditional boundaries of Okun clans often overlap local government divisions. Historically, clans like Yagba are spread across multiple modern LGAs.
+              Traditional boundaries of Okun sub-groups often overlap local government divisions. Historically, sub-groups like Yagba are spread across multiple modern LGAs.
             </p>
           </div>
         </div>

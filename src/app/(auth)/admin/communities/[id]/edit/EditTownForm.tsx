@@ -95,7 +95,7 @@ export function EditTownForm(props: { town: Town }) {
           {/* Tagline */}
           <div>
             <label htmlFor="tagline" className="mb-1.5 block text-xs font-bold tracking-wider text-gray-600 uppercase dark:text-gray-400">
-              Tagline / District or Clan
+              Tagline / District or Sub-group
             </label>
             <input
               id="tagline"

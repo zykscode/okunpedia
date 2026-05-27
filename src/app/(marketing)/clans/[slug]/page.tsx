@@ -24,7 +24,7 @@ export async function generateMetadata(props: ClanPageProps): Promise<Metadata> 
     return {};
   }
 
-  const title = `${clan.name} Clan — Cultural Lineage & Towns | Okunpedia`;
+  const title = `${clan.name} Sub-group — Cultural Lineage & Towns | Okunpedia`;
   const description = clan.description.length > 160 ? `${clan.description.slice(0, 157)}...` : clan.description;
 
   return {
@@ -40,7 +40,7 @@ export async function generateMetadata(props: ClanPageProps): Promise<Metadata> 
           url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
           width: 1200,
           height: 630,
-          alt: `${clan.name} Clan Heritage Profile`,
+          alt: `${clan.name} Sub-group Heritage Profile`,
         },
       ],
       type: 'website',
@@ -113,11 +113,11 @@ export default async function ClanPage(props: ClanPageProps) {
         <div className="relative z-10 flex items-center gap-2">
           <Shield className="size-5 text-amber-400" />
           <span className="text-sm font-semibold tracking-wider uppercase text-amber-400">
-            Okun Heritage Clan Profile
+            Okun Heritage Sub-group Profile
           </span>
         </div>
         <h1 className="relative z-10 mt-4 font-serif text-4xl font-black tracking-tight text-white sm:text-6xl">
-          The {clan.name} Clan
+          The {clan.name} Sub-group
         </h1>
         <div className="relative z-10 mt-5 h-1 w-20 rounded-full bg-gradient-to-r from-emerald-500 to-amber-400" />
 
@@ -127,7 +127,7 @@ export default async function ClanPage(props: ClanPageProps) {
             <span className="block text-xs font-semibold uppercase tracking-wider text-gray-400">Heritage Type</span>
             <span className="mt-1 flex items-center gap-1.5 text-base font-bold text-white sm:text-lg">
               <Landmark className="size-4 text-emerald-400" />
-              Dialectal Clan
+              Dialectal Sub-group
             </span>
           </div>
           <div>
@@ -153,7 +153,7 @@ export default async function ClanPage(props: ClanPageProps) {
               {clan.description}
             </p>
             <p className="mt-4 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
-              The {clan.name} traditional structure is tied deeply to ancestral migration lines that converged in Kogi State, establishing distinct linguistic inflections and farming patterns that persist today.
+            The {clan.name} traditional structure is tied deeply to ancestral migration lines that converged in Kogi State, establishing distinct linguistic inflections and farming patterns that persist today.
             </p>
           </div>
         </section>
@@ -175,7 +175,7 @@ export default async function ClanPage(props: ClanPageProps) {
       <section className="space-y-6 pt-4">
         <div className="border-b border-gray-200 pb-4 dark:border-gray-800">
           <h2 className="font-serif text-2xl font-bold text-gray-900 dark:text-white">
-            Communities of the {clan.name} Clan
+            Communities of the {clan.name} Sub-group
           </h2>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Explore detailed community registries matching the historical settlement footprint of the {clan.name} people.
@@ -190,7 +190,7 @@ export default async function ClanPage(props: ClanPageProps) {
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-gray-300 p-12 text-center dark:border-gray-700">
-            <p className="text-gray-500 dark:text-gray-400">No communities are currently classified under this clan.</p>
+            <p className="text-gray-500 dark:text-gray-400">No communities are currently classified under this sub-group.</p>
           </div>
         )}
       </section>

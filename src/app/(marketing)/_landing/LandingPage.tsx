@@ -48,7 +48,7 @@ const features = [
     icon: BookOpen,
     title: 'Community Encyclopedia',
     description:
-      'In-depth profiles spanning founding folklore, clan boundaries, prominent leadership, and civic infrastructure across all Okun towns.',
+      'In-depth profiles spanning founding folklore, sub-group boundaries, prominent leadership, and civic infrastructure across all Okun towns.',
     href: '/communities',
     cta: 'Browse Communities',
     accent: 'emerald',
@@ -94,12 +94,12 @@ const accentMap = {
 const popularTowns = ['Kabba', 'Isanlu', 'Mopa', 'Egbe', 'Iyara', 'Ekinrin-Adde'];
 
 const lgas = [
-  { name: 'Kabba/Bunu', slug: 'kabba-bunu', info: 'Headquarters: Kabba · Owe, Bunu & Kiri clans' },
-  { name: 'Ijumu', slug: 'ijumu', info: 'Headquarters: Iyara · Gbede & Ijumu clans' },
-  { name: 'Mopa-Muro', slug: 'mopa-muro', info: 'Headquarters: Mopa · Yagba clans' },
-  { name: 'Yagba West', slug: 'yagba-west', info: 'Headquarters: Odo-Ere · Yagba clans' },
-  { name: 'Yagba East', slug: 'yagba-east', info: 'Headquarters: Isanlu · Yagba clans' },
-  { name: 'Lokoja (Oworo)', slug: 'lokoja', info: 'Headquarters: Lokoja · Oworo clan' },
+  { name: 'Kabba/Bunu', slug: 'kabba-bunu', info: 'Headquarters: Kabba · Owe, Bunu & Kiri sub-groups' },
+  { name: 'Ijumu', slug: 'ijumu', info: 'Headquarters: Iyara · Gbede & Ijumu sub-groups' },
+  { name: 'Mopa-Muro', slug: 'mopa-muro', info: 'Headquarters: Mopa · Yagba sub-groups' },
+  { name: 'Yagba West', slug: 'yagba-west', info: 'Headquarters: Odo-Ere · Yagba sub-groups' },
+  { name: 'Yagba East', slug: 'yagba-east', info: 'Headquarters: Isanlu · Yagba sub-groups' },
+  { name: 'Lokoja (Oworo)', slug: 'lokoja', info: 'Headquarters: Lokoja · Oworo sub-group' },
 ];
 
 const clans = [
@@ -257,16 +257,16 @@ export function LandingPage() {
         </div>
       </ScrollRevealWrapper>
 
-      {/* ── LGAs & Clans Heritage ── */}
+      {/* ── LGAs & Sub-groups Heritage ── */}
       <ScrollRevealWrapper
         tagName="section"
         mode="children"
         threshold={0.08}
-        aria-label="Okun LGAs and Clans"
+        aria-label="Okun LGAs and Sub-groups"
       >
         <div className="animate-on-scroll mb-10 text-center">
           <h2 className="font-serif text-2xl font-bold text-gray-900 sm:text-3xl dark:text-white">
-            Clans & Local Government Areas
+            Sub-groups & Local Government Areas
           </h2>
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
             Discover the rich historical administrative and dialectal divisions of Okunland.
@@ -302,10 +302,10 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Clans Column */}
+          {/* Sub-groups Column */}
           <div className="space-y-4">
             <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-gray-900 dark:text-white">
-              <Shield className="size-5 text-amber-600 dark:text-amber-400" />7 Dialectal Clans
+              <Shield className="size-5 text-amber-600 dark:text-amber-400" />7 Dialectal Sub-groups
               (Tribes)
             </h3>
             <div className="grid gap-3 sm:grid-cols-2">

@@ -1,10 +1,11 @@
+import { allBlogs } from 'contentlayer/generated';
+// oxlint-disable require-await
+// oxlint-disable typescript/no-unsafe-type-assertion
 import { notFound } from 'next/navigation';
-import { Link } from '@/libs/I18nNavigation';
+import { MDXRenderer } from '@/components/blog/MDXRenderer';
 import { Button } from '@/components/ui/Button';
 import { ArticleHeaderBlock } from '@/features/editorial/ArticleHeaderBlock';
-import { MDXRenderer } from '@/components/blog/MDXRenderer';
-import { allBlogs } from 'contentlayer/generated';
-
+import { Link } from '@/libs/I18nNavigation';
 import { AppConfig } from '@/utils/AppConfig';
 
 type BlogDetailProps = {
@@ -24,8 +25,13 @@ export async function generateMetadata(props: BlogDetailProps) {
   const post = allBlogs.find((p) => p.slug === slug);
   const title = post ? post.title : slug.replace(/-/g, ' ');
   const cleanTitle = `${title} — Okunpedia Dispatch`;
-  const description = post?.summary || `Official peer-reviewed archival publication addressing ${title} across Okun municipal districts.`;
-  const image = post?.images && post.images.length > 0 ? post.images[0] : `${AppConfig.siteUrl}/static/images/hero-bg.jpg`;
+  const description =
+    post?.summary ||
+    `Official peer-reviewed archival publication addressing ${title} across Okun municipal districts.`;
+  const image =
+    post?.images && post.images.length > 0
+      ? post.images[0]
+      : `${AppConfig.siteUrl}/static/images/hero-bg.jpg`;
 
   return {
     title: cleanTitle,
@@ -80,12 +86,12 @@ export default async function BlogDetailPage(props: BlogDetailProps) {
         </Link>
       </div>
 
-      <div className="rounded-3xl border border-gray-200/80 bg-white p-6 shadow-xs dark:border-gray-800 dark:bg-gray-900/60 sm:p-10">
+      <div className="rounded-3xl border border-gray-200/80 bg-white p-6 shadow-xs sm:p-10 dark:border-gray-800 dark:bg-gray-900/60">
         {/* Render standardized editorial header block feature primitive */}
         <ArticleHeaderBlock article={mappedPost as any} />
 
         {/* Article Monograph Body Content */}
-        <div className="mt-8 prose prose-emerald dark:prose-invert max-w-none prose-headings:font-serif">
+        <div className="prose mt-8 max-w-none prose-emerald dark:prose-invert prose-headings:font-serif">
           <MDXRenderer code={post.body.code} />
         </div>
 
@@ -93,7 +99,8 @@ export default async function BlogDetailPage(props: BlogDetailProps) {
         <footer className="mt-12 border-t border-gray-100 pt-6 dark:border-gray-800">
           <div className="rounded-2xl bg-gray-50 p-4 text-center dark:bg-gray-950/40">
             <span className="text-[11px] font-semibold text-gray-500 dark:text-gray-400">
-              Verified by the Okun Archival Peer Review Network • Access open repository datasets via civic protocols.
+              Verified by the Okun Archival Peer Review Network • Access open repository datasets
+              via civic protocols.
             </span>
           </div>
         </footer>

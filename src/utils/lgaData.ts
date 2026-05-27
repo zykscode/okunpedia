@@ -70,7 +70,7 @@ export const OKUN_LGAS: Record<string, LgaInfo> = {
     name: 'Lokoja',
     slug: 'lokoja',
     headquarters: 'Lokoja',
-    description: 'While Lokoja is the state capital and home to diverse groups, the northern and western wards of Lokoja LGA are home to the Oworo clan, a major dialectal group of the Okun people. This area includes the beautiful Oworo hills and communities overlooking the River Niger confluence.',
+    description: 'While Lokoja is the state capital and home to diverse groups, the northern and western wards of Lokoja LGA are home to the Oworo sub-group, a major dialectal group of the Okun people. This area includes the beautiful Oworo hills and communities overlooking the River Niger confluence.',
     culturalHighlights: 'The Olu of Oworo is the paramount ruler for the Okun/Oworo communities in the local government area. The Oworo Cultural Festival showcases distinct regional boat regattas and mountain dances.',
     keyStats: {
       communitiesCount: 15,
