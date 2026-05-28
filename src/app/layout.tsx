@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     description: AppConfig.description,
     url: AppConfig.siteUrl,
     siteName: AppConfig.title,
-    images: [{ url: AppConfig.socialBanner, width: 1200, height: 630, alt: AppConfig.title }],
+    images: [{ url: AppConfig.socialBanner, width: 1024, height: 1024, alt: AppConfig.title }],
     locale: 'en_US',
     type: 'website',
   },

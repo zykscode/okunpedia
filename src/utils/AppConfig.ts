@@ -11,7 +11,7 @@ export const AppConfig = {
   siteUrl: "https://okunpedia.vercel.app",
   siteRepo: "https://github.com",
   siteLogo: "/logo.png",
-  socialBanner: "/logo.png",
+  socialBanner: "/og-banner.png",
   mastodon: "https://mastodon.social/@mastodonuser",
   email: "address@yoursite.com",
   github: "https://github.com",

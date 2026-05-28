@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Home, Search } from 'lucide-react';
+import { MainTemplate } from '@/templates/MainTemplate';
 
 export const metadata = {
   title: '404 — Page Not Found',
@@ -8,6 +9,7 @@ export const metadata = {
 
 export default function NotFound() {
   return (
+    <MainTemplate>
     <div className="flex min-h-[70vh] items-center justify-center px-4 py-16">
       <div className="w-full max-w-lg text-center">
         {/* 404 number */}
@@ -59,5 +61,6 @@ export default function NotFound() {
         </p>
       </div>
     </div>
+    </MainTemplate>
   );
 }
