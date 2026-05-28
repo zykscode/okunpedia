@@ -8,10 +8,8 @@ import { Button } from '@/components/ui/Button';
 import { Markdown } from '@/components/Markdown';
 import { db } from '@/libs/DB';
 import {
-  townTable,
-  lgaTable,
-  prominentPersonTable,
   communitiesSchema,
+  lgaTable,
   prominentIndigenesSchema,
   traditionalRulersSchema,
 } from '@/models/Schema';
@@ -316,23 +314,19 @@ function DetailContent(props: DetailContentProps) {
     </div>
   );
 }
-
 const getTownBySlug = unstable_cache(
   async (slug: string) => {
     const townRows = await db
       .select({
-        id: townTable.id,
-        name: townTable.name,
-        slug: townTable.slug,
-        tagline: townTable.tagline,
-        overview: townTable.overview,
-        rulerTitle: townTable.rulerTitle,
-        traditionalRuler: townTable.traditionalRuler,
-        lat: townTable.lat,
-        lng: townTable.lng,
-        population: townTable.population,
-        founded: townTable.founded,
-        randomFacts: townTable.randomFacts,
+        id: communitiesSchema.id,
+        name: communitiesSchema.name,
+        slug: communitiesSchema.slug,
+        tagline: communitiesSchema.tagline,
+        overview: communitiesSchema.overview,
+        lat: communitiesSchema.latitude,
+        lng: communitiesSchema.longitude,
+        population: communitiesSchema.population,
+        founded: communitiesSchema.founded,
         lga: lgaTable.name,
         historicalBackground: communitiesSchema.historicalBackground,
         foundingStories: communitiesSchema.foundingStories,
@@ -342,29 +336,13 @@ const getTownBySlug = unstable_cache(
         districtOrClan: communitiesSchema.districtOrClan,
         communityId: communitiesSchema.id,
       })
-      .from(townTable)
-      .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-      .leftJoin(communitiesSchema, eq(townTable.slug, communitiesSchema.slug))
-      .where(eq(townTable.slug, slug))
+      .from(communitiesSchema)
+      .innerJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+      .where(eq(communitiesSchema.slug, slug))
       .limit(1);
     return townRows[0] || null;
   },
   ['town-by-slug-cache'],
-  { tags: ['communities'] },
-);
-
-const getPersonsByTownId = unstable_cache(
-  async (townId: string) =>
-    await db
-      .select({
-        id: prominentPersonTable.id,
-        name: prominentPersonTable.name,
-        title: prominentPersonTable.title,
-        biography: prominentPersonTable.biography,
-      })
-      .from(prominentPersonTable)
-      .where(eq(prominentPersonTable.townId, townId)),
-  ['persons-by-town-cache'],
   { tags: ['communities'] },
 );
 
@@ -401,7 +379,7 @@ const getNewIndigenesByCommunityId = unstable_cache(
 
 export async function generateStaticParams() {
   try {
-    const towns = await db.select({ slug: townTable.slug }).from(townTable);
+    const towns = await db.select({ slug: communitiesSchema.slug }).from(communitiesSchema);
     return towns.map((town) => ({
       slug: town.slug,
     }));
@@ -460,7 +438,6 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
   const { slug } = await props.params;
 
   let town = null;
-  let persons: { id: string; name: string; title: string | null; biography: string | null }[] = [];
   let newRulers: { id: number; title: string; name: string; reignStart: string | null; reignEnd: string | null; isIncumbent: boolean | null }[] = [];
   let newIndigenes: { id: number; name: string; biography: string }[] = [];
   let fetchError = false;
@@ -468,13 +445,11 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
   try {
     town = await getTownBySlug(slug);
     if (town) {
-      const { id: townId, communityId } = town;
-      const [resPersons, resNewRulers, resNewIndigenes] = await Promise.all([
-        getPersonsByTownId(townId),
+      const { communityId } = town;
+      const [resNewRulers, resNewIndigenes] = await Promise.all([
         communityId ? getNewRulersByCommunityId(communityId) : Promise.resolve([]),
         communityId ? getNewIndigenesByCommunityId(communityId) : Promise.resolve([]),
       ]);
-      persons = resPersons;
       newRulers = resNewRulers;
       newIndigenes = resNewIndigenes;
     }
@@ -503,24 +478,12 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
     return { title: titleStr, name: r.name, isIncumbent: r.isIncumbent ?? false };
   });
 
-  let rulers: RulerItem[] = [];
-  if (customRulers.length > 0) {
-    rulers = customRulers;
-  } else if (town.rulerTitle && town.traditionalRuler) {
-    rulers = [{ title: town.rulerTitle, name: town.traditionalRuler, isIncumbent: true }];
-  }
+  const rulers: RulerItem[] = customRulers;
 
-  const customIndigenes: IndigeneItem[] = newIndigenes.map((ind) => ({
+  const indigenes: IndigeneItem[] = newIndigenes.map((ind) => ({
     name: ind.name,
     biography: ind.biography,
   }));
-
-  const indigenes: IndigeneItem[] = [
-    ...customIndigenes,
-    ...persons
-      .filter((p) => p.biography && !customIndigenes.some((ci) => ci.name.toLowerCase() === p.name.toLowerCase()))
-      .map((p) => ({ name: p.name, biography: p.biography ?? '' })),
-  ];
 
   const districtOrClan = town.districtOrClan || town.tagline || `${town.lga} LGA`;
   const lgaSlug = town.lga.toLowerCase().replaceAll(/[^a-z0-9]+/gu, '-').replaceAll(/(^-|-$)/gu, '');
@@ -550,7 +513,7 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
       />
 
       <DetailContent
-        town={town}
+        town={{ ...town, randomFacts: [] }}
         rulers={rulers}
         indigenes={indigenes}
       />

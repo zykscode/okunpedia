@@ -1,25 +1,18 @@
 import { notFound } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { db } from '@/libs/DB';
-import { townTable, communitiesSchema } from '@/models/Schema';
-import { getOrCreateCommunity } from '../actions';
+import { communitiesSchema } from '@/models/Schema';
 import { SectionsEditor } from './SectionsEditor';
 
 export default async function SectionsAdminPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
+  const communityId = Number.parseInt(id, 10);
+  if (Number.isNaN(communityId)) notFound();
 
   const [town] = await db
-    .select({ id: townTable.id, name: townTable.name })
-    .from(townTable)
-    .where(eq(townTable.id, id))
-    .limit(1);
-
-  if (!town) notFound();
-
-  const communityId = await getOrCreateCommunity(id);
-
-  const [community] = await db
     .select({
+      id: communitiesSchema.id,
+      name: communitiesSchema.name,
       historicalBackground: communitiesSchema.historicalBackground,
       foundingStories: communitiesSchema.foundingStories,
       cultureAndTraditions: communitiesSchema.cultureAndTraditions,
@@ -27,6 +20,8 @@ export default async function SectionsAdminPage(props: { params: Promise<{ id: s
     .from(communitiesSchema)
     .where(eq(communitiesSchema.id, communityId))
     .limit(1);
+
+  if (!town) notFound();
 
   return (
     <div className="space-y-6">
@@ -40,9 +35,9 @@ export default async function SectionsAdminPage(props: { params: Promise<{ id: s
       <SectionsEditor
         townId={id}
         initialData={{
-          historicalBackground: community?.historicalBackground ?? '',
-          foundingStories: community?.foundingStories ?? '',
-          cultureAndTraditions: community?.cultureAndTraditions ?? '',
+          historicalBackground: town?.historicalBackground ?? '',
+          foundingStories: town?.foundingStories ?? '',
+          cultureAndTraditions: town?.cultureAndTraditions ?? '',
         }}
       />
     </div>

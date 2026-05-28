@@ -1,22 +1,21 @@
 import { notFound } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { db } from '@/libs/DB';
-import { townTable, amenitiesSchema } from '@/models/Schema';
-import { getOrCreateCommunity } from '../actions';
+import { communitiesSchema, amenitiesSchema } from '@/models/Schema';
 import { AmenityManager } from './AmenityManager';
 
 export default async function AmenitiesAdminPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
+  const communityId = Number.parseInt(id, 10);
+  if (Number.isNaN(communityId)) notFound();
 
   const [town] = await db
-    .select({ id: townTable.id, name: townTable.name })
-    .from(townTable)
-    .where(eq(townTable.id, id))
+    .select({ id: communitiesSchema.id, name: communitiesSchema.name })
+    .from(communitiesSchema)
+    .where(eq(communitiesSchema.id, communityId))
     .limit(1);
 
   if (!town) notFound();
-
-  const communityId = await getOrCreateCommunity(id);
 
   const amenities = await db
     .select()

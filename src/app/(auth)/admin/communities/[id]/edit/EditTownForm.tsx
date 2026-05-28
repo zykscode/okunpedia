@@ -11,8 +11,6 @@ type Town = {
   name: string;
   tagline: string | null;
   overview: string;
-  rulerTitle: string | null;
-  traditionalRuler: string | null;
   published: boolean;
   lgaName: string | null;
 };
@@ -123,36 +121,7 @@ export function EditTownForm(props: { town: Town }) {
             />
           </div>
 
-          {/* Ruler info */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="rulerTitle" className="mb-1.5 block text-xs font-bold tracking-wider text-gray-600 uppercase dark:text-gray-400">
-                Ruler Title
-              </label>
-              <input
-                id="rulerTitle"
-                name="rulerTitle"
-                type="text"
-                defaultValue={props.town.rulerTitle ?? ''}
-                disabled={isPending}
-                placeholder="e.g. Obaro, Elulu"
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
-              />
-            </div>
-            <div>
-              <label htmlFor="traditionalRuler" className="mb-1.5 block text-xs font-bold tracking-wider text-gray-600 uppercase dark:text-gray-400">
-                Traditional Ruler
-              </label>
-              <input
-                id="traditionalRuler"
-                name="traditionalRuler"
-                type="text"
-                defaultValue={props.town.traditionalRuler ?? ''}
-                disabled={isPending}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none disabled:opacity-60 dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
-              />
-            </div>
-          </div>
+
 
           {/* Published toggle */}
           <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/30">

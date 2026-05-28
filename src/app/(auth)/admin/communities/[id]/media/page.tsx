@@ -1,16 +1,18 @@
 import { notFound } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { db } from '@/libs/DB';
-import { townTable, mediaTable } from '@/models/Schema';
+import { communitiesSchema, mediaTable } from '@/models/Schema';
 import { MediaManager } from './MediaManager';
 
 export default async function MediaAdminPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
+  const communityId = Number.parseInt(id, 10);
+  if (Number.isNaN(communityId)) notFound();
 
   const [town] = await db
-    .select({ id: townTable.id, name: townTable.name })
-    .from(townTable)
-    .where(eq(townTable.id, id))
+    .select({ id: communitiesSchema.id, name: communitiesSchema.name })
+    .from(communitiesSchema)
+    .where(eq(communitiesSchema.id, communityId))
     .limit(1);
 
   if (!town) notFound();
@@ -18,7 +20,7 @@ export default async function MediaAdminPage(props: { params: Promise<{ id: stri
   const mediaList = await db
     .select()
     .from(mediaTable)
-    .where(eq(mediaTable.communityId, id));
+    .where(eq(mediaTable.communityId, communityId));
 
   return (
     <div className="space-y-6">

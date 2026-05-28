@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { desc, eq } from 'drizzle-orm';
 import { PlusCircle, Pencil } from 'lucide-react';
 import { db } from '@/libs/DB';
-import { townTable, lgaTable } from '@/models/Schema';
+import { communitiesSchema, lgaTable } from '@/models/Schema';
 import { Badge } from '@/components/ui/Badge';
 import { CommunityActionsMenu } from './CommunityActionsMenu';
 
@@ -13,19 +13,25 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminCommunitiesPage() {
-  const towns = await db
+  const rawTowns = await db
     .select({
-      id: townTable.id,
-      name: townTable.name,
-      slug: townTable.slug,
-      tagline: townTable.tagline,
-      published: townTable.published,
+      id: communitiesSchema.id,
+      name: communitiesSchema.name,
+      slug: communitiesSchema.slug,
+      tagline: communitiesSchema.tagline,
+      status: communitiesSchema.status,
       lgaName: lgaTable.name,
-      updatedAt: townTable.updatedAt,
+      updatedAt: communitiesSchema.updatedAt,
     })
-    .from(townTable)
-    .leftJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-    .orderBy(desc(townTable.updatedAt));
+    .from(communitiesSchema)
+    .leftJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+    .orderBy(desc(communitiesSchema.updatedAt));
+
+  const towns = rawTowns.map(t => ({
+    ...t,
+    id: String(t.id),
+    published: t.status === 'published',
+  }));
 
   const total = towns.length;
   const published = towns.filter((t) => t.published).length;

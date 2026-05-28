@@ -9,12 +9,11 @@ import { z } from 'zod';
 import { db } from '@/libs/DB';
 import { requireRole } from '@/libs/auth/guards';
 import {
-  townTable,
   lgaTable,
-  townRevisionsTable,
   userTable,
   auditLogsTable,
   communitiesSchema,
+  communityRevisionsTable,
 } from '@/models/Schema';
 
 export type ActionState = {
@@ -31,10 +30,6 @@ const generateSlug = (input: string) =>
     .replace(/\s+/g, '-')
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '-');
-
-/** Generates a CUID-like ID for Prisma-managed rows. */
-const generateId = () =>
-  `cmp_${Math.random().toString(36).slice(2, 11)}_${Date.now().toString(36)}`;
 
 /** Inserts a row into the audit log (fire-and-forget, non-throwing). */
 async function insertAuditLog(opts: {
@@ -75,8 +70,6 @@ const UpdateTownSchema = z.object({
   lga:               z.string().min(1, 'LGA is required'),
   tagline:           z.string().max(300).optional(),
   overview:          z.string().min(10, 'Overview must be at least 10 characters').max(20_000),
-  rulerTitle:        z.string().max(100).optional(),
-  traditionalRuler:  z.string().max(200).optional(),
   published:         z.enum(['true', 'false']).transform((v) => v === 'true'),
 });
 
@@ -120,26 +113,31 @@ export async function createCommunityAction(
     }
 
     const slug = generateSlug(name);
-    const id = generateId();
 
-    await db.insert(townTable).values({
-      id,
+    const [inserted] = await db.insert(communitiesSchema).values({
       name,
       slug,
       tagline: tagline || null,
       overview: overview || `Community profile for ${name} in ${lgaName} LGA.`,
+      lga: lgaName,
       lgaId: lgaRows[0].id,
+      districtOrClan: tagline || `${lgaName} LGA`,
       createdById: session.user.id,
-      published: true,
+      createdBy: session.user.name || session.user.email || 'Admin',
+      status: 'published',
       featured: false,
       updatedAt: new Date(),
-    });
+    }).returning({ id: communitiesSchema.id });
+
+    if (!inserted) {
+      throw new Error('Failed to insert community.');
+    }
 
     await insertAuditLog({
       actorId: session.user.id,
       action: 'create',
       targetType: 'community',
-      targetId: id,
+      targetId: String(inserted.id),
       after: { name, lgaName },
     });
 
@@ -158,20 +156,22 @@ export async function createCommunityAction(
 // ---------------------------------------------------------------
 
 export async function updateTownAction(
-  townId: string,
+  townIdStr: string,
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
   try {
     const session = await requireRole('ADMIN');
+    const townId = Number.parseInt(townIdStr, 10);
+    if (Number.isNaN(townId)) {
+      return { success: false, message: 'Invalid community ID.' };
+    }
 
     const parsed = UpdateTownSchema.safeParse({
       name:             formData.get('name'),
       lga:              formData.get('lga'),
       tagline:          formData.get('tagline'),
       overview:         formData.get('overview'),
-      rulerTitle:       formData.get('rulerTitle'),
-      traditionalRuler: formData.get('traditionalRuler'),
       published:        formData.get('published') ?? 'false',
     });
 
@@ -179,7 +179,7 @@ export async function updateTownAction(
       return { success: false, message: parsed.error.issues[0]?.message ?? 'Validation failed.' };
     }
 
-    const { name, lga: lgaName, tagline, overview, rulerTitle, traditionalRuler, published } = parsed.data;
+    const { name, lga: lgaName, tagline, overview, published } = parsed.data;
 
     const lgaRows = await db
       .select({ id: lgaTable.id })
@@ -192,47 +192,34 @@ export async function updateTownAction(
     }
 
     // Snapshot before update
-    const [before] = await db.select().from(townTable).where(eq(townTable.id, townId)).limit(1);
+    const [before] = await db.select().from(communitiesSchema).where(eq(communitiesSchema.id, townId)).limit(1);
 
     await db
-      .update(townTable)
+      .update(communitiesSchema)
       .set({
         name,
         slug: generateSlug(name),
         tagline: tagline || null,
         overview,
+        lga: lgaName,
         lgaId: lgaRows[0].id,
-        rulerTitle: rulerTitle || null,
-        traditionalRuler: traditionalRuler || null,
-        published,
+        districtOrClan: tagline || `${lgaName} LGA`,
+        status: published ? 'published' : 'draft',
         updatedAt: new Date(),
       })
-      .where(eq(townTable.id, townId));
-
-    if (before?.slug) {
-      await db
-        .update(communitiesSchema)
-        .set({
-          name,
-          slug: generateSlug(name),
-          lga: lgaName,
-          districtOrClan: tagline || '',
-          updatedAt: new Date(),
-        })
-        .where(eq(communitiesSchema.slug, before.slug));
-    }
+      .where(eq(communitiesSchema.id, townId));
 
     await insertAuditLog({
       actorId: session.user.id,
       action: published ? 'publish' : 'unpublish',
       targetType: 'community',
-      targetId: townId,
+      targetId: townIdStr,
       before: before ?? undefined,
       after: { name, published },
     });
 
     revalidateTag('communities', 'max');
-    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag(`community-${townIdStr}`, 'max');
     return { success: true, message: 'Community updated successfully.' };
   } catch (error) {
     if (error instanceof Error && error.message === 'NEXT_REDIRECT') throw error;
@@ -246,26 +233,30 @@ export async function updateTownAction(
 // ---------------------------------------------------------------
 
 export async function toggleTownPublishedAction(
-  townId: string,
+  townIdStr: string,
   published: boolean,
 ): Promise<ActionState> {
   try {
     const session = await requireRole('ADMIN');
+    const townId = Number.parseInt(townIdStr, 10);
+    if (Number.isNaN(townId)) {
+      return { success: false, message: 'Invalid community ID.' };
+    }
 
     await db
-      .update(townTable)
-      .set({ published, updatedAt: new Date() })
-      .where(eq(townTable.id, townId));
+      .update(communitiesSchema)
+      .set({ status: published ? 'published' : 'draft', updatedAt: new Date() })
+      .where(eq(communitiesSchema.id, townId));
 
     await insertAuditLog({
       actorId: session.user.id,
       action: published ? 'publish' : 'unpublish',
       targetType: 'community',
-      targetId: townId,
+      targetId: townIdStr,
     });
 
     revalidateTag('communities', 'max');
-    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag(`community-${townIdStr}`, 'max');
     return { success: true, message: published ? 'Community published.' : 'Community unpublished.' };
   } catch (error) {
     console.error('Error toggling publish:', error);
@@ -277,19 +268,23 @@ export async function toggleTownPublishedAction(
 // DELETE COMMUNITY
 // ---------------------------------------------------------------
 
-export async function deleteTownAction(townId: string): Promise<ActionState> {
+export async function deleteTownAction(townIdStr: string): Promise<ActionState> {
   try {
     const session = await requireRole('ADMIN');
+    const townId = Number.parseInt(townIdStr, 10);
+    if (Number.isNaN(townId)) {
+      return { success: false, message: 'Invalid community ID.' };
+    }
 
-    const [before] = await db.select().from(townTable).where(eq(townTable.id, townId)).limit(1);
+    const [before] = await db.select().from(communitiesSchema).where(eq(communitiesSchema.id, townId)).limit(1);
 
-    await db.delete(townTable).where(eq(townTable.id, townId));
+    await db.delete(communitiesSchema).where(eq(communitiesSchema.id, townId));
 
     await insertAuditLog({
       actorId: session.user.id,
       action: 'delete',
       targetType: 'community',
-      targetId: townId,
+      targetId: townIdStr,
       before: before ?? undefined,
     });
 
@@ -348,13 +343,17 @@ export async function updateUserRoleAction(
 // CURATION QUEUE ACTIONS
 // ---------------------------------------------------------------
 
-export async function approveTownAction(townId: string): Promise<ActionState> {
+export async function approveTownAction(townIdStr: string): Promise<ActionState> {
   try {
     const session = await requireRole('ADMIN');
+    const townId = Number.parseInt(townIdStr, 10);
+    if (Number.isNaN(townId)) {
+      return { success: false, message: 'Invalid community ID.' };
+    }
 
-    await db.update(townTable).set({ published: true, updatedAt: new Date() }).where(eq(townTable.id, townId));
+    await db.update(communitiesSchema).set({ status: 'published', updatedAt: new Date() }).where(eq(communitiesSchema.id, townId));
 
-    await insertAuditLog({ actorId: session.user.id, action: 'publish', targetType: 'community', targetId: townId });
+    await insertAuditLog({ actorId: session.user.id, action: 'publish', targetType: 'community', targetId: townIdStr });
 
     revalidateTag('communities', 'max');
     return { success: true, message: 'Town approved and published.' };
@@ -364,13 +363,17 @@ export async function approveTownAction(townId: string): Promise<ActionState> {
   }
 }
 
-export async function rejectTownAction(townId: string): Promise<ActionState> {
+export async function rejectTownAction(townIdStr: string): Promise<ActionState> {
   try {
     const session = await requireRole('ADMIN');
+    const townId = Number.parseInt(townIdStr, 10);
+    if (Number.isNaN(townId)) {
+      return { success: false, message: 'Invalid community ID.' };
+    }
 
-    await db.delete(townTable).where(eq(townTable.id, townId));
+    await db.delete(communitiesSchema).where(eq(communitiesSchema.id, townId));
 
-    await insertAuditLog({ actorId: session.user.id, action: 'delete', targetType: 'community', targetId: townId });
+    await insertAuditLog({ actorId: session.user.id, action: 'delete', targetType: 'community', targetId: townIdStr });
 
     revalidateTag('communities', 'max');
     return { success: true, message: 'Town submission rejected and removed.' };
@@ -381,11 +384,15 @@ export async function rejectTownAction(townId: string): Promise<ActionState> {
 }
 
 export async function submitTownRevisionAction(
-  townId: string,
+  townIdStr: string,
   formData: FormData,
 ): Promise<ActionState> {
   try {
     const session = await requireRole('ADMIN');
+    const townId = Number.parseInt(townIdStr, 10);
+    if (Number.isNaN(townId)) {
+      return { success: false, message: 'Invalid community ID.' };
+    }
 
     const name = (formData.get('name') as string | null)?.trim() ?? '';
     const overview = (formData.get('overview') as string | null)?.trim() ?? '';
@@ -395,21 +402,19 @@ export async function submitTownRevisionAction(
     }
 
     await db
-      .update(townTable)
+      .update(communitiesSchema)
       .set({
         name,
         tagline: (formData.get('tagline') as string) || null,
         overview,
-        rulerTitle: (formData.get('rulerTitle') as string) || null,
-        traditionalRuler: (formData.get('traditionalRuler') as string) || null,
         updatedAt: new Date(),
       })
-      .where(eq(townTable.id, townId));
+      .where(eq(communitiesSchema.id, townId));
 
-    await insertAuditLog({ actorId: session.user.id, action: 'edit', targetType: 'community', targetId: townId });
+    await insertAuditLog({ actorId: session.user.id, action: 'edit', targetType: 'community', targetId: townIdStr });
 
     revalidateTag('communities', 'max');
-    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag(`community-${townIdStr}`, 'max');
     return { success: true, message: 'Changes applied directly.' };
   } catch (error) {
     console.error('Error submitting revision:', error);
@@ -423,28 +428,26 @@ export async function approveRevisionAction(revisionId: number): Promise<ActionS
 
     const [revision] = await db
       .select()
-      .from(townRevisionsTable)
-      .where(eq(townRevisionsTable.id, revisionId))
+      .from(communityRevisionsTable)
+      .where(eq(communityRevisionsTable.id, revisionId))
       .limit(1);
 
     if (!revision) return { success: false, message: 'Revision not found.' };
 
     await db
-      .update(townTable)
+      .update(communitiesSchema)
       .set({
         name: revision.name,
         tagline: revision.tagline,
         overview: revision.overview,
-        rulerTitle: revision.rulerTitle,
-        traditionalRuler: revision.traditionalRuler,
         updatedAt: new Date(),
       })
-      .where(eq(townTable.id, revision.townId));
+      .where(eq(communitiesSchema.id, revision.communityId));
 
     await db
-      .update(townRevisionsTable)
+      .update(communityRevisionsTable)
       .set({ status: 'approved' })
-      .where(eq(townRevisionsTable.id, revisionId));
+      .where(eq(communityRevisionsTable.id, revisionId));
 
     await insertAuditLog({ actorId: session.user.id, action: 'approve_revision', targetType: 'revision', targetId: String(revisionId) });
 
@@ -461,9 +464,9 @@ export async function rejectRevisionAction(revisionId: number): Promise<ActionSt
     const session = await requireRole('MODERATOR');
 
     await db
-      .update(townRevisionsTable)
+      .update(communityRevisionsTable)
       .set({ status: 'rejected' })
-      .where(eq(townRevisionsTable.id, revisionId));
+      .where(eq(communityRevisionsTable.id, revisionId));
 
     await insertAuditLog({ actorId: session.user.id, action: 'reject_revision', targetType: 'revision', targetId: String(revisionId) });
 

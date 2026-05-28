@@ -25,13 +25,15 @@ type PendingRevision = {
   originalName: string | null;
   originalTagline: string | null;
   originalOverview: string | null;
-  originalRulerTitle: string | null;
-  originalTraditionalRuler: string | null;
+  originalHistoricalBackground: string | null;
+  originalFoundingStories: string | null;
+  originalCultureAndTraditions: string | null;
   name: string;
   tagline: string | null;
   overview: string;
-  rulerTitle: string | null;
-  traditionalRuler: string | null;
+  historicalBackground: string | null;
+  foundingStories: string | null;
+  cultureAndTraditions: string | null;
   submittedBy: string | null;
   createdAt: Date;
 };
@@ -276,30 +278,44 @@ export function CurationList(props: Props) {
                     </div>
                   )}
 
-                  {/* Ruler Title Check */}
-                  {rev.rulerTitle !== rev.originalRulerTitle && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-950 p-3 rounded-lg border border-gray-100 dark:border-gray-900">
+                  {/* Historical Background Check */}
+                  {rev.historicalBackground !== rev.originalHistoricalBackground && (
+                    <div className="space-y-2 bg-gray-50 dark:bg-gray-950 p-3 rounded-lg border border-gray-100 dark:border-gray-900">
                       <div>
-                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider block mb-1">Current Ruler Title</span>
-                        <p className="text-sm text-gray-550 line-through">{rev.originalRulerTitle || '(None)'}</p>
+                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider block mb-1">Current Historical Background</span>
+                        <p className="text-xs text-gray-550 line-through whitespace-pre-wrap">{rev.originalHistoricalBackground || '(None)'}</p>
                       </div>
-                      <div>
-                        <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider block mb-1">Proposed Ruler Title</span>
-                        <p className="text-sm text-gray-900 dark:text-white font-bold">{rev.rulerTitle || '(Cleared)'}</p>
+                      <div className="mt-2 pt-2 border-t border-gray-200/50 dark:border-gray-800">
+                        <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider block mb-1">Proposed Historical Background</span>
+                        <p className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{rev.historicalBackground || '(Cleared)'}</p>
                       </div>
                     </div>
                   )}
 
-                  {/* Traditional Ruler Check */}
-                  {rev.traditionalRuler !== rev.originalTraditionalRuler && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-950 p-3 rounded-lg border border-gray-100 dark:border-gray-900">
+                  {/* Founding Stories Check */}
+                  {rev.foundingStories !== rev.originalFoundingStories && (
+                    <div className="space-y-2 bg-gray-50 dark:bg-gray-950 p-3 rounded-lg border border-gray-100 dark:border-gray-900">
                       <div>
-                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider block mb-1">Current Traditional Ruler</span>
-                        <p className="text-sm text-gray-550 line-through">{rev.originalTraditionalRuler || '(None)'}</p>
+                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider block mb-1">Current Founding Stories</span>
+                        <p className="text-xs text-gray-550 line-through whitespace-pre-wrap">{rev.originalFoundingStories || '(None)'}</p>
                       </div>
+                      <div className="mt-2 pt-2 border-t border-gray-200/50 dark:border-gray-800">
+                        <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider block mb-1">Proposed Founding Stories</span>
+                        <p className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{rev.foundingStories || '(Cleared)'}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Culture & Traditions Check */}
+                  {rev.cultureAndTraditions !== rev.originalCultureAndTraditions && (
+                    <div className="space-y-2 bg-gray-50 dark:bg-gray-950 p-3 rounded-lg border border-gray-100 dark:border-gray-900">
                       <div>
-                        <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider block mb-1">Proposed Traditional Ruler</span>
-                        <p className="text-sm text-gray-900 dark:text-white font-bold">{rev.traditionalRuler || '(Cleared)'}</p>
+                        <span className="text-[10px] font-bold text-red-500 uppercase tracking-wider block mb-1">Current Culture & Traditions</span>
+                        <p className="text-xs text-gray-550 line-through whitespace-pre-wrap">{rev.originalCultureAndTraditions || '(None)'}</p>
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-gray-200/50 dark:border-gray-800">
+                        <span className="text-[10px] font-bold text-green-500 uppercase tracking-wider block mb-1">Proposed Culture & Traditions</span>
+                        <p className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">{rev.cultureAndTraditions || '(Cleared)'}</p>
                       </div>
                     </div>
                   )}

@@ -2,39 +2,37 @@ import { notFound } from 'next/navigation';
 import { eq, desc } from 'drizzle-orm';
 import Link from 'next/link';
 import { db } from '@/libs/DB';
-import { townTable, lgaTable, prominentPersonTable, townRevisionsTable } from '@/models/Schema';
+import { communitiesSchema, lgaTable, prominentIndigenesSchema, communityRevisionsTable } from '@/models/Schema';
 
 export default async function CommunityOverviewPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
+  const communityId = Number.parseInt(id, 10);
+  if (Number.isNaN(communityId)) notFound();
 
   const [town] = await db
     .select({
-      id: townTable.id,
-      name: townTable.name,
-      slug: townTable.slug,
-      tagline: townTable.tagline,
-      overview: townTable.overview,
-      rulerTitle: townTable.rulerTitle,
-      traditionalRuler: townTable.traditionalRuler,
-      published: townTable.published,
-      updatedAt: townTable.updatedAt,
+      id: communitiesSchema.id,
+      name: communitiesSchema.name,
+      slug: communitiesSchema.slug,
+      tagline: communitiesSchema.tagline,
+      overview: communitiesSchema.overview,
+      updatedAt: communitiesSchema.updatedAt,
       lgaName: lgaTable.name,
     })
-    .from(townTable)
-    .leftJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-    .where(eq(townTable.id, id))
+    .from(communitiesSchema)
+    .leftJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+    .where(eq(communitiesSchema.id, communityId))
     .limit(1);
 
   if (!town) notFound();
 
   const [indigeneCount, pendingRevisions] = await Promise.all([
-    db.select().from(prominentPersonTable).where(eq(prominentPersonTable.townId, id)),
-    db.select().from(townRevisionsTable)
-      .where(eq(townRevisionsTable.townId, id))
-      .orderBy(desc(townRevisionsTable.createdAt))
+    db.select().from(prominentIndigenesSchema).where(eq(prominentIndigenesSchema.communityId, communityId)),
+    db.select().from(communityRevisionsTable)
+      .where(eq(communityRevisionsTable.communityId, communityId))
+      .orderBy(desc(communityRevisionsTable.createdAt))
       .limit(5),
   ]);
-
 
   const stats = [
     { label: 'Prominent Indigenes', value: indigeneCount.length, href: 'people' },
@@ -68,12 +66,6 @@ export default async function CommunityOverviewPage(props: { params: Promise<{ i
             <p className="text-xs font-bold tracking-wider text-gray-400 uppercase">Slug</p>
             <p className="mt-1 font-mono text-sm text-gray-700 dark:text-gray-300">{town.slug}</p>
           </div>
-          {town.traditionalRuler && (
-            <div>
-              <p className="text-xs font-bold tracking-wider text-gray-400 uppercase">{town.rulerTitle ?? 'Traditional Ruler'}</p>
-              <p className="mt-1 font-semibold text-gray-900 dark:text-white">{town.traditionalRuler}</p>
-            </div>
-          )}
           <div>
             <p className="text-xs font-bold tracking-wider text-gray-400 uppercase">Last updated</p>
             <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">

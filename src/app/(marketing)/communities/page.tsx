@@ -1,50 +1,50 @@
-import { eq } from 'drizzle-orm';
-import { Search, ArrowRight, MapPin, AlertCircle } from 'lucide-react';
-import { unstable_cache } from 'next/cache';
-import Link from 'next/link';
-import { Badge } from '@/components/ui/Badge';
-import { Button } from '@/components/ui/Button';
-import { CommunityProfileCard } from '@/features/communities/CommunityProfileCard';
-import { db } from '@/libs/DB';
-import { townTable, lgaTable } from '@/models/Schema';
+import { eq } from "drizzle-orm";
+import { Search, ArrowRight, MapPin, AlertCircle } from "lucide-react";
+import { unstable_cache } from "next/cache";
+import Link from "next/link";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { CommunityProfileCard } from "@/features/communities/CommunityProfileCard";
+import { db } from "@/libs/DB";
+import { communitiesSchema, lgaTable } from "@/models/Schema";
 
-import { AppConfig } from '@/utils/AppConfig';
+import { AppConfig } from "@/utils/AppConfig";
 
 export const metadata = {
-  title: 'Okun Communities — Explore Traditional Towns & Lineages | Okunpedia',
+  title: "Okun Communities — Explore Traditional Towns & Lineages | Okunpedia",
   description:
-    'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.',
+    "Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.",
   openGraph: {
-    title: 'Okun Communities — Explore Traditional Towns & Lineages',
+    title: "Okun Communities — Explore Traditional Towns & Lineages",
     description:
-      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.',
+      "Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.",
     url: `${AppConfig.siteUrl}/communities`,
     siteName: AppConfig.title,
     images: [
       {
-        url: `${AppConfig.siteUrl}/static/images/hero-bg.jpg`,
+        url: `${AppConfig.siteUrl}/logo.png`,
         width: 1200,
         height: 630,
-        alt: 'Okun Communities',
+        alt: "Okun Communities",
       },
     ],
-    type: 'website',
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'Okun Communities — Explore Traditional Towns & Lineages',
+    card: "summary_large_image",
+    title: "Okun Communities — Explore Traditional Towns & Lineages",
     description:
-      'Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.',
-    images: [`${AppConfig.siteUrl}/static/images/hero-bg.jpg`],
+      "Browse the comprehensive registry of Okun communities with documented local governance hubs, traditional sub-groups, migration archives, and civic metrics across all six LGAs.",
+    images: [`${AppConfig.siteUrl}/logo.png`],
   },
 };
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-const lgaBelts = ['Kabba/Bunu', 'Mopa-Muro', 'Yagba East', 'Yagba West', 'Ijumu', 'Lokoja'];
+const lgaBelts = ["Kabba/Bunu", "Mopa-Muro", "Yagba East", "Yagba West", "Ijumu", "Lokoja"];
 
 type TownRow = {
-  id: string;
+  id: number;
   name: string;
   slug: string;
   lga: string;
@@ -56,17 +56,17 @@ const fetchTownsCached = unstable_cache(
   async (): Promise<TownRow[]> => {
     const rows = await db
       .select({
-        id: townTable.id,
-        name: townTable.name,
-        slug: townTable.slug,
+        id: communitiesSchema.id,
+        name: communitiesSchema.name,
+        slug: communitiesSchema.slug,
         lga: lgaTable.name,
-        districtOrClan: townTable.tagline,
-        historicalBackground: townTable.overview,
+        districtOrClan: communitiesSchema.districtOrClan,
+        historicalBackground: communitiesSchema.overview,
       })
-      .from(townTable)
-      .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-      .where(eq(townTable.published, true))
-      .orderBy(townTable.name);
+      .from(communitiesSchema)
+      .innerJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+      .where(eq(communitiesSchema.status, "published"))
+      .orderBy(communitiesSchema.name);
 
     return rows.map((r) => ({
       ...r,
@@ -74,15 +74,15 @@ const fetchTownsCached = unstable_cache(
       historicalBackground: r.historicalBackground ?? null,
     }));
   },
-  ['all-published-towns-cache'],
-  { tags: ['communities'] },
+  ["all-published-towns-cache"],
+  { tags: ["communities"] },
 );
 
 export default async function CommunitiesPage(props: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const searchParams = await props.searchParams;
-  const rawSearch = typeof searchParams.search === 'string' ? searchParams.search : '';
+  const rawSearch = typeof searchParams.search === "string" ? searchParams.search : "";
   const query = rawSearch.toLowerCase().trim();
 
   let towns: TownRow[] = [];
@@ -90,7 +90,7 @@ export default async function CommunitiesPage(props: {
   try {
     towns = await fetchTownsCached();
   } catch (error) {
-    console.error('Error fetching communities:', error);
+    console.error("Error fetching communities:", error);
     fetchError = true;
   }
 
@@ -158,12 +158,12 @@ export default async function CommunitiesPage(props: {
           <p className="text-sm text-gray-500 dark:text-gray-400">
             <span className="font-semibold text-gray-900 dark:text-white">
               {displayList.length}
-            </span>{' '}
-            {displayList.length === 1 ? 'community' : 'communities'} found
+            </span>{" "}
+            {displayList.length === 1 ? "community" : "communities"} found
             {query && (
               <span>
-                {' '}
-                for{' '}
+                {" "}
+                for{" "}
                 <span className="font-medium text-gray-900 dark:text-white">
                   &ldquo;{rawSearch}&rdquo;
                 </span>
@@ -240,11 +240,11 @@ export default async function CommunitiesPage(props: {
                   key={belt}
                   href={`/communities/?search=${encodeURIComponent(belt)}`}
                   className={[
-                    'rounded-lg px-2.5 py-1 transition-colors',
+                    "rounded-lg px-2.5 py-1 transition-colors",
                     rawSearch === belt
-                      ? 'bg-amber-500 font-semibold text-gray-950'
-                      : 'bg-white/8 hover:bg-white/15 hover:text-gray-200',
-                  ].join(' ')}
+                      ? "bg-amber-500 font-semibold text-gray-950"
+                      : "bg-white/8 hover:bg-white/15 hover:text-gray-200",
+                  ].join(" ")}
                 >
                   {belt}
                 </Link>

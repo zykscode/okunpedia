@@ -14,11 +14,16 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
-    const communityId = formData.get('communityId') as string | null;
+    const communityIdStr = formData.get('communityId') as string | null;
     const caption = formData.get('caption') as string | null;
 
-    if (!file || !communityId) {
+    if (!file || !communityIdStr) {
       return NextResponse.json({ error: 'Missing file or communityId' }, { status: 400 });
+    }
+
+    const communityId = Number.parseInt(communityIdStr, 10);
+    if (Number.isNaN(communityId)) {
+      return NextResponse.json({ error: 'Invalid communityId format' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();

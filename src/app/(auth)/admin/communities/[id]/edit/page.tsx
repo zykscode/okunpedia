@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { db } from '@/libs/DB';
-import { townTable, lgaTable } from '@/models/Schema';
+import { communitiesSchema, lgaTable } from '@/models/Schema';
 import { EditTownForm } from './EditTownForm';
 
 export const metadata: Metadata = {
@@ -12,26 +12,35 @@ export const metadata: Metadata = {
 
 export default async function EditCommunityPage(props: { params: Promise<{ id: string }> }) {
   const { id } = await props.params;
+  const communityId = Number.parseInt(id, 10);
+  if (Number.isNaN(communityId)) {
+    notFound();
+  }
 
   const [town] = await db
     .select({
-      id: townTable.id,
-      name: townTable.name,
-      tagline: townTable.tagline,
-      overview: townTable.overview,
-      rulerTitle: townTable.rulerTitle,
-      traditionalRuler: townTable.traditionalRuler,
-      published: townTable.published,
+      id: communitiesSchema.id,
+      name: communitiesSchema.name,
+      tagline: communitiesSchema.tagline,
+      overview: communitiesSchema.overview,
+      published: communitiesSchema.status,
       lgaName: lgaTable.name,
     })
-    .from(townTable)
-    .leftJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-    .where(eq(townTable.id, id))
+    .from(communitiesSchema)
+    .leftJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+    .where(eq(communitiesSchema.id, communityId))
     .limit(1);
 
   if (!town) {
     notFound();
   }
+
+  const mappedTown = {
+    ...town,
+    id: String(town.id),
+    published: town.published === 'published',
+    overview: town.overview || '',
+  };
 
   return (
     <div className="mx-auto max-w-3xl space-y-8 py-8">
@@ -55,7 +64,7 @@ export default async function EditCommunityPage(props: { params: Promise<{ id: s
       </div>
 
       {/* Form */}
-      <EditTownForm town={town} />
+      <EditTownForm town={mappedTown} />
     </div>
   );
 }

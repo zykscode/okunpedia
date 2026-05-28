@@ -2,9 +2,8 @@ import { eq, desc, count } from 'drizzle-orm';
 import Link from 'next/link';
 import { auth } from '@/auth';
 import { db } from '@/libs/DB';
-import { townTable, townRevisionsTable, userTable, lgaTable } from '@/models/Schema';
+import { communitiesSchema, communityRevisionsTable, userTable, lgaTable } from '@/models/Schema';
 import { CurationList } from './CurationList';
-
 
 export default async function AdminPage() {
   const session = await auth();
@@ -13,53 +12,68 @@ export default async function AdminPage() {
   const isSuperAdmin = role === 'SUPER_ADMIN';
 
   // Fetch pending towns
-  const pendingTowns = isAdmin
+  const pendingTownsRaw = isAdmin
     ? await db
         .select({
-          id: townTable.id,
-          name: townTable.name,
-          tagline: townTable.tagline,
-          overview: townTable.overview,
+          id: communitiesSchema.id,
+          name: communitiesSchema.name,
+          tagline: communitiesSchema.tagline,
+          overview: communitiesSchema.overview,
           lgaName: lgaTable.name,
-          createdAt: townTable.updatedAt,
+          createdAt: communitiesSchema.updatedAt,
         })
-        .from(townTable)
-        .leftJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-        .where(eq(townTable.published, false))
-        .orderBy(desc(townTable.updatedAt))
+        .from(communitiesSchema)
+        .leftJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+        .where(eq(communitiesSchema.status, 'draft'))
+        .orderBy(desc(communitiesSchema.updatedAt))
     : [];
 
+  const pendingTowns = pendingTownsRaw.map(t => ({
+    ...t,
+    id: String(t.id),
+    overview: t.overview || '',
+  }));
+
   // Fetch pending revisions
-  const pendingRevisions = isAdmin
+  const pendingRevisionsRaw = isAdmin
     ? await db
         .select({
-          id: townRevisionsTable.id,
-          townId: townRevisionsTable.townId,
-          townName: townTable.name,
-          originalName: townTable.name,
-          originalTagline: townTable.tagline,
-          originalOverview: townTable.overview,
-          originalRulerTitle: townTable.rulerTitle,
-          originalTraditionalRuler: townTable.traditionalRuler,
-          name: townRevisionsTable.name,
-          tagline: townRevisionsTable.tagline,
-          overview: townRevisionsTable.overview,
-          rulerTitle: townRevisionsTable.rulerTitle,
-          traditionalRuler: townRevisionsTable.traditionalRuler,
+          id: communityRevisionsTable.id,
+          townId: communityRevisionsTable.communityId,
+          townName: communitiesSchema.name,
+          originalName: communitiesSchema.name,
+          originalTagline: communitiesSchema.tagline,
+          originalOverview: communitiesSchema.overview,
+          originalHistoricalBackground: communitiesSchema.historicalBackground,
+          originalFoundingStories: communitiesSchema.foundingStories,
+          originalCultureAndTraditions: communitiesSchema.cultureAndTraditions,
+          name: communityRevisionsTable.name,
+          tagline: communityRevisionsTable.tagline,
+          overview: communityRevisionsTable.overview,
+          historicalBackground: communityRevisionsTable.historicalBackground,
+          foundingStories: communityRevisionsTable.foundingStories,
+          cultureAndTraditions: communityRevisionsTable.cultureAndTraditions,
           submittedBy: userTable.name,
-          createdAt: townRevisionsTable.createdAt,
+          createdAt: communityRevisionsTable.createdAt,
         })
-        .from(townRevisionsTable)
-        .leftJoin(townTable, eq(townRevisionsTable.townId, townTable.id))
-        .leftJoin(userTable, eq(townRevisionsTable.submittedById, userTable.id))
-        .where(eq(townRevisionsTable.status, 'pending'))
-        .orderBy(desc(townRevisionsTable.createdAt))
+        .from(communityRevisionsTable)
+        .leftJoin(communitiesSchema, eq(communityRevisionsTable.communityId, communitiesSchema.id))
+        .leftJoin(userTable, eq(communityRevisionsTable.submittedById, userTable.id))
+        .where(eq(communityRevisionsTable.status, 'pending'))
+        .orderBy(desc(communityRevisionsTable.createdAt))
     : [];
+
+  const pendingRevisions = pendingRevisionsRaw.map(r => ({
+    ...r,
+    townId: String(r.townId),
+    overview: r.overview || '',
+    originalOverview: r.originalOverview || '',
+  }));
 
   // Counts for portal cards
   const communityCountResult = await db
     .select({ value: count() })
-    .from(townTable);
+    .from(communitiesSchema);
   const communityCount = communityCountResult[0]?.value ?? 0;
 
   const userCountResult = isAdmin

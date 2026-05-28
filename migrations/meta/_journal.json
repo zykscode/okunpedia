@@ -50,6 +50,13 @@
       "when": 1779890410068,
       "tag": "0006_simple_veda",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1779971873533,
+      "tag": "0007_unified_schema",
+      "breakpoints": true
     }
   ]
 }

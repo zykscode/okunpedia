@@ -1,14 +1,14 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { revalidateTag } from 'next/cache';
 import { z } from 'zod';
 import { db } from '@/libs/DB';
 import { requireRole } from '@/libs/auth/guards';
 import {
   communitiesSchema,
-  townTable,
-  lgaTable,
+  communityHierarchySchema,
+  communityRelationshipsSchema,
   prominentIndigenesSchema,
   traditionalRulersSchema,
   amenitiesSchema,
@@ -23,8 +23,13 @@ export type ActionState = {
 };
 
 /** Logs an administrative action. */
-async function logAction(actorId: string, action: string, targetType: 'indigene' | 'ruler' | 'amenity' | 'community' | 'media', targetId: string, details?: object) {
-
+async function logAction(
+  actorId: string,
+  action: string,
+  targetType: 'indigene' | 'ruler' | 'amenity' | 'community' | 'media',
+  targetId: string,
+  details?: object,
+) {
   try {
     await db.insert(auditLogsTable).values({
       actorId,
@@ -38,52 +43,13 @@ async function logAction(actorId: string, action: string, targetType: 'indigene'
   }
 }
 
-/** Resolves or creates a community mapping record for the Town. */
+/** Resolves the community ID from the string parameter. */
 export async function getOrCreateCommunity(townId: string): Promise<number> {
-  const [town] = await db
-    .select({
-      name: townTable.name,
-      slug: townTable.slug,
-      tagline: townTable.tagline,
-      overview: townTable.overview,
-      lgaName: lgaTable.name,
-    })
-    .from(townTable)
-    .leftJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-    .where(eq(townTable.id, townId))
-    .limit(1);
-
-  if (!town) {
-    throw new Error('Town not found');
+  const id = Number.parseInt(townId, 10);
+  if (Number.isNaN(id)) {
+    throw new Error('Invalid community ID');
   }
-
-  const [existing] = await db
-    .select({ id: communitiesSchema.id })
-    .from(communitiesSchema)
-    .where(eq(communitiesSchema.slug, town.slug))
-    .limit(1);
-
-  if (existing) {
-    return existing.id;
-  }
-
-  const [inserted] = await db
-    .insert(communitiesSchema)
-    .values({
-      name: town.name,
-      slug: town.slug,
-      lga: town.lgaName ?? 'Unknown',
-      districtOrClan: town.tagline ?? 'Unknown',
-      historicalBackground: town.overview,
-      createdBy: 'system',
-    })
-    .returning({ id: communitiesSchema.id });
-
-  if (!inserted) {
-    throw new Error('Failed to create community mapping');
-  }
-
-  return inserted.id;
+  return id;
 }
 
 // ---------------------------------------------------------------
@@ -401,4 +367,188 @@ export async function updateCommunitySectionsAction(
   }
 }
 
+const HierarchySchema = z.object({
+  relationType: z.enum(['child', 'parent']),
+  targetCommunityId: z.coerce.number(),
+  context: z.string().min(1),
+  notes: z.string().optional(),
+});
 
+export async function addHierarchyAction(
+  townId: string,
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireRole('ADMIN');
+    const parsed = HierarchySchema.safeParse({
+      relationType: formData.get('relationType'),
+      targetCommunityId: formData.get('targetCommunityId'),
+      context: formData.get('context'),
+      notes: formData.get('notes') || '',
+    });
+
+    if (!parsed.success) {
+      return { success: false, message: parsed.error.issues[0]?.message ?? 'Invalid inputs.' };
+    }
+
+    const currentId = await getOrCreateCommunity(townId);
+    const targetId = parsed.data.targetCommunityId;
+
+    if (currentId === targetId) {
+      return { success: false, message: 'A community cannot be related to itself.' };
+    }
+
+    const parentId = parsed.data.relationType === 'child' ? currentId : targetId;
+    const childId = parsed.data.relationType === 'child' ? targetId : currentId;
+
+    // Check if duplicate exists
+    const existing = await db
+      .select()
+      .from(communityHierarchySchema)
+      .where(
+        and(
+          eq(communityHierarchySchema.parentId, parentId),
+          eq(communityHierarchySchema.childId, childId)
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      return { success: false, message: 'This hierarchical connection already exists.' };
+    }
+
+    const [inserted] = await db.insert(communityHierarchySchema).values({
+      parentId,
+      childId,
+      context: parsed.data.context,
+      notes: parsed.data.notes || null,
+    }).returning({ id: communityHierarchySchema.id });
+
+    if (inserted) {
+      await logAction(session.user.id, 'add_hierarchy', 'community', String(currentId), { hierarchyId: inserted.id });
+    }
+
+    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
+    return { success: true, message: 'Hierarchical connection added.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to add hierarchical connection.' };
+  }
+}
+
+export async function deleteHierarchyAction(
+  townId: string,
+  hierarchyId: number,
+): Promise<ActionState> {
+  try {
+    const session = await requireRole('ADMIN');
+    const currentId = await getOrCreateCommunity(townId);
+
+    await db
+      .delete(communityHierarchySchema)
+      .where(eq(communityHierarchySchema.id, hierarchyId));
+
+    await logAction(session.user.id, 'delete_hierarchy', 'community', String(currentId), { hierarchyId });
+
+    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
+    return { success: true, message: 'Hierarchical connection removed.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to delete hierarchical connection.' };
+  }
+}
+
+const RelationshipSchema = z.object({
+  targetCommunityId: z.coerce.number(),
+  relationshipType: z.string().min(1),
+  description: z.string().optional(),
+  establishedPeriod: z.string().optional(),
+});
+
+export async function addRelationshipAction(
+  townId: string,
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireRole('ADMIN');
+    const parsed = RelationshipSchema.safeParse({
+      targetCommunityId: formData.get('targetCommunityId'),
+      relationshipType: formData.get('relationshipType'),
+      description: formData.get('description') || '',
+      establishedPeriod: formData.get('establishedPeriod') || '',
+    });
+
+    if (!parsed.success) {
+      return { success: false, message: parsed.error.issues[0]?.message ?? 'Invalid inputs.' };
+    }
+
+    const currentId = await getOrCreateCommunity(townId);
+    const targetId = parsed.data.targetCommunityId;
+
+    if (currentId === targetId) {
+      return { success: false, message: 'A community cannot form a relationship with itself.' };
+    }
+
+    // Check if duplicate exists (either direction for relationships)
+    const existing = await db
+      .select()
+      .from(communityRelationshipsSchema)
+      .where(
+        and(
+          eq(communityRelationshipsSchema.sourceCommunityId, currentId),
+          eq(communityRelationshipsSchema.targetCommunityId, targetId)
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      return { success: false, message: 'This relationship connection already exists.' };
+    }
+
+    const [inserted] = await db.insert(communityRelationshipsSchema).values({
+      sourceCommunityId: currentId,
+      targetCommunityId: targetId,
+      relationshipType: parsed.data.relationshipType,
+      description: parsed.data.description || null,
+      establishedPeriod: parsed.data.establishedPeriod || null,
+    }).returning({ id: communityRelationshipsSchema.id });
+
+    if (inserted) {
+      await logAction(session.user.id, 'add_relationship', 'community', String(currentId), { relationshipId: inserted.id });
+    }
+
+    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
+    return { success: true, message: 'Relationship added successfully.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to add relationship.' };
+  }
+}
+
+export async function deleteRelationshipAction(
+  townId: string,
+  relationshipId: number,
+): Promise<ActionState> {
+  try {
+    const session = await requireRole('ADMIN');
+    const currentId = await getOrCreateCommunity(townId);
+
+    await db
+      .delete(communityRelationshipsSchema)
+      .where(eq(communityRelationshipsSchema.id, relationshipId));
+
+    await logAction(session.user.id, 'delete_relationship', 'community', String(currentId), { relationshipId });
+
+    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
+    return { success: true, message: 'Relationship connection removed.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to delete relationship connection.' };
+  }
+}

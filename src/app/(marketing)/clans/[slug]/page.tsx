@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { ChevronLeft, Shield, Users, Landmark } from 'lucide-react';
 
 import { db } from '@/libs/DB';
-import { townTable, lgaTable } from '@/models/Schema';
+import { communitiesSchema, lgaTable } from '@/models/Schema';
 import { CommunityProfileCard } from '@/features/communities/CommunityProfileCard';
 import { OKUN_CLANS, getClanSlug } from '@/utils/clanMatcher';
 import { Button } from '@/components/ui/Button';
@@ -65,17 +65,17 @@ export default async function ClanPage(props: ClanPageProps) {
   // Fetch all published towns and dynamically match against current clan slug
   const allTowns = await db
     .select({
-      id: townTable.id,
-      name: townTable.name,
-      slug: townTable.slug,
+      id: communitiesSchema.id,
+      name: communitiesSchema.name,
+      slug: communitiesSchema.slug,
       lga: lgaTable.name,
-      districtOrClan: townTable.tagline,
-      historicalBackground: townTable.overview,
+      districtOrClan: communitiesSchema.districtOrClan,
+      historicalBackground: communitiesSchema.overview,
     })
-    .from(townTable)
-    .innerJoin(lgaTable, eq(townTable.lgaId, lgaTable.id))
-    .where(eq(townTable.published, true))
-    .orderBy(townTable.name);
+    .from(communitiesSchema)
+    .innerJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+    .where(eq(communitiesSchema.status, "published"))
+    .orderBy(communitiesSchema.name);
 
   const clanTowns = allTowns
     .filter((town) => {

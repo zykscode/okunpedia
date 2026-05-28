@@ -2,13 +2,14 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { eq } from 'drizzle-orm';
 import { db } from '@/libs/DB';
-import { townTable } from '@/models/Schema';
+import { communitiesSchema } from '@/models/Schema';
 import { requireRole } from '@/libs/auth/guards';
 
 const TABS = [
   { href: '', label: 'Overview' },
   { href: '/edit', label: 'Edit Info' },
   { href: '/sections', label: 'Sections' },
+  { href: '/relationships', label: 'Relationships' },
   { href: '/people', label: 'People' },
   { href: '/rulers', label: 'Rulers' },
   { href: '/amenities', label: 'Amenities' },
@@ -22,14 +23,18 @@ export default async function CommunityAdminLayout(props: {
 }) {
   await requireRole('ADMIN');
   const { id } = await props.params;
+  const communityId = Number.parseInt(id, 10);
+  if (Number.isNaN(communityId)) notFound();
 
   const [town] = await db
-    .select({ id: townTable.id, name: townTable.name, published: townTable.published })
-    .from(townTable)
-    .where(eq(townTable.id, id))
+    .select({ id: communitiesSchema.id, name: communitiesSchema.name, status: communitiesSchema.status })
+    .from(communitiesSchema)
+    .where(eq(communitiesSchema.id, communityId))
     .limit(1);
 
   if (!town) notFound();
+
+  const isPublished = town.status === 'published';
 
   const base = `/admin/communities/${id}`;
 
@@ -49,11 +54,11 @@ export default async function CommunityAdminLayout(props: {
             {town.name}
           </h1>
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-            town.published
+            isPublished
               ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
               : 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
           }`}>
-            {town.published ? 'Published' : 'Draft'}
+            {isPublished ? 'Published' : 'Draft'}
           </span>
         </div>
       </div>
