@@ -1,5 +1,3 @@
-import path from "path";
-
 /** Centralized application configuration */
 export const AppConfig = {
   name: "Okunpedia",
