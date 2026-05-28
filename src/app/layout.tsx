@@ -1,22 +1,22 @@
-import { Analytics } from '@vercel/analytics/next';
-import type { Metadata, Viewport } from 'next';
-import { Inter, Lora } from 'next/font/google';
-import '@/styles/global.css';
-import { SearchProvider } from 'pliny/search/index.js';
-import { PwaRegistration } from '@/components/PwaRegistration';
-import { ThemeProvider } from '@/components/theme/theme-provider';
-import { AppConfig } from '@/utils/AppConfig';
+import { Analytics } from "@vercel/analytics/next";
+import type { Metadata, Viewport } from "next";
+import { Inter, Lora } from "next/font/google";
+import "@/styles/global.css";
+import { SearchProvider } from "pliny/search/index.js";
+import { PwaRegistration } from "@/components/PwaRegistration";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { AppConfig } from "@/utils/AppConfig";
 
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
 });
 
 const lora = Lora({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  display: 'swap',
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -27,51 +27,58 @@ export const metadata: Metadata = {
   },
   description: AppConfig.description,
   keywords: [
-    'Okun',
-    'Kogi State',
-    'Nigeria',
-    'Oworo',
-    'Lokoja',
-    'Yoruba',
-    'encyclopedia',
-    'history',
-    'culture',
-    'Bunu',
-    'Owe',
-    'Gbede',
-    'Oyi',
-    'Kabba',
-    'Ijumu',
-    'Yagba',
+    "Okun",
+    "Kogi State",
+    "Nigeria",
+    "Oworo",
+    "Lokoja",
+    "Yoruba",
+    "encyclopedia",
+    "history",
+    "culture",
+    "Bunu",
+    "Owe",
+    "Gbede",
+    "Oyi",
+    "Kabba",
+    "Ijumu",
+    "Yagba",
   ],
   authors: [{ name: AppConfig.author }],
   creator: AppConfig.author,
   icons: {
     icon: [
-      { url: '/static/favicons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/static/favicons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: "/static/favicons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/static/favicons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
-    apple: '/static/favicons/apple-touch-icon.png',
+    apple: "/static/favicons/apple-touch-icon.png",
   },
   openGraph: {
     title: AppConfig.title,
     description: AppConfig.description,
     url: AppConfig.siteUrl,
     siteName: AppConfig.title,
-    images: [{ url: AppConfig.socialBanner, width: 1024, height: 1024, alt: AppConfig.title }],
-    locale: 'en_US',
-    type: 'website',
+    images: [
+      {
+        url: "/og-banner.png",
+        width: 1200,
+        height: 630,
+        alt: AppConfig.title,
+      },
+    ],
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: AppConfig.title,
     description: AppConfig.description,
-    images: [AppConfig.socialBanner],
+    images: ["/og-banner.png"],
   },
   alternates: {
-    canonical: '/',
+    canonical: "/",
     types: {
-      'application/rss+xml': `${AppConfig.siteUrl}/feed.xml`,
+      "application/rss+xml": `${AppConfig.siteUrl}/feed.xml`,
     },
   },
   robots: {
@@ -80,24 +87,24 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
-  manifest: '/manifest.json',
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: "default",
     title: AppConfig.title,
   },
   formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
-  themeColor: '#10b981',
+  themeColor: "#10b981",
 };
 
 export default function RootLayout(props: { children: React.ReactNode }) {
