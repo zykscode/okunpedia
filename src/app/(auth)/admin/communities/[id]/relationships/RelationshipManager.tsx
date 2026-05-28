@@ -1,12 +1,13 @@
-'use client';
+// oxlint-disable require-await
+"use client";
 
-import { useState, useTransition, useRef } from 'react';
+import { useState, useTransition, useRef } from "react";
 import {
   addHierarchyAction,
   deleteHierarchyAction,
   addRelationshipAction,
   deleteRelationshipAction,
-} from '../actions';
+} from "../actions";
 
 type Community = {
   id: number;
@@ -48,8 +49,10 @@ export function RelationshipManager(props: {
 }) {
   const [parents, setParents] = useState<ParentRelation[]>(props.initialParents);
   const [children, setChildren] = useState<ChildRelation[]>(props.initialChildren);
-  const [relationships, setRelationships] = useState<ResolvedRelationship[]>(props.initialRelationships);
-  
+  const [relationships, setRelationships] = useState<ResolvedRelationship[]>(
+    props.initialRelationships,
+  );
+
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -64,7 +67,7 @@ export function RelationshipManager(props: {
     setSuccess(null);
 
     startTransition(async () => {
-      const res = await addHierarchyAction(props.townId, { success: false, message: '' }, formData);
+      const res = await addHierarchyAction(props.townId, { success: false, message: "" }, formData);
       if (res.success) {
         setSuccess(res.message);
         hierarchyFormRef.current?.reset();
@@ -76,7 +79,7 @@ export function RelationshipManager(props: {
   };
 
   const handleDeleteHierarchy = async (id: number) => {
-    if (!confirm('Are you sure you want to remove this hierarchical connection?')) return;
+    if (!confirm("Are you sure you want to remove this hierarchical connection?")) return;
 
     setError(null);
     setSuccess(null);
@@ -98,7 +101,11 @@ export function RelationshipManager(props: {
     setSuccess(null);
 
     startTransition(async () => {
-      const res = await addRelationshipAction(props.townId, { success: false, message: '' }, formData);
+      const res = await addRelationshipAction(
+        props.townId,
+        { success: false, message: "" },
+        formData,
+      );
       if (res.success) {
         setSuccess(res.message);
         relationshipFormRef.current?.reset();
@@ -110,7 +117,9 @@ export function RelationshipManager(props: {
   };
 
   const handleDeleteRelationship = async (id: number) => {
-    if (!confirm('Are you sure you want to remove this community relationship connection?')) return;
+    if (!confirm("Are you sure you want to remove this community relationship connection?")) {
+      return;
+    }
 
     setError(null);
     setSuccess(null);
@@ -132,7 +141,9 @@ export function RelationshipManager(props: {
       {(error || success) && (
         <div className="rounded-xl border p-4 text-sm transition-all duration-300">
           {error && <p className="font-semibold text-red-600 dark:text-red-400">{error}</p>}
-          {success && <p className="font-semibold text-emerald-600 dark:text-emerald-400">{success}</p>}
+          {success && (
+            <p className="font-semibold text-emerald-600 dark:text-emerald-400">{success}</p>
+          )}
         </div>
       )}
 
@@ -143,7 +154,8 @@ export function RelationshipManager(props: {
             Hierarchical Structures (Parent / Child Communities)
           </h3>
           <p className="text-xs text-gray-500 mt-1">
-            Establish if this community belongs under a parent town, or if it is a major town containing other quarters, villages, and satellite settlements.
+            Establish if this community belongs under a parent town, or if it is a major town
+            containing other quarters, villages, and satellite settlements.
           </p>
         </div>
 
@@ -151,11 +163,15 @@ export function RelationshipManager(props: {
           {/* Add Hierarchy Connection Form */}
           <div className="md:col-span-1">
             <div className="rounded-2xl border border-gray-200/80 bg-white/70 p-5 shadow-xs backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/50">
-              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Add Hierarchical Relation</h4>
-              
+              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+                Add Hierarchical Relation
+              </h4>
+
               <form ref={hierarchyFormRef} action={handleAddHierarchy} className="mt-4 space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase">Relation Type</label>
+                  <label className="block text-xs font-bold text-gray-400 uppercase">
+                    Relation Type
+                  </label>
                   <select
                     name="relationType"
                     required
@@ -167,7 +183,9 @@ export function RelationshipManager(props: {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase">Target Community</label>
+                  <label className="block text-xs font-bold text-gray-400 uppercase">
+                    Target Community
+                  </label>
                   <select
                     name="targetCommunityId"
                     required
@@ -189,15 +207,21 @@ export function RelationshipManager(props: {
                     required
                     className="mt-1 w-full rounded-xl border border-gray-200/80 bg-white px-3 py-2 text-sm outline-hidden focus:border-emerald-500 dark:border-gray-800 dark:bg-gray-950 dark:text-white"
                   >
-                    <option value="administrative">Administrative (e.g. ward, district subdivisions)</option>
-                    <option value="historical">Historical (settlement origins and expansion)</option>
+                    <option value="administrative">
+                      Administrative (e.g. ward, district subdivisions)
+                    </option>
+                    <option value="historical">
+                      Historical (settlement origins and expansion)
+                    </option>
                     <option value="social">Social / Clan Alliance</option>
                     <option value="cultural">Cultural</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase">Notes (Optional)</label>
+                  <label className="block text-xs font-bold text-gray-400 uppercase">
+                    Notes (Optional)
+                  </label>
                   <textarea
                     name="notes"
                     placeholder="e.g. Quarter founded in the late 19th century by migrants from the main town."
@@ -211,7 +235,7 @@ export function RelationshipManager(props: {
                   disabled={isPending}
                   className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-bold text-white shadow-md transition-all hover:bg-emerald-700 disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? 'Adding...' : 'Add Hierarchical Link'}
+                  {isPending ? "Adding..." : "Add Hierarchical Link"}
                 </button>
               </form>
             </div>
@@ -221,7 +245,9 @@ export function RelationshipManager(props: {
           <div className="md:col-span-2 space-y-6">
             {/* Parents Section */}
             <div className="rounded-2xl border border-gray-200/80 bg-white/70 p-5 shadow-xs backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/50">
-              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Parent Communities / Clans</h4>
+              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+                Parent Communities / Clans
+              </h4>
               {parents.length === 0 ? (
                 <p className="mt-2 text-sm text-gray-400">No parent community configured.</p>
               ) : (
@@ -239,11 +265,11 @@ export function RelationshipManager(props: {
                       {parents.map((item) => (
                         <tr key={item.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/10">
                           <td className="py-3 font-semibold text-gray-900 dark:text-white">
-                            {item.parentName || 'Unknown'}
+                            {item.parentName || "Unknown"}
                           </td>
                           <td className="py-3 capitalize">{item.context}</td>
-                          <td className="py-3 max-w-[200px] truncate" title={item.notes || ''}>
-                            {item.notes || '—'}
+                          <td className="py-3 max-w-[200px] truncate" title={item.notes || ""}>
+                            {item.notes || "—"}
                           </td>
                           <td className="py-3 text-right">
                             <button
@@ -264,9 +290,13 @@ export function RelationshipManager(props: {
 
             {/* Children Section */}
             <div className="rounded-2xl border border-gray-200/80 bg-white/70 p-5 shadow-xs backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/50">
-              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Subordinate Communities / Quarters / Villages</h4>
+              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+                Subordinate Communities / Quarters / Villages
+              </h4>
               {children.length === 0 ? (
-                <p className="mt-2 text-sm text-gray-400">No sub-communities configured under this community.</p>
+                <p className="mt-2 text-sm text-gray-400">
+                  No sub-communities configured under this community.
+                </p>
               ) : (
                 <div className="mt-4 overflow-x-auto">
                   <table className="w-full border-collapse text-left text-sm text-gray-500 dark:text-gray-400">
@@ -282,11 +312,11 @@ export function RelationshipManager(props: {
                       {children.map((item) => (
                         <tr key={item.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/10">
                           <td className="py-3 font-semibold text-gray-900 dark:text-white">
-                            {item.childName || 'Unknown'}
+                            {item.childName || "Unknown"}
                           </td>
                           <td className="py-3 capitalize">{item.context}</td>
-                          <td className="py-3 max-w-[200px] truncate" title={item.notes || ''}>
-                            {item.notes || '—'}
+                          <td className="py-3 max-w-[200px] truncate" title={item.notes || ""}>
+                            {item.notes || "—"}
                           </td>
                           <td className="py-3 text-right">
                             <button
@@ -315,7 +345,8 @@ export function RelationshipManager(props: {
             Horizontal Alliances & Historical Connections
           </h3>
           <p className="text-xs text-gray-550 mt-1">
-            Establish bilateral relationships like sister-town connections, migration source/destinations, cultural alliances, or shared monarchies.
+            Establish bilateral relationships like sister-town connections, migration
+            source/destinations, cultural alliances, or shared monarchies.
           </p>
         </div>
 
@@ -323,11 +354,19 @@ export function RelationshipManager(props: {
           {/* Add Relationship Form */}
           <div className="md:col-span-1">
             <div className="rounded-2xl border border-gray-200/80 bg-white/70 p-5 shadow-xs backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/50">
-              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Add Relationship Link</h4>
-              
-              <form ref={relationshipFormRef} action={handleAddRelationship} className="mt-4 space-y-4">
+              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+                Add Relationship Link
+              </h4>
+
+              <form
+                ref={relationshipFormRef}
+                action={handleAddRelationship}
+                className="mt-4 space-y-4"
+              >
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase">Related Community</label>
+                  <label className="block text-xs font-bold text-gray-400 uppercase">
+                    Related Community
+                  </label>
                   <select
                     name="targetCommunityId"
                     required
@@ -343,7 +382,9 @@ export function RelationshipManager(props: {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase">Relationship Type</label>
+                  <label className="block text-xs font-bold text-gray-400 uppercase">
+                    Relationship Type
+                  </label>
                   <select
                     name="relationshipType"
                     required
@@ -359,7 +400,9 @@ export function RelationshipManager(props: {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase">Established Period (Optional)</label>
+                  <label className="block text-xs font-bold text-gray-400 uppercase">
+                    Established Period (Optional)
+                  </label>
                   <input
                     type="text"
                     name="establishedPeriod"
@@ -369,7 +412,9 @@ export function RelationshipManager(props: {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase">Description (Optional)</label>
+                  <label className="block text-xs font-bold text-gray-400 uppercase">
+                    Description (Optional)
+                  </label>
                   <textarea
                     name="description"
                     placeholder="e.g. The two towns share historical bonds and hold joint festivals."
@@ -383,7 +428,7 @@ export function RelationshipManager(props: {
                   disabled={isPending}
                   className="w-full rounded-xl bg-emerald-600 py-2 text-sm font-bold text-white shadow-md transition-all hover:bg-emerald-700 disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? 'Adding...' : 'Add Relationship'}
+                  {isPending ? "Adding..." : "Add Relationship"}
                 </button>
               </form>
             </div>
@@ -392,7 +437,9 @@ export function RelationshipManager(props: {
           {/* Current Relationships List */}
           <div className="md:col-span-2">
             <div className="rounded-2xl border border-gray-200/80 bg-white/70 p-5 shadow-xs backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/50">
-              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">Active Relationships ({relationships.length})</h4>
+              <h4 className="font-semibold text-sm text-gray-900 dark:text-white">
+                Active Relationships ({relationships.length})
+              </h4>
               {relationships.length === 0 ? (
                 <p className="mt-2 text-sm text-gray-400">No active relations documented yet.</p>
               ) : (
@@ -415,12 +462,15 @@ export function RelationshipManager(props: {
                           </td>
                           <td className="py-3">
                             <span className="rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-400 px-2 py-0.5 text-xs font-bold border border-blue-100 dark:border-blue-900/40">
-                              {item.relationshipType.replace('_', ' ')}
+                              {item.relationshipType.replace("_", " ")}
                             </span>
                           </td>
-                          <td className="py-3">{item.establishedPeriod || '—'}</td>
-                          <td className="py-3 max-w-[200px] truncate" title={item.description || ''}>
-                            {item.description || '—'}
+                          <td className="py-3">{item.establishedPeriod || "—"}</td>
+                          <td
+                            className="py-3 max-w-[200px] truncate"
+                            title={item.description || ""}
+                          >
+                            {item.description || "—"}
                           </td>
                           <td className="py-3 text-right">
                             <button

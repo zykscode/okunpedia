@@ -115,6 +115,45 @@ export async function deleteIndigeneAction(townId: string, indigeneId: number): 
   }
 }
 
+export async function updateIndigeneAction(
+  townId: string,
+  indigeneId: number,
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireRole('ADMIN');
+    const parsed = IndigeneSchema.safeParse({
+      name: formData.get('name'),
+      biography: formData.get('biography'),
+    });
+
+    if (!parsed.success) {
+      return { success: false, message: parsed.error.issues[0]?.message ?? 'Invalid inputs.' };
+    }
+
+    const communityId = await getOrCreateCommunity(townId);
+
+    await db
+      .update(prominentIndigenesSchema)
+      .set({
+        name: parsed.data.name,
+        biography: parsed.data.biography,
+      })
+      .where(and(eq(prominentIndigenesSchema.id, indigeneId), eq(prominentIndigenesSchema.communityId, communityId)));
+
+    await logAction(session.user.id, 'update_indigene', 'indigene', String(indigeneId), { name: parsed.data.name });
+
+    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
+    return { success: true, message: 'Indigene updated successfully.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to update indigene.' };
+  }
+}
+
+
 // ---------------------------------------------------------------
 // TRADITIONAL RULERS ACTIONS
 // ---------------------------------------------------------------
@@ -186,6 +225,51 @@ export async function deleteRulerAction(townId: string, rulerId: number): Promis
   }
 }
 
+export async function updateRulerAction(
+  townId: string,
+  rulerId: number,
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireRole('ADMIN');
+    const parsed = RulerSchema.safeParse({
+      title: formData.get('title'),
+      name: formData.get('name'),
+      reignStart: formData.get('reignStart') || undefined,
+      reignEnd: formData.get('reignEnd') || undefined,
+      isIncumbent: formData.get('isIncumbent') ?? 'false',
+    });
+
+    if (!parsed.success) {
+      return { success: false, message: parsed.error.issues[0]?.message ?? 'Invalid inputs.' };
+    }
+
+    const communityId = await getOrCreateCommunity(townId);
+
+    await db
+      .update(traditionalRulersSchema)
+      .set({
+        title: parsed.data.title,
+        name: parsed.data.name,
+        reignStart: parsed.data.reignStart || null,
+        reignEnd: parsed.data.reignEnd || null,
+        isIncumbent: parsed.data.isIncumbent,
+      })
+      .where(and(eq(traditionalRulersSchema.id, rulerId), eq(traditionalRulersSchema.communityId, communityId)));
+
+    await logAction(session.user.id, 'update_ruler', 'ruler', String(rulerId), { name: parsed.data.name });
+
+    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
+    return { success: true, message: 'Traditional ruler updated successfully.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to update traditional ruler.' };
+  }
+}
+
+
 // ---------------------------------------------------------------
 // AMENITIES ACTIONS
 // ---------------------------------------------------------------
@@ -256,6 +340,51 @@ export async function deleteAmenityAction(townId: string, amenityId: number): Pr
     return { success: false, message: 'Failed to delete amenity.' };
   }
 }
+
+export async function updateAmenityAction(
+  townId: string,
+  amenityId: number,
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  try {
+    const session = await requireRole('ADMIN');
+    const parsed = AmenitySchema.safeParse({
+      category: formData.get('category'),
+      name: formData.get('name'),
+      status: formData.get('status'),
+      latitude: formData.get('latitude') || undefined,
+      longitude: formData.get('longitude') || undefined,
+    });
+
+    if (!parsed.success) {
+      return { success: false, message: parsed.error.issues[0]?.message ?? 'Invalid inputs.' };
+    }
+
+    const communityId = await getOrCreateCommunity(townId);
+
+    await db
+      .update(amenitiesSchema)
+      .set({
+        category: parsed.data.category,
+        name: parsed.data.name,
+        status: parsed.data.status,
+        latitude: parsed.data.latitude ?? null,
+        longitude: parsed.data.longitude ?? null,
+      })
+      .where(and(eq(amenitiesSchema.id, amenityId), eq(amenitiesSchema.communityId, communityId)));
+
+    await logAction(session.user.id, 'update_amenity', 'amenity', String(amenityId), { name: parsed.data.name });
+
+    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag('communities', 'max');
+    return { success: true, message: 'Amenity updated successfully.' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to update amenity.' };
+  }
+}
+
 
 // ---------------------------------------------------------------
 // GIS MAP ACTIONS

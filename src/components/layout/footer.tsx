@@ -104,6 +104,15 @@ export function Footer() {
             <span className="text-gray-300 dark:text-gray-700" aria-hidden="true">
               ·
             </span>
+            <Link
+              href="/feedback"
+              className="text-xs text-gray-400 no-underline transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
+            >
+              Feedback
+            </Link>
+            <span className="text-gray-300 dark:text-gray-700" aria-hidden="true">
+              ·
+            </span>
             <a
               href="mailto:hello@okunpedia.ng"
               className="flex items-center gap-1 text-xs text-gray-400 no-underline transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
