@@ -2,6 +2,8 @@ import { getJobVacancies } from "@/features/jobs/actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Job Vacancies | Okunpedia",
   description: "Explore and apply for job vacancies in Okun communities.",
