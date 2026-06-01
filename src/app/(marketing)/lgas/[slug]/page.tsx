@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { ChevronLeft, Landmark, Users, MapPin, Sparkles } from 'lucide-react';
 
 import { db } from '@/libs/DB';
-import { communitiesSchema } from '@/models/Schema';
+import { communitiesSchema, lgaTable } from '@/models/Schema';
 import { CommunityProfileCard } from '@/features/communities/CommunityProfileCard';
 import { OKUN_LGAS } from '@/utils/lgaData';
 import { Button } from '@/components/ui/Button';
@@ -62,18 +62,19 @@ export default async function LgaPage(props: LgaPageProps) {
     notFound();
   }
 
-  // Query all published towns belonging to this LGA using the text `lga` column
+  // Query all published towns belonging to this LGA
   const towns = await db
     .select({
       id: communitiesSchema.id,
       name: communitiesSchema.name,
       slug: communitiesSchema.slug,
-      lga: communitiesSchema.lga,
+      lga: lgaTable.name,
       districtOrClan: communitiesSchema.districtOrClan,
       historicalBackground: communitiesSchema.overview,
     })
     .from(communitiesSchema)
-    .where(eq(communitiesSchema.lga, lga.name))
+    .innerJoin(lgaTable, eq(communitiesSchema.lgaId, lgaTable.id))
+    .where(eq(lgaTable.name, lga.name))
     .orderBy(communitiesSchema.name);
 
   const formattedTowns = towns.map((town) => ({
