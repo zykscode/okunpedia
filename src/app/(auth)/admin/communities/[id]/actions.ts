@@ -555,10 +555,16 @@ export async function addHierarchyAction(
     }).returning({ id: communityHierarchySchema.id });
 
     if (inserted) {
+      await db
+        .update(communitiesSchema)
+        .set({ parentCommunityId: parentId })
+        .where(eq(communitiesSchema.id, childId));
+
       await logAction(session.user.id, 'add_hierarchy', 'community', String(currentId), { hierarchyId: inserted.id });
     }
 
-    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag(`community-${currentId}`, 'max');
+    revalidateTag(`community-${targetId}`, 'max');
     revalidateTag('communities', 'max');
     return { success: true, message: 'Hierarchical connection added.' };
   } catch (error) {
@@ -575,13 +581,37 @@ export async function deleteHierarchyAction(
     const session = await requireRole('ADMIN');
     const currentId = await getOrCreateCommunity(townId);
 
+    const [hierarchy] = await db
+      .select({ parentId: communityHierarchySchema.parentId, childId: communityHierarchySchema.childId })
+      .from(communityHierarchySchema)
+      .where(eq(communityHierarchySchema.id, hierarchyId))
+      .limit(1);
+
+    if (!hierarchy) {
+      return { success: false, message: 'Hierarchical connection not found.' };
+    }
+
     await db
       .delete(communityHierarchySchema)
       .where(eq(communityHierarchySchema.id, hierarchyId));
 
+    // Reset parentCommunityId on the child if it points to this parent
+    await db
+      .update(communitiesSchema)
+      .set({ parentCommunityId: null })
+      .where(
+        and(
+          eq(communitiesSchema.id, hierarchy.childId),
+          eq(communitiesSchema.parentCommunityId, hierarchy.parentId)
+        )
+      );
+
+    const otherId = hierarchy.parentId === currentId ? hierarchy.childId : hierarchy.parentId;
+
     await logAction(session.user.id, 'delete_hierarchy', 'community', String(currentId), { hierarchyId });
 
-    revalidateTag(`community-${townId}`, 'max');
+    revalidateTag(`community-${currentId}`, 'max');
+    revalidateTag(`community-${otherId}`, 'max');
     revalidateTag('communities', 'max');
     return { success: true, message: 'Hierarchical connection removed.' };
   } catch (error) {

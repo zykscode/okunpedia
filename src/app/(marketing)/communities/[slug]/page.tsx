@@ -1,5 +1,5 @@
-import { eq } from 'drizzle-orm';
-import { ChevronLeft, Crown, Star, AlertCircle } from 'lucide-react';
+import { eq, or, inArray } from 'drizzle-orm';
+import { ChevronLeft, Crown, Star, AlertCircle, Network, Link2 } from 'lucide-react';
 import { unstable_cache } from 'next/cache';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -12,6 +12,8 @@ import {
   lgaTable,
   prominentIndigenesSchema,
   traditionalRulersSchema,
+  communityHierarchySchema,
+  communityRelationshipsSchema,
 } from '@/models/Schema';
 
 import { AppConfig } from '@/utils/AppConfig';
@@ -132,7 +134,7 @@ function DetailHeader(props: DetailHeaderProps) {
   );
 }
 
-type DetailContentProps = {
+function DetailContent(props: {
   town: {
     historicalBackground: string | null;
     overview: string | null;
@@ -146,17 +148,12 @@ type DetailContentProps = {
   };
   rulers: RulerItem[];
   indigenes: IndigeneItem[];
-};
-
-/**
- * Main content body containing history, lore, culture, economics, facts, and sidebar highlights.
- * @param props Component properties.
- * @returns React node representing main content.
- */
-function DetailContent(props: DetailContentProps) {
-  const { town, rulers, indigenes } = props;
-  const showCulture = !!(town.cultureAndTraditions || town.festivalsAndRituals);
-  const facts = Array.isArray(town.randomFacts) ? town.randomFacts : [];
+  parents: { id: number; name: string; slug: string; context: string }[];
+  children: { id: number; name: string; slug: string; context: string }[];
+  relationships: { id: number; relationshipType: string; description: string | null; name: string; slug: string }[];
+}) {
+  const showCulture = !!(props.town.cultureAndTraditions || props.town.festivalsAndRituals);
+  const facts = Array.isArray(props.town.randomFacts) ? props.town.randomFacts : [];
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
@@ -167,18 +164,18 @@ function DetailContent(props: DetailContentProps) {
           </h2>
           <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
           <Markdown
-            content={town.historicalBackground || town.overview || 'No historical overview documented yet.'}
+            content={props.town.historicalBackground || props.town.overview || 'No historical overview documented yet.'}
             className="mt-5"
           />
         </section>
 
-        {town.foundingStories && (
+        {props.town.foundingStories && (
           <section className="rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs sm:p-8 dark:border-gray-800 dark:bg-gray-900/60">
             <h2 className="font-serif text-xl font-bold text-gray-900 sm:text-2xl dark:text-white">
               Founding Lore & Mythologies
             </h2>
             <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
-            <Markdown content={town.foundingStories} className="mt-5" />
+            <Markdown content={props.town.foundingStories} className="mt-5" />
           </section>
         )}
 
@@ -188,23 +185,23 @@ function DetailContent(props: DetailContentProps) {
               Culture, Festivals & Traditions
             </h2>
             <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
-            {town.cultureAndTraditions && <Markdown content={town.cultureAndTraditions} className="mt-5" />}
-            {town.festivalsAndRituals && (
+            {props.town.cultureAndTraditions && <Markdown content={props.town.cultureAndTraditions} className="mt-5" />}
+            {props.town.festivalsAndRituals && (
               <>
                 <h3 className="mt-6 font-serif text-lg font-bold text-gray-900 dark:text-white">Festivals & Rituals</h3>
-                <Markdown content={town.festivalsAndRituals} className="mt-3" />
+                <Markdown content={props.town.festivalsAndRituals} className="mt-3" />
               </>
             )}
           </section>
         )}
 
-        {town.economicActivities && (
+        {props.town.economicActivities && (
           <section className="rounded-2xl border border-gray-200/80 bg-white p-6 shadow-xs sm:p-8 dark:border-gray-800 dark:bg-gray-900/60">
             <h2 className="font-serif text-xl font-bold text-gray-900 sm:text-2xl dark:text-white">
               Economic Landscape
             </h2>
             <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
-            <Markdown content={town.economicActivities} className="mt-5" />
+            <Markdown content={props.town.economicActivities} className="mt-5" />
           </section>
         )}
 
@@ -244,9 +241,9 @@ function DetailContent(props: DetailContentProps) {
             Paramount Monarchy
           </h2>
           <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
-          {rulers.length > 0 ? (
+          {props.rulers.length > 0 ? (
             <ul className="mt-4 space-y-3">
-              {rulers.map((r, i) => (
+              {props.rulers.map((r, i) => (
                 <li
                   key={String(i)}
                   className="flex flex-col gap-1 rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-gray-800 dark:bg-gray-900/40"
@@ -278,9 +275,9 @@ function DetailContent(props: DetailContentProps) {
             Prominent Indigenes
           </h2>
           <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
-          {indigenes.length > 0 ? (
+          {props.indigenes.length > 0 ? (
             <ul className="mt-4 space-y-3">
-              {indigenes.map((ind, i) => (
+              {props.indigenes.map((ind, i) => (
                 <li
                   key={String(i)}
                   className="flex flex-col gap-1 rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-gray-800 dark:bg-gray-900/40"
@@ -299,14 +296,98 @@ function DetailContent(props: DetailContentProps) {
           )}
         </div>
 
-        {town.lat !== null && town.lng !== null && (
+        {(props.parents.length > 0 || props.children.length > 0 || props.relationships.length > 0) && (
+          <div className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs dark:border-gray-800 dark:bg-gray-900/60">
+            <h2 className="flex items-center gap-2 font-serif text-sm font-bold tracking-wider text-gray-900 uppercase dark:text-white">
+              <Network className="size-4 text-emerald-500" aria-hidden="true" />
+              Community Connections
+            </h2>
+            <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
+
+            <div className="mt-4 space-y-5">
+              {/* Parents */}
+              {props.parents.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Parent Community</h3>
+                  <div className="mt-2 space-y-2">
+                    {props.parents.map((p) => (
+                      <Link
+                        key={p.slug}
+                        href={`/communities/${p.slug}`}
+                        className="flex flex-col gap-0.5 rounded-xl border border-emerald-100 bg-emerald-50/20 p-2.5 hover:bg-emerald-50/50 hover:border-emerald-200 transition-colors dark:border-emerald-950/40 dark:bg-emerald-950/10 dark:hover:bg-emerald-950/20"
+                      >
+                        <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400 hover:underline">
+                          {p.name}
+                        </span>
+                        {p.context && (
+                          <span className="text-[10px] text-gray-500 capitalize">{p.context} relation</span>
+                        )}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Children */}
+              {props.children.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Quarters & Sub-towns</h3>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    {props.children.map((c) => (
+                      <Link
+                        key={c.slug}
+                        href={`/communities/${c.slug}`}
+                        className="flex items-center justify-center rounded-xl border border-gray-100 bg-gray-50/50 px-2.5 py-2 text-center text-xs font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-800 dark:bg-gray-900/40 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+                      >
+                        {c.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Relationships */}
+              {props.relationships.length > 0 && (
+                <div>
+                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Historical & Cultural Ties</h3>
+                  <div className="mt-2 space-y-2">
+                    {props.relationships.map((r) => (
+                      <Link
+                        key={r.slug}
+                        href={`/communities/${r.slug}`}
+                        className="flex items-start gap-2.5 rounded-xl border border-gray-100 bg-gray-50/50 p-2.5 hover:bg-gray-100 transition-colors dark:border-gray-800 dark:bg-gray-900/40 dark:hover:bg-gray-800"
+                      >
+                        <Link2 className="mt-0.5 size-3.5 shrink-0 text-blue-500" aria-hidden="true" />
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-sm font-bold text-gray-900 dark:text-white hover:underline">
+                            {r.name}
+                          </span>
+                          <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 capitalize">
+                            {r.relationshipType.replace('_', ' ')}
+                          </span>
+                          {r.description && (
+                            <span className="text-[10px] text-gray-500 line-clamp-2">
+                              {r.description}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {props.town.lat !== null && props.town.lng !== null && (
           <div className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs dark:border-gray-800 dark:bg-gray-900/60">
             <h2 className="font-serif text-sm font-bold tracking-wider text-gray-900 uppercase dark:text-white">
               Coordinates
             </h2>
             <div className="mt-3 h-px bg-gray-100 dark:bg-gray-800" />
             <p className="mt-3 font-mono text-xs text-gray-600 dark:text-gray-400">
-              {town.lat.toFixed(6)}, {town.lng.toFixed(6)}
+              {props.town.lat.toFixed(6)}, {props.town.lng.toFixed(6)}
             </p>
           </div>
         )}
@@ -377,6 +458,87 @@ const getNewIndigenesByCommunityId = unstable_cache(
   { tags: ['communities'] },
 );
 
+const getParentsByCommunityId = unstable_cache(
+  async (communityId: number) =>
+    await db
+      .select({
+        id: communitiesSchema.id,
+        name: communitiesSchema.name,
+        slug: communitiesSchema.slug,
+        context: communityHierarchySchema.context,
+      })
+      .from(communityHierarchySchema)
+      .innerJoin(communitiesSchema, eq(communityHierarchySchema.parentId, communitiesSchema.id))
+      .where(eq(communityHierarchySchema.childId, communityId)),
+  ['parents-by-community-cache'],
+  { tags: ['communities'] },
+);
+
+const getChildrenByCommunityId = unstable_cache(
+  async (communityId: number) =>
+    await db
+      .select({
+        id: communitiesSchema.id,
+        name: communitiesSchema.name,
+        slug: communitiesSchema.slug,
+        context: communityHierarchySchema.context,
+      })
+      .from(communityHierarchySchema)
+      .innerJoin(communitiesSchema, eq(communityHierarchySchema.childId, communitiesSchema.id))
+      .where(eq(communityHierarchySchema.parentId, communityId)),
+  ['children-by-community-cache'],
+  { tags: ['communities'] },
+);
+
+const getRelationshipsByCommunityId = unstable_cache(
+  async (communityId: number) => {
+    const rels = await db
+      .select({
+        id: communityRelationshipsSchema.id,
+        sourceCommunityId: communityRelationshipsSchema.sourceCommunityId,
+        targetCommunityId: communityRelationshipsSchema.targetCommunityId,
+        relationshipType: communityRelationshipsSchema.relationshipType,
+        description: communityRelationshipsSchema.description,
+      })
+      .from(communityRelationshipsSchema)
+      .where(
+        or(
+          eq(communityRelationshipsSchema.sourceCommunityId, communityId),
+          eq(communityRelationshipsSchema.targetCommunityId, communityId)
+        )
+      );
+
+    if (rels.length === 0) return [];
+
+    const relatedIds = rels.map((r) =>
+      r.sourceCommunityId === communityId ? r.targetCommunityId : r.sourceCommunityId
+    );
+
+    const relatedTowns = await db
+      .select({
+        id: communitiesSchema.id,
+        name: communitiesSchema.name,
+        slug: communitiesSchema.slug,
+      })
+      .from(communitiesSchema)
+      .where(inArray(communitiesSchema.id, relatedIds));
+
+    return rels.map((r) => {
+      const relatedId = r.sourceCommunityId === communityId ? r.targetCommunityId : r.sourceCommunityId;
+      const town = relatedTowns.find((t) => t.id === relatedId);
+      return {
+        id: r.id,
+        relationshipType: r.relationshipType,
+        description: r.description,
+        name: town?.name ?? 'Unknown',
+        slug: town?.slug ?? '',
+      };
+    });
+  },
+  ['relationships-by-community-cache'],
+  { tags: ['communities'] },
+);
+
 export async function generateStaticParams() {
   try {
     const towns = await db.select({ slug: communitiesSchema.slug }).from(communitiesSchema);
@@ -440,18 +602,27 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
   let town = null;
   let newRulers: { id: number; title: string; name: string; reignStart: string | null; reignEnd: string | null; isIncumbent: boolean | null }[] = [];
   let newIndigenes: { id: number; name: string; biography: string }[] = [];
+  let parents: { id: number; name: string; slug: string; context: string }[] = [];
+  let children: { id: number; name: string; slug: string; context: string }[] = [];
+  let relationships: { id: number; relationshipType: string; description: string | null; name: string; slug: string }[] = [];
   let fetchError = false;
 
   try {
     town = await getTownBySlug(slug);
     if (town) {
       const { communityId } = town;
-      const [resNewRulers, resNewIndigenes] = await Promise.all([
+      const [resNewRulers, resNewIndigenes, resParents, resChildren, resRelationships] = await Promise.all([
         communityId ? getNewRulersByCommunityId(communityId) : Promise.resolve([]),
         communityId ? getNewIndigenesByCommunityId(communityId) : Promise.resolve([]),
+        communityId ? getParentsByCommunityId(communityId) : Promise.resolve([]),
+        communityId ? getChildrenByCommunityId(communityId) : Promise.resolve([]),
+        communityId ? getRelationshipsByCommunityId(communityId) : Promise.resolve([]),
       ]);
       newRulers = resNewRulers;
       newIndigenes = resNewIndigenes;
+      parents = resParents;
+      children = resChildren;
+      relationships = resRelationships;
     }
   } catch (error) {
     console.error(`Error loading community detail for slug ${slug}:`, error);
@@ -516,6 +687,9 @@ export default async function CommunityDetailPage(props: DetailPageProps) {
         town={{ ...town, randomFacts: [] }}
         rulers={rulers}
         indigenes={indigenes}
+        parents={parents}
+        children={children}
+        relationships={relationships}
       />
     </article>
   );
