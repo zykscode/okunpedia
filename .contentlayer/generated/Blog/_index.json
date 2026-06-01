@@ -37,7 +37,7 @@
       "datePublished": "2026-05-10T00:00:00.000Z",
       "dateModified": "2026-05-10T00:00:00.000Z",
       "description": "Comprehensive comparative phonetic matrices charting intonation and tonal shifts separating Owe, Yagba, Ijumu, Bunu, and Oworo dialects across indigenous ancestral hamlets.",
-      "image": "/logo.png",
+      "image": "/og-banner.png",
       "url": "https://okunpedia.vercel.app/blog/linguistic-mapping-dialects"
     }
   },
@@ -85,7 +85,7 @@
       "datePublished": "2026-04-10T00:00:00.000Z",
       "dateModified": "2026-04-10T00:00:00.000Z",
       "description": "A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.",
-      "image": "/logo.png",
+      "image": "/og-banner.png",
       "url": "https://okunpedia.vercel.app/blog/mopa-muro-road-deficits"
     }
   },
@@ -133,7 +133,7 @@
       "datePublished": "2026-03-15T00:00:00.000Z",
       "dateModified": "2026-03-15T00:00:00.000Z",
       "description": "An investigative exploration tracing back the pre-colonial boundary dynamics, historical conflicts, and cultural cross-pollination between the Okun and bordering Nupe kingdoms.",
-      "image": "/logo.png",
+      "image": "/og-banner.png",
       "url": "https://okunpedia.vercel.app/blog/nupe-okun-migrations"
     }
   },
@@ -175,8 +175,58 @@
       "datePublished": "2026-05-02T00:00:00.000Z",
       "dateModified": "2026-05-02T00:00:00.000Z",
       "description": "Oral historian interviews mapping the ancestral significance of the periodic Ovia ritual celebrations, native chants transcription, and digital audio preservation efforts.",
-      "image": "/logo.png",
+      "image": "/og-banner.png",
       "url": "https://okunpedia.vercel.app/blog/reviving-ovia-festival"
+    }
+  },
+  {
+    "title": "Mission statement for Okunpedia",
+    "date": "2026-05-05T00:00:00.000Z",
+    "tags": [
+      "development",
+      "mission",
+      "Culture"
+    ],
+    "draft": false,
+    "summary": "A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.",
+    "body": {
+      "raw": "\n# Background\n\nContinuous road infrastructure viability remains the foundational prerequisite for accelerating internal trade across Mopa-Muro local government axes. The current state assessment documents targeted priority areas requiring immediate asphalt reinforcement to connect remote farming belts directly with primary commercial terminals.\n",
+      "code": "var Component=(()=>{var u=Object.create;var i=Object.defineProperty;var h=Object.getOwnPropertyDescriptor;var p=Object.getOwnPropertyNames;var f=Object.getPrototypeOf,g=Object.prototype.hasOwnProperty;var x=(t,e)=>()=>(e||t((e={exports:{}}).exports,e),e.exports),v=(t,e)=>{for(var n in e)i(t,n,{get:e[n],enumerable:!0})},o=(t,e,n,s)=>{if(e&&typeof e==\"object\"||typeof e==\"function\")for(let r of p(e))!g.call(t,r)&&r!==n&&i(t,r,{get:()=>e[r],enumerable:!(s=h(e,r))||s.enumerable});return t};var w=(t,e,n)=>(n=t!=null?u(f(t)):{},o(e||!t||!t.__esModule?i(n,\"default\",{value:t,enumerable:!0}):n,t)),y=t=>o(i({},\"__esModule\",{value:!0}),t);var c=x((k,l)=>{l.exports=_jsx_runtime});var _={};v(_,{default:()=>m,frontmatter:()=>M});var a=w(c()),M={title:\"Mission statement for Okunpedia\",date:\"2026-05-05\",tags:[\"development\",\"mission\",\"Culture\"],summary:\"A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.\",draft:!1};function d(t){let e={a:\"a\",h1:\"h1\",p:\"p\",path:\"path\",span:\"span\",svg:\"svg\",...t.components};return(0,a.jsxs)(a.Fragment,{children:[(0,a.jsxs)(e.h1,{className:\"content-header\",id:\"background\",children:[(0,a.jsx)(e.a,{\"aria-hidden\":\"true\",href:\"#background\",tabIndex:\"-1\",children:(0,a.jsx)(a.Fragment,{children:(0,a.jsx)(e.span,{className:\"content-header-link\",children:(0,a.jsxs)(e.svg,{className:\"h-5 linkicon w-5\",fill:\"currentColor\",viewBox:\"0 0 20 20\",xmlns:\"http://www.w3.org/2000/svg\",children:[(0,a.jsx)(e.path,{d:\"M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z\"}),(0,a.jsx)(e.path,{d:\"M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z\"})]})})})}),\"Background\"]}),(0,a.jsx)(e.p,{children:\"Continuous road infrastructure viability remains the foundational prerequisite for accelerating internal trade across Mopa-Muro local government axes. The current state assessment documents targeted priority areas requiring immediate asphalt reinforcement to connect remote farming belts directly with primary commercial terminals.\"})]})}function m(t={}){let{wrapper:e}=t.components||{};return e?(0,a.jsx)(e,{...t,children:(0,a.jsx)(d,{...t})}):d(t)}return y(_);})();\n;return Component;"
+    },
+    "_id": "blog/Test-New-blog-post.mdx",
+    "_raw": {
+      "sourceFilePath": "blog/Test-New-blog-post.mdx",
+      "sourceFileName": "Test-New-blog-post.mdx",
+      "sourceFileDir": "blog",
+      "contentType": "mdx",
+      "flattenedPath": "blog/Test-New-blog-post"
+    },
+    "type": "Blog",
+    "readingTime": {
+      "text": "1 min read",
+      "minutes": 0.205,
+      "time": 12300,
+      "words": 41
+    },
+    "slug": "Test-New-blog-post",
+    "path": "blog/Test-New-blog-post",
+    "filePath": "blog/Test-New-blog-post.mdx",
+    "toc": [
+      {
+        "value": "Background",
+        "url": "#background",
+        "depth": 1
+      }
+    ],
+    "structuredData": {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Mission statement for Okunpedia",
+      "datePublished": "2026-05-05T00:00:00.000Z",
+      "dateModified": "2026-05-05T00:00:00.000Z",
+      "description": "A critical review of municipal bypass conditions detailing targeted action pathways for indigenous development trust funds to coordinate infrastructural self-help repairs.",
+      "image": "/og-banner.png",
+      "url": "https://okunpedia.vercel.app/blog/Test-New-blog-post"
     }
   }
 ]

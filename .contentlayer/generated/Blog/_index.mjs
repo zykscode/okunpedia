@@ -4,5 +4,6 @@ import blog__linguisticMappingDialectsMdx from './blog__linguistic-mapping-diale
 import blog__mopaMuroRoadDeficitsMdx from './blog__mopa-muro-road-deficits.mdx.json' with { type: 'json' }
 import blog__nupeOkunMigrationsMdx from './blog__nupe-okun-migrations.mdx.json' with { type: 'json' }
 import blog__revivingOviaFestivalMdx from './blog__reviving-ovia-festival.mdx.json' with { type: 'json' }
+import blog__testNewBlogPostMdx from './blog__Test-New-blog-post.mdx.json' with { type: 'json' }
 
-export const allBlogs = [blog__linguisticMappingDialectsMdx, blog__mopaMuroRoadDeficitsMdx, blog__nupeOkunMigrationsMdx, blog__revivingOviaFestivalMdx]
+export const allBlogs = [blog__linguisticMappingDialectsMdx, blog__mopaMuroRoadDeficitsMdx, blog__nupeOkunMigrationsMdx, blog__revivingOviaFestivalMdx, blog__testNewBlogPostMdx]
