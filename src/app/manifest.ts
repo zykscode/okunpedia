@@ -32,7 +32,7 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/png",
       },
       {
-        src: "/favicon.svg",
+        src: "/favicon.ico",
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",

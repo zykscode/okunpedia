@@ -639,6 +639,7 @@ export const userProfilesRelations = relations(userProfilesSchema, ({ one, many 
   stories: many(communityStoriesSchema),
   comments: many(commentsSchema),
   reactions: many(reactionsSchema),
+  jobVacancies: many(jobVacanciesSchema),
 }));
 
 export const blogPostsRelations = relations(blogPostsSchema, ({ one, many }) => ({
@@ -730,5 +731,58 @@ export const mediaRelations = relations(mediaTable, ({ one }) => ({
   uploadedBy: one(userTable, {
     fields: [mediaTable.uploadedById],
     references: [userTable.id],
+  }),
+}));
+
+export const jobVacanciesSchema = pgTable('job_vacancies', {
+  id: serial('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  location: text('location'),
+  type: text('type').default('Full-time').notNull(),
+  status: text('status').default('open').notNull(), // 'open', 'closed'
+  authorId: text('author_id')
+    .references(() => userProfilesSchema.id, { onDelete: 'cascade' })
+    .notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, (table) => [
+  index('job_vacancies_status_idx').on(table.status),
+]);
+
+export const jobApplicationsSchema = pgTable('job_applications', {
+  id: serial('id').primaryKey(),
+  vacancyId: integer('vacancy_id')
+    .references(() => jobVacanciesSchema.id, { onDelete: 'cascade' })
+    .notNull(),
+  applicantName: text('applicant_name').notNull(),
+  applicantEmail: text('applicant_email').notNull(),
+  resumeUrl: text('resume_url').notNull(),
+  coverLetter: text('cover_letter'),
+  status: text('status').default('pending').notNull(), // 'pending', 'reviewed', 'rejected', 'accepted'
+  updatedAt: timestamp('updated_at', { mode: 'date' })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+}, (table) => [
+  index('job_applications_vacancy_idx').on(table.vacancyId),
+]);
+
+export const jobVacanciesRelations = relations(jobVacanciesSchema, ({ one, many }) => ({
+  author: one(userProfilesSchema, {
+    fields: [jobVacanciesSchema.authorId],
+    references: [userProfilesSchema.id],
+  }),
+  applications: many(jobApplicationsSchema),
+}));
+
+export const jobApplicationsRelations = relations(jobApplicationsSchema, ({ one }) => ({
+  vacancy: one(jobVacanciesSchema, {
+    fields: [jobApplicationsSchema.vacancyId],
+    references: [jobVacanciesSchema.id],
   }),
 }));
