@@ -1,22 +1,22 @@
-import { MapPin, FileText, Users, Mail, ArrowUpRight } from 'lucide-react';
-import Link from 'next/link';
-import { PageLogo } from '@/components/ui/PageLogo';
+import { MapPin, FileText, Users, Mail, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { PageLogo } from "@/components/ui/PageLogo";
 
 const exploreLinks = [
-  { href: '/communities', label: 'All Communities' },
-  { href: '/map', label: 'Interactive Map' },
-  { href: '/blog', label: 'Blog & Articles' },
-  { href: '/about', label: 'About Okunpedia' },
-  { href: '/search', label: 'Search' },
+  { href: "/communities", label: "All Communities" },
+  { href: "/map", label: "Interactive Map" },
+  { href: "/blog", label: "Blog & Articles" },
+  { href: "/about", label: "About Okunpedia" },
+  { href: "/search", label: "Search" },
 ];
 
 const featuredLinks = [
-  { href: '/communities/kabba', label: 'Kabba (Owe)' },
-  { href: '/communities/isanlu', label: 'Isanlu' },
-  { href: '/communities/mopa', label: 'Mopa' },
-  { href: '/communities/egbe', label: 'Egbe' },
-  { href: '/communities/iyara', label: 'Iyara' },
-  { href: '/communities/ekinrin-adde', label: 'Ekinrin-Adde' },
+  { href: "/communities/kabba", label: "Kabba (Owe)" },
+  { href: "/communities/isanlu", label: "Isanlu" },
+  { href: "/communities/mopa", label: "Mopa" },
+  { href: "/communities/egbe", label: "Egbe" },
+  { href: "/communities/iyara", label: "Iyara" },
+  { href: "/communities/ekinrin-adde", label: "Ekinrin-Adde" },
 ];
 
 /**
@@ -38,19 +38,27 @@ export function Footer() {
                 </span>
               </div>
               <p className="mx-auto max-w-sm text-sm leading-relaxed text-gray-500 md:mx-0 dark:text-gray-400">
-                A community-driven digital encyclopedia preserving the rich history, culture, and
-                heritage of Okun towns in Kogi State, Nigeria — for future generations.
+                A community-driven digital encyclopedia preserving the rich
+                history, culture, and heritage of Okun towns in Kogi State,
+                Nigeria — for future generations.
               </p>
               <p className="mt-4 hidden items-center justify-center gap-1.5 text-sm text-gray-400 md:flex md:justify-start dark:text-gray-500">
-                <MapPin className="size-3.5 shrink-0 text-emerald-500" aria-hidden="true" />
-                Kabba/Bunu · Ijumu · Mopa-Muro · Yagba East · Yagba West, Kogi State
+                <MapPin
+                  className="size-3.5 shrink-0 text-emerald-500"
+                  aria-hidden="true"
+                />
+                Kabba/Bunu · Ijumu · Mopa-Muro · Yagba East · Yagba West, Kogi
+                State
               </p>
             </div>
 
             {/* Explore */}
             <div>
               <h3 className="mb-4 flex items-center justify-center gap-2 text-xs font-semibold tracking-widest text-gray-900 uppercase md:justify-start dark:text-white">
-                <FileText className="size-3.5 text-emerald-500" aria-hidden="true" />
+                <FileText
+                  className="size-3.5 text-emerald-500"
+                  aria-hidden="true"
+                />
                 Explore
               </h3>
               <ul className="space-y-2.5">
@@ -70,7 +78,10 @@ export function Footer() {
             {/* Featured Communities */}
             <div className="hidden md:block">
               <h3 className="mb-4 flex items-center justify-center gap-2 text-xs font-semibold tracking-widest text-gray-900 uppercase md:justify-start dark:text-white">
-                <Users className="size-3.5 text-emerald-500" aria-hidden="true" />
+                <Users
+                  className="size-3.5 text-emerald-500"
+                  aria-hidden="true"
+                />
                 Communities
               </h3>
               <ul className="space-y-2.5">
@@ -94,14 +105,17 @@ export function Footer() {
           <p className="text-xs text-gray-400 dark:text-gray-500">
             © {new Date().getFullYear()} Okunpedia. Built with ❤️ for Okun land.
           </p>
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
             <Link
               href="/about"
-              className="text-xs text-gray-400 no-underline transition-colors hover:text-gray-700 dark:hover:text-gray-200"
+              className="text-xs text-gray-400 no-underline transition-colors hover:text-gray-750 dark:hover:text-gray-200"
             >
               About
             </Link>
-            <span className="text-gray-300 dark:text-gray-700" aria-hidden="true">
+            <span
+              className="text-gray-300 dark:text-gray-800"
+              aria-hidden="true"
+            >
               ·
             </span>
             <Link
@@ -110,7 +124,46 @@ export function Footer() {
             >
               Feedback
             </Link>
-            <span className="text-gray-300 dark:text-gray-700" aria-hidden="true">
+            <span
+              className="text-gray-300 dark:text-gray-800"
+              aria-hidden="true"
+            >
+              ·
+            </span>
+            <Link
+              href="/privacy"
+              className="text-xs text-gray-400 no-underline transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
+            >
+              Privacy
+            </Link>
+            <span
+              className="text-gray-300 dark:text-gray-800"
+              aria-hidden="true"
+            >
+              ·
+            </span>
+            <Link
+              href="/terms"
+              className="text-xs text-gray-400 no-underline transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
+            >
+              Terms
+            </Link>
+            <span
+              className="text-gray-300 dark:text-gray-800"
+              aria-hidden="true"
+            >
+              ·
+            </span>
+            <Link
+              href="/cookie-policy"
+              className="text-xs text-gray-400 no-underline transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
+            >
+              Cookies
+            </Link>
+            <span
+              className="text-gray-300 dark:text-gray-800"
+              aria-hidden="true"
+            >
               ·
             </span>
             <a
@@ -120,7 +173,10 @@ export function Footer() {
               <Mail className="size-3" aria-hidden="true" />
               Contact
             </a>
-            <span className="text-gray-300 dark:text-gray-700" aria-hidden="true">
+            <span
+              className="text-gray-300 dark:text-gray-800"
+              aria-hidden="true"
+            >
               ·
             </span>
             <a

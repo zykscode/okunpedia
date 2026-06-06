@@ -6,6 +6,8 @@ import { SearchProvider } from "pliny/search/index.js";
 import { PwaRegistration } from "@/components/PwaRegistration";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { AppConfig } from "@/utils/AppConfig";
+import { CookieConsent } from "@/components/layout/CookieConsent";
+import { WelcomeModal } from "@/components/layout/WelcomeModal";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,8 +50,16 @@ export const metadata: Metadata = {
   creator: AppConfig.author,
   icons: {
     icon: [
-      { url: "/static/favicons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/static/favicons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      {
+        url: "/static/favicons/favicon-16x16.png",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        url: "/static/favicons/favicon-32x32.png",
+        sizes: "32x32",
+        type: "image/png",
+      },
     ],
     apple: "/static/favicons/apple-touch-icon.png",
   },
@@ -109,15 +119,31 @@ export const viewport: Viewport = {
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${lora.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${lora.variable}`}
+    >
       <head>
-        <link rel="apple-touch-icon" sizes="192x192" href="/static/favicons/apple-touch-icon.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="192x192"
+          href="/static/favicons/apple-touch-icon.png"
+        />
       </head>
       <body>
-        <ThemeProvider attribute="class" defaultTheme={AppConfig.theme} enableSystem>
-          <SearchProvider searchConfig={AppConfig.search as any}>{props.children}</SearchProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme={AppConfig.theme}
+          enableSystem
+        >
+          <SearchProvider searchConfig={AppConfig.search as any}>
+            {props.children}
+          </SearchProvider>
           <Analytics />
           <PwaRegistration />
+          <CookieConsent />
+          <WelcomeModal />
         </ThemeProvider>
       </body>
     </html>
