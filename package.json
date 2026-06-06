@@ -7,7 +7,7 @@
     "dev:next": "next dev",
     "dev": "run-p db-server:file dev:*",
     "build:next": "next build",
-    "build-local": "run-p db-server:memory build:next --race",
+    "build-local": "cross-env DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5435/postgres run-p db-server:memory build:next --race",
     "build": "next build",
     "start": "next start",
     "build-stats": "cross-env ANALYZE=true pnpm run build",
