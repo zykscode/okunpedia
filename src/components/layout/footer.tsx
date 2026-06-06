@@ -167,7 +167,7 @@ export function Footer() {
               ·
             </span>
             <a
-              href="mailto:hello@okunpedia.ng"
+              href="mailto:okunpedia@gmail.com"
               className="flex items-center gap-1 text-xs text-gray-400 no-underline transition-colors hover:text-emerald-700 dark:hover:text-emerald-400"
             >
               <Mail className="size-3" aria-hidden="true" />

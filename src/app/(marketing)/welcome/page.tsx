@@ -226,7 +226,7 @@ export default function WelcomePage() {
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <a
-            href="mailto:hello@okunpedia.ng?subject=Contacting Mr. John Otitoju"
+            href="mailto:okunpedia@gmail.com?subject=Contacting Mr. John Otitoju"
             className="inline-block focus:outline-hidden"
           >
             <Button variant="outline" size="sm" className="gap-1.5">

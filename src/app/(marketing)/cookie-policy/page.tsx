@@ -218,10 +218,10 @@ export default function CookiePolicyPage() {
             If you have any questions or feedback about our use of cookies and
             local storage technologies, please email the administrator team at:{" "}
             <a
-              href="mailto:hello@okunpedia.ng"
+              href="mailto:okunpedia@gmail.com"
               className="text-emerald-600 hover:underline dark:text-emerald-400"
             >
-              hello@okunpedia.ng
+              okunpedia@gmail.com
             </a>
             .
           </p>

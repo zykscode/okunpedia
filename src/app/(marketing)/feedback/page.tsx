@@ -1,20 +1,23 @@
-import type { Metadata } from 'next';
-import { Env } from '@/libs/Env';
-import { AppConfig } from '@/utils/AppConfig';
+import type { Metadata } from "next";
+import { Env } from "@/libs/Env";
+import { AppConfig } from "@/utils/AppConfig";
 
 export const metadata: Metadata = {
-  title: 'Share Feedback & Suggestions — Okunpedia',
-  description: 'Provide comments, report issues, or suggest improvements to help us preserve the rich history and heritage of Okunland.',
+  title: "Share Feedback & Suggestions — Okunpedia",
+  description:
+    "Provide comments, report issues, or suggest improvements to help us preserve the rich history and heritage of Okunland.",
   openGraph: {
-    title: 'Share Feedback & Suggestions — Okunpedia',
-    description: 'Provide comments, report issues, or suggest improvements to help us preserve the rich history and heritage of Okunland.',
+    title: "Share Feedback & Suggestions — Okunpedia",
+    description:
+      "Provide comments, report issues, or suggest improvements to help us preserve the rich history and heritage of Okunland.",
     url: `${AppConfig.siteUrl}/feedback`,
     siteName: AppConfig.title,
-    type: 'website',
+    type: "website",
   },
 };
 
-const DEFAULT_FEEDBACK_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSe-p2V_kS8F_2e59eN-qG-f4eWw04kFh8Y_4y-y1g4P4j_Tyg/viewform?embedded=true';
+const DEFAULT_FEEDBACK_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfdyCXHVfWFlzqBhJmsg4TZdSkCYbNldNR5rRVOAGh_0PtXZg/viewform?embedded=true";
 
 export default function FeedbackPage() {
   const formUrl = Env.NEXT_PUBLIC_FEEDBACK_FORM_URL || DEFAULT_FEEDBACK_URL;
@@ -27,7 +30,8 @@ export default function FeedbackPage() {
           Feedback & Suggestions
         </h1>
         <p className="mt-3 text-base text-gray-500 dark:text-gray-400">
-          Help us improve Okunpedia. Share your thoughts, report issues, or suggest new community records.
+          Help us improve Okunpedia. Share your thoughts, report issues, or
+          suggest new community records.
         </p>
       </div>
 
@@ -37,7 +41,10 @@ export default function FeedbackPage() {
           We want to hear from you!
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-          Whether you found a typo, have suggestions on historical community boundaries, or want to contribute oral lineage records, please use the form below to let us know. Your feedback helps us shape Okunpedia to be a more accurate resource for all Okun people.
+          Whether you found a typo, have suggestions on historical community
+          boundaries, or want to contribute oral lineage records, please use the
+          form below to let us know. Your feedback helps us shape Okunpedia to
+          be a more accurate resource for all Okun people.
         </p>
       </div>
 
