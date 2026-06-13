@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import { Badge } from '@/components/ui/Badge';
-import { ArrowRight } from 'lucide-react';
-import { getClanSlug } from '@/utils/clanMatcher';
+import Link from "next/link";
+import { Badge } from "@/components/ui/Badge";
+import { ArrowRight } from "lucide-react";
+import { getClanSlug } from "@/utils/clanMatcher";
 
 /**
  * Type for community data displayed in cards.
@@ -25,8 +25,11 @@ export type CommunityProfileCardProps = {
  */
 export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
   const data = props.community;
-  
-  const lgaSlug = data.lga.toLowerCase().replaceAll(/[^a-z0-9]+/gu, '-').replaceAll(/(^-|-$)/gu, '');
+
+  const lgaSlug = data.lga
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/gu, "-")
+    .replaceAll(/(^-|-$)/gu, "");
   const clanSlug = getClanSlug({
     districtOrClan: data.districtOrClan,
     lgaName: data.lga,
@@ -38,18 +41,24 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
     <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-400/50 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900/60 dark:hover:border-emerald-500/30">
       {/* Decorative corner gradient */}
       <div
-        className="pointer-events-none absolute top-0 right-0 size-28 rounded-bl-full bg-gradient-to-br from-emerald-500/8 to-amber-500/5 transition-transform duration-500 group-hover:scale-110"
+        className="pointer-events-none absolute top-0 right-0 size-28 rounded-bl-full bg-linear-to-br from-emerald-500/8 to-amber-500/5 transition-transform duration-500 group-hover:scale-110"
         aria-hidden="true"
       />
 
       <div className="p-6">
         {/* Meta row */}
         <div className="flex items-center justify-between gap-2">
-          <Link href={`/lgas/${lgaSlug}`} className="hover:scale-[1.02] active:scale-[0.98] transition-transform">
+          <Link
+            href={`/lgas/${lgaSlug}`}
+            className="hover:scale-[1.02] active:scale-[0.98] transition-transform"
+          >
             <Badge variant="emerald">{data.lga} LGA</Badge>
           </Link>
           {clanSlug ? (
-            <Link href={`/clans/${clanSlug}`} className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline">
+            <Link
+              href={`/clans/${clanSlug}`}
+              className="text-xs capitalize font-semibold text-amber-700 dark:text-amber-400 hover:underline"
+            >
               {data.districtOrClan}
             </Link>
           ) : (
@@ -60,7 +69,7 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
         </div>
 
         {/* Title */}
-        <h3 className="mt-4 font-serif text-xl font-bold tracking-tight text-gray-900 transition-colors group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400 sm:text-2xl">
+        <h3 className="mt-4 font-serif text-xl capitalize font-bold tracking-tight text-gray-900 transition-colors group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400 sm:text-2xl">
           {data.name}
         </h3>
 
@@ -78,10 +87,12 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
           className="flex items-center justify-between text-sm font-semibold text-emerald-700 no-underline transition-colors hover:text-emerald-600 focus:outline-hidden dark:text-emerald-400 dark:hover:text-emerald-300"
         >
           <span>View community profile</span>
-          <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+          <ArrowRight
+            className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+            aria-hidden="true"
+          />
         </Link>
       </div>
     </article>
   );
 };
-
