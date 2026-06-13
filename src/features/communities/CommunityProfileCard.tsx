@@ -62,7 +62,7 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
               {data.districtOrClan}
             </Link>
           ) : (
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
+            <span className="text-xs font-medium capitalize text-gray-400 dark:text-gray-500">
               {data.districtOrClan}
             </span>
           )}
@@ -75,7 +75,7 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
 
         {/* Excerpt */}
         <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-          {data.historicalBackground ||
+          {data.historicalBackground ??
             `Explore official archival documentation, origin lineages, traditional monarchy leadership, and public infrastructure registries for ${data.name}.`}
         </p>
       </div>
