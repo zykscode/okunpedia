@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { ArrowRight } from "lucide-react";
 import { getClanSlug } from "@/utils/clanMatcher";
+import { toTitleCase } from "@/utils/Helpers";
 
 /**
  * Type for community data displayed in cards.
@@ -57,20 +58,20 @@ export const CommunityProfileCard = (props: CommunityProfileCardProps) => {
           {clanSlug ? (
             <Link
               href={`/clans/${clanSlug}`}
-              className="text-xs capitalize font-semibold text-amber-700 dark:text-amber-400 hover:underline"
+              className="text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline"
             >
-              {data.districtOrClan}
+              {toTitleCase(data.districtOrClan)}
             </Link>
           ) : (
-            <span className="text-xs font-medium capitalize text-gray-400 dark:text-gray-500">
-              {data.districtOrClan}
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500">
+              {toTitleCase(data.districtOrClan)}
             </span>
           )}
         </div>
 
         {/* Title */}
-        <h3 className="mt-4 font-serif text-xl capitalize font-bold tracking-tight text-gray-900 transition-colors group-hover:text-emerald-700 dark:text-white dark:group-hover:text-emerald-400 sm:text-2xl">
-          {data.name}
+        <h3 className="mt-4 font-serif text-xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-2xl">
+          {toTitleCase(data.name)}
         </h3>
 
         {/* Excerpt */}

@@ -11,3 +11,14 @@ export const getBaseUrl = () => {
 
   return 'http://localhost:3000';
 };
+
+/**
+ * Converts a string to title case, handling ALL-CAPS and all-lowercase inputs.
+ * Preserves hyphens and treats each hyphenated segment independently.
+ * @param value Raw string (e.g. "IKERE-EKITI" or "ikere ekiti").
+ * @returns Properly capitalised title-case string.
+ */
+export const toTitleCase = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/(?:^|[\s-])\S/gu, (char) => char.toUpperCase());
